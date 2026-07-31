@@ -1,0 +1,26 @@
+import { PortfolioApp } from "../PortfolioApp";
+
+export function generateStaticParams() {
+  return [
+    "blog",
+    "publications",
+    "projects",
+    "cv",
+    "teaching",
+    "people",
+    "news",
+    "award-fdp",
+    "repositories",
+    "books",
+    "profiles",
+  ].map((section) => ({ section }));
+}
+
+export default async function SectionPage({
+  params,
+}: {
+  params: Promise<{ section: string }>;
+}) {
+  const { section } = await params;
+  return <PortfolioApp section={section} />;
+}
