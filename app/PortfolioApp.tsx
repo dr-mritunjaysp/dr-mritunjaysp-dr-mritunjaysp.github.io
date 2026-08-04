@@ -9,10 +9,13 @@ import {
   Download,
   ExternalLink,
   FileText,
+  House,
   Mail,
   Menu,
+  Moon,
   Search,
   Sparkles,
+  Sun,
   UsersRound,
   X,
 } from "lucide-react";
@@ -531,8 +534,13 @@ function Header({
   return (
     <header className="site-header">
       <nav className="nav-pill" aria-label="Main navigation">
-        <Link className="desktop-page-brand" href="/" aria-label="Home">
-          <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
+        {section !== "home" && (
+          <Link className="desktop-page-brand" href="/" aria-label="Home">
+            <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
+          </Link>
+        )}
+        <Link className="mobile-page-brand" href="/" aria-label="Home">
+          Academic Portfolio
         </Link>
 
         <div className={`nav-links ${mobileOpen ? "is-open" : ""}`}>
@@ -543,10 +551,7 @@ function Header({
             aria-label="Home"
             onClick={() => setMobileOpen(false)}
           >
-            <LottieIcon
-              path="/lottie/home-button.json"
-              className="home-lottie-icon"
-            />
+            <House size={19} aria-hidden="true" />
           </Link>
           {primaryNav.map((item) => (
             <Link
@@ -604,20 +609,18 @@ function Header({
         <div className="nav-actions">
           <button onClick={onSearch} aria-label="Search" className="search-button">
             <span>Search</span>
-            <LottieIcon
-              path="/lottie/search-icon.json"
-              className="search-lottie-icon"
-            />
+            <Search size={18} aria-hidden="true" />
           </button>
           <button
             onClick={onTheme}
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
             className="theme-button"
           >
-            <LottieIcon
-              path="/lottie/theme-toggle.json"
-              className="theme-toggle-lottie"
-            />
+            {theme === "light" ? (
+              <Moon size={18} aria-hidden="true" />
+            ) : (
+              <Sun size={18} aria-hidden="true" />
+            )}
           </button>
           <button
             className="mobile-button"
@@ -664,18 +667,30 @@ function SectionTitle({
 function PublicationCard({
   publication,
   index,
-  open,
-  onToggle,
   compact = false,
 }: {
   publication: Publication;
   index: number;
-  open: boolean;
-  onToggle: () => void;
   compact?: boolean;
 }) {
+  const [panel, setPanel] = useState<"abstract" | "bib" | null>(null);
+  const scholarUrl =
+    "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en";
+  const citationKey = `peelam${publication.year}${publication.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "")
+    .slice(0, 24)}`;
+  const bibtex = `@article{${citationKey},\n  title = {${publication.title}},\n  author = {${publication.authors}},\n  journal = {${publication.venue}},\n  year = {${publication.year}}${
+    publication.doi
+      ? `,\n  doi = {${publication.doi.replace("https://doi.org/", "")}}`
+      : ""
+  }\n}`;
+
   return (
-    <article className={`publication-card ${compact ? "compact" : ""}`}>
+    <article
+      className={`publication-card${compact ? " compact" : ""}`}
+      data-featured={index === 19 ? "true" : undefined}
+    >
       <div className="publication-number">
         {String(index + 1).padStart(2, "0")}
       </div>
@@ -705,27 +720,49 @@ function PublicationCard({
             Citations: {publication.citations}
           </a>
         </div>
-        {!compact && (
-          <>
-            <div className="publication-actions">
-              <button onClick={onToggle} aria-expanded={open}>
-                Abs
-              </button>
-              {publication.doi && (
-                <a href={publication.doi} target="_blank" rel="noreferrer">
-                  DOI
-                </a>
-              )}
-              <a
-                href="https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Scholar
-              </a>
-            </div>
-            {open && <p className="abstract">{publication.abstract}</p>}
-          </>
+        <div className="publication-actions">
+          <button
+            className={panel === "abstract" ? "active" : ""}
+            onClick={() =>
+              setPanel(panel === "abstract" ? null : "abstract")
+            }
+            aria-expanded={panel === "abstract"}
+          >
+            ABS
+          </button>
+          {publication.doi && (
+            <a href={publication.doi} target="_blank" rel="noreferrer">
+              DOI
+            </a>
+          )}
+          <button
+            className={panel === "bib" ? "active" : ""}
+            onClick={() => setPanel(panel === "bib" ? null : "bib")}
+            aria-expanded={panel === "bib"}
+          >
+            BIB
+          </button>
+          <a
+            href={publication.doi ?? scholarUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            HTML
+          </a>
+        </div>
+        {panel === "abstract" && (
+          <p className="abstract">{publication.abstract}</p>
+        )}
+        {panel === "bib" && (
+          <div className="bibtex-panel">
+            <code>{bibtex}</code>
+            <button
+              type="button"
+              onClick={() => void navigator.clipboard?.writeText(bibtex)}
+            >
+              Copy BibTeX
+            </button>
+          </div>
         )}
       </div>
     </article>
@@ -929,8 +966,6 @@ function SocialStrip() {
 }
 
 function HomePage() {
-  const [opened, setOpened] = useState<number | null>(null);
-
   return (
     <>
       <section className="hero">
@@ -1076,8 +1111,6 @@ function HomePage() {
               key={publication.title}
               publication={publication}
               index={index}
-              open={opened === index}
-              onToggle={() => setOpened(opened === index ? null : index)}
             />
           ))}
         </div>
@@ -1092,7 +1125,6 @@ function HomePage() {
 }
 
 function PublicationsPage() {
-  const [opened, setOpened] = useState<number | null>(0);
   const [query, setQuery] = useState("");
   const [year, setYear] = useState("all");
 
@@ -1147,10 +1179,6 @@ function PublicationsPage() {
               key={publication.title}
               publication={publication}
               index={originalIndex}
-              open={opened === originalIndex}
-              onToggle={() =>
-                setOpened(opened === originalIndex ? null : originalIndex)
-              }
             />
           );
         })}
@@ -2224,7 +2252,7 @@ function Footer() {
       </div>
       <div className="footer-wave-content">
         <div className="footer-wave-container">
-          © Copyright 2026 Dr. Mritunjay Shall Peelam. Last updated: July 31, 2026.
+          © Copyright 2026 Dr. Mritunjay Shall Peelam. Last updated: August 04, 2026.
         </div>
       </div>
     </footer>
