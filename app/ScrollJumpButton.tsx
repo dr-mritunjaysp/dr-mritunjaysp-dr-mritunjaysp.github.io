@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 type ScrollDirection = "down" | "up";
 
 type ScrollState = {
-  canScroll: boolean;
   direction: ScrollDirection;
 };
 
@@ -22,14 +21,12 @@ function getScrollState(): ScrollState {
   const maxScroll = Math.max(0, scrollHeight - viewportHeight);
 
   return {
-    canScroll: maxScroll > 180,
-    direction: scrollTop < maxScroll / 2 ? "down" : "up",
+    direction: maxScroll <= 0 || scrollTop < maxScroll / 2 ? "down" : "up",
   };
 }
 
 export function ScrollJumpButton({ pageKey }: { pageKey: string }) {
   const [state, setState] = useState<ScrollState>({
-    canScroll: false,
     direction: "down",
   });
 
@@ -57,8 +54,6 @@ export function ScrollJumpButton({ pageKey }: { pageKey: string }) {
 
     window.scrollTo({ top, behavior: "smooth" });
   };
-
-  if (!state.canScroll) return null;
 
   const goingDown = state.direction === "down";
 
