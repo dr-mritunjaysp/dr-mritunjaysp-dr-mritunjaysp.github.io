@@ -11,10 +11,16 @@
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "docker:up": "docker compose up --build -d portfolio",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f portfolio",
+    "docker:dev": "docker compose --profile dev up --build portfolio-dev"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
+    "firebase": "^12.17.0",
+    "lottie-web": "^5.13.0",
     "lucide-react": "^1.28.0",
     "next": "16.2.6",
     "react": "19.2.6",

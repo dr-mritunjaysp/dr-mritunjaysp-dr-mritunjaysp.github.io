@@ -4,24 +4,19 @@ import {
   Award,
   BookOpen,
   BriefcaseBusiness,
-  CalendarDays,
-  ChevronDown,
   ChevronRight,
-  CircleUserRound,
   Code2,
   Download,
   ExternalLink,
   FileText,
-  GraduationCap,
   Mail,
   Menu,
-  Moon,
   Search,
   Sparkles,
-  Sun,
   UsersRound,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import {
   SiGooglescholar,
   SiGithub,
@@ -30,7 +25,11 @@ import {
   SiYoutube,
 } from "react-icons/si";
 import { FaLinkedinIn } from "react-icons/fa6";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { LottieIcon } from "./LottieIcon";
+import { ScrollJumpButton } from "./ScrollJumpButton";
+import { subscribeVisitorCounter, subscribeScholarMetrics } from "./firebase";
+import type { ScholarMetrics } from "./firebase";
 
 type SectionKey =
   | "home"
@@ -40,8 +39,16 @@ type SectionKey =
   | "cv"
   | "teaching"
   | "people"
-  | "news"
   | "award-fdp"
+  | "game"
+  | "daily-mantra"
+  | "bhagwatgita"
+  | "ramayan"
+  | "quantum-computation"
+  | "blockchain"
+  | "poems"
+  | "motivations"
+  | "news"
   | "repositories"
   | "books"
   | "profiles";
@@ -67,16 +74,19 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
-  { label: "News", href: "/news", key: "news", icon: CalendarDays },
-  { label: "Awards & FDP", href: "/award-fdp", key: "award-fdp", icon: Award },
+  { label: "Awards & FDP", href: "/award-fdp", key: "award-fdp" },
+  { label: "Game", href: "/game", key: "game" },
+  { label: "Daily Mantra", href: "/daily-mantra", key: "daily-mantra" },
+  { label: "Bhagwatgita", href: "/bhagwatgita", key: "bhagwatgita" },
+  { label: "Ramayan", href: "/ramayan", key: "ramayan" },
   {
-    label: "Repositories",
-    href: "/repositories",
-    key: "repositories",
-    icon: SiGithub,
+    label: "Quantum Computing",
+    href: "/quantum-computation",
+    key: "quantum-computation",
   },
-  { label: "Books", href: "/books", key: "books", icon: BookOpen },
-  { label: "Profiles", href: "/profiles", key: "profiles", icon: CircleUserRound },
+  { label: "Blockchain", href: "/blockchain", key: "blockchain" },
+  { label: "Poems", href: "/poems", key: "poems" },
+  { label: "Motivations", href: "/motivations", key: "motivations" },
 ] as const;
 
 const publications: Publication[] = [
@@ -429,6 +439,18 @@ const cvSections = {
       place: "Institution of Electronics and Telecommunication Engineers",
       detail: "Graduated with a CGPA of 7.60/10.",
     },
+    {
+      period: "2008",
+      title: "Class XII",
+      place: "Guru Nanak Inter College, Mirzapur",
+      detail: "BHSIEUP · 65.00%.",
+    },
+    {
+      period: "2006",
+      title: "Class X",
+      place: "Sarvoday Public School, Pandari, Mirzapur",
+      detail: "BHSIEUP · 67.50%.",
+    },
   ],
   Experience: [
     {
@@ -452,6 +474,13 @@ const cvSections = {
       detail:
         "Trained students in C, C++, Java, and core computer science subjects.",
     },
+    {
+      period: "2012",
+      title: "Java and Advanced Java Intern",
+      place: "HCL CDC, New Delhi",
+      detail:
+        "Hands-on exposure to practical software development with Java technologies.",
+    },
   ],
 };
 
@@ -468,73 +497,126 @@ function Header({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const updateProgress = () => {
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(
+        scrollable > 0
+          ? Math.min(100, (window.scrollY / scrollable) * 100)
+          : 0,
+      );
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest(".more-wrap")) {
+        setMoreOpen(false);
+      }
+    };
+
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="site-header">
       <nav className="nav-pill" aria-label="Main navigation">
-        <a className="brand-mark" href="/" aria-label="Home">
-          <span />
-          <span />
-          <span />
-          <span />
-        </a>
+        <Link className="desktop-page-brand" href="/" aria-label="Home">
+          <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
+        </Link>
 
         <div className={`nav-links ${mobileOpen ? "is-open" : ""}`}>
+          <Link
+            className={`nav-home-link ${section === "home" ? "active" : ""}`}
+            href="/"
+            title="Home"
+            aria-label="Home"
+            onClick={() => setMobileOpen(false)}
+          >
+            <LottieIcon
+              path="/lottie/home-button.json"
+              className="home-lottie-icon"
+            />
+          </Link>
           {primaryNav.map((item) => (
-            <a
+            <Link
               key={item.key}
               className={section === item.key ? "active" : ""}
               href={item.href}
               onClick={() => setMobileOpen(false)}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
-          <div className="more-wrap">
+          <div
+            className="more-wrap"
+            onMouseEnter={() => setMoreOpen(true)}
+            onMouseLeave={() => setMoreOpen(false)}
+          >
             <button
               className={
                 moreNav.some((item) => item.key === section) ? "active" : ""
               }
-              onClick={() => setMoreOpen((value) => !value)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setMoreOpen((value) => !value);
+              }}
               aria-expanded={moreOpen}
               aria-haspopup="menu"
             >
-              More <ChevronDown size={14} />
+              More{" "}
+              <span className="navbar-dropdown-arrow" aria-hidden="true">
+                ▾
+              </span>
             </button>
             {moreOpen && (
               <div className="more-menu" role="menu">
-                {moreNav.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <a
-                      href={item.href}
-                      key={item.key}
-                      role="menuitem"
-                      onClick={() => {
-                        setMoreOpen(false);
-                        setMobileOpen(false);
-                      }}
-                    >
-                      <Icon size={15} />
-                      {item.label}
-                    </a>
-                  );
-                })}
+                {moreNav.map((item) => (
+                  <Link
+                    href={item.href}
+                    key={item.key}
+                    role="menuitem"
+                    className={section === item.key ? "active" : ""}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMoreOpen(false);
+                      setMobileOpen(false);
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </div>
             )}
           </div>
         </div>
 
         <div className="nav-actions">
-          <button onClick={onSearch} aria-label="Search" className="icon-button">
-            <Search size={19} />
+          <button onClick={onSearch} aria-label="Search" className="search-button">
+            <span>Search</span>
+            <LottieIcon
+              path="/lottie/search-icon.json"
+              className="search-lottie-icon"
+            />
           </button>
           <button
             onClick={onTheme}
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
             className="theme-button"
           >
-            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            <LottieIcon
+              path="/lottie/theme-toggle.json"
+              className="theme-toggle-lottie"
+            />
           </button>
           <button
             className="mobile-button"
@@ -546,7 +628,10 @@ function Header({
           </button>
         </div>
       </nav>
-      <div className="rainbow-progress" />
+      <div
+        className="rainbow-progress"
+        style={{ width: `${scrollProgress}%` }}
+      />
     </header>
   );
 }
@@ -646,7 +731,95 @@ function PublicationCard({
   );
 }
 
+function AnimatedCount({
+  value,
+  fallback = "…",
+  className = "",
+}: {
+  value: number;
+  fallback?: string;
+  className?: string;
+}) {
+  const [displayValue, setDisplayValue] = useState<number>(0);
+  const [tickColor, setTickColor] = useState<string | null>(null);
+  const [isTicking, setIsTicking] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (value <= 0) return;
+
+    const targetVal = value;
+    const tickColors = ["#48dbfb", "#1dd1a1", "#feca57", "#ff6b6b", "#a855f7", "#22c55e"];
+    let colorIdx = 0;
+    const duration = 2400;
+    const frameDelay = 20;
+    const maxFrames = Math.floor(duration / frameDelay);
+    const step = Math.max(1, Math.ceil(targetVal / maxFrames));
+    let cur = 0;
+
+    setIsTicking(true);
+
+    const timer = setInterval(() => {
+      cur += step;
+      if (cur >= targetVal) {
+        cur = targetVal;
+        clearInterval(timer);
+        setDisplayValue(targetVal);
+        setTickColor(null);
+        setIsTicking(false);
+      } else {
+        const nextColor = tickColors[colorIdx % tickColors.length];
+        colorIdx++;
+        setTickColor(nextColor);
+        setDisplayValue(cur);
+      }
+    }, frameDelay);
+
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return (
+    <span
+      className={`animated-count ${isTicking ? "is-ticking" : ""} ${className}`}
+      style={
+        tickColor
+          ? ({
+              color: tickColor,
+              WebkitTextFillColor: tickColor,
+              textShadow: `0 0 8px ${tickColor}`,
+            } as React.CSSProperties)
+          : undefined
+      }
+    >
+      {displayValue > 0 ? displayValue.toLocaleString() : fallback}
+    </span>
+  );
+}
+
 function SocialStrip() {
+  const [visitorTotal, setVisitorTotal] = useState<number>(0);
+  const [scholar, setScholar] = useState<ScholarMetrics>({
+    total_citations: 584,
+    h_index: 12,
+    i10_index: 16,
+  });
+
+  useEffect(() => {
+    const unsubCounter = subscribeVisitorCounter({
+      onTotal: (total) => setVisitorTotal(total),
+    });
+    const unsubScholar = subscribeScholarMetrics((m) => {
+      setScholar((prev) => ({
+        total_citations: m.total_citations ?? prev.total_citations,
+        h_index: m.h_index ?? prev.h_index,
+        i10_index: m.i10_index ?? prev.i10_index,
+      }));
+    });
+    return () => {
+      unsubCounter();
+      unsubScholar();
+    };
+  }, []);
+
   const socials = [
     {
       label: "Download CV",
@@ -687,41 +860,69 @@ function SocialStrip() {
 
   return (
     <section className="social-panel" aria-label="Contact and research profiles">
-      <div className="social-icons">
-        {socials.map(({ label, href, icon: Icon }) => (
-          <a
-            href={href}
-            key={label}
-            aria-label={label}
-            title={label}
-            target={href.startsWith("http") ? "_blank" : undefined}
-            rel={href.startsWith("http") ? "noreferrer" : undefined}
-          >
-            <Icon />
+      <div className="social site-social-strip">
+        <div className="social-icons contact-icons">
+          {socials.map(({ label, href, icon: Icon }) => (
+            <a
+              href={href}
+              key={label}
+              aria-label={label}
+              title={label}
+              target={href.startsWith("http") ? "_blank" : undefined}
+              rel={href.startsWith("http") ? "noreferrer" : undefined}
+            >
+              <Icon />
+            </a>
+          ))}
+        </div>
+        <div className="visitor-counter">
+          <span className="visitor-counter-item">
+            <span className="visitor-counter-eye" aria-hidden="true">
+              <img src="/media/view.gif" alt="" width={34} height={34} />
+            </span>
+            <AnimatedCount
+              value={visitorTotal}
+              className="visitor-counter-value"
+            />
+          </span>
+          <span className="visitor-counter-text">
+            <span className="visitor-counter-separator" aria-hidden="true"> | </span>
+            <span className="visitor-counter-metric">
+              Citations :{" "}
+              <AnimatedCount
+                value={scholar.total_citations ?? 584}
+                fallback="584"
+                className="visitor-counter-metric-value"
+              />
+            </span>
+            <span className="visitor-counter-separator" aria-hidden="true"> | </span>
+            <span className="visitor-counter-metric">
+              H-index :{" "}
+              <AnimatedCount
+                value={scholar.h_index ?? 12}
+                fallback="12"
+                className="visitor-counter-metric-value"
+              />
+            </span>
+            <span className="visitor-counter-separator" aria-hidden="true"> | </span>
+            <span className="visitor-counter-metric">
+              i10-index :{" "}
+              <AnimatedCount
+                value={scholar.i10_index ?? 16}
+                fallback="16"
+                className="visitor-counter-metric-value"
+              />
+            </span>
+          </span>
+        </div>
+        <div className="contact-note">
+          The best way to reach me is via email —{" "}
+          <a href="mailto:mritunjay.peelam@ddn.upes.ac.in">
+            mritunjay.peelam@ddn.upes.ac.in
           </a>
-        ))}
+          .
+        </div>
       </div>
-      <div className="metrics">
-        <span>
-          <strong>13,535</strong> Visitors
-        </span>
-        <span>
-          Citations <strong>584</strong>
-        </span>
-        <span>
-          H-index <strong>12</strong>
-        </span>
-        <span>
-          i10-index <strong>16</strong>
-        </span>
-      </div>
-      <p>
-        The best way to reach me is via email —{" "}
-        <a href="mailto:mritunjay.peelam@ddn.upes.ac.in">
-          mritunjay.peelam@ddn.upes.ac.in
-        </a>
-        .
-      </p>
     </section>
   );
 }
@@ -740,17 +941,27 @@ function HomePage() {
             height={190}
           />
         </div>
-        <h1>Dr. Mritunjay Shall Peelam</h1>
+        <h1>
+          <span className="font-weight-bold">
+            Dr. Mritunjay Shall Peelam
+          </span>
+        </h1>
         <div className="credentials">
           <p>
-            <span className="twin-dot" />
+            <LottieIcon
+              path="/lottie/tiktok-bullet-loader.json"
+              className="about-bullet-lottie"
+            />
             <span>
               <strong>Assistant Professor (Selection Grade)</strong> at{" "}
               <a href="https://www.upes.ac.in/">UPES Dehradun, Uttarakhand</a>
             </span>
           </p>
           <p>
-            <span className="twin-dot" />
+            <LottieIcon
+              path="/lottie/tiktok-bullet-loader.json"
+              className="about-bullet-lottie"
+            />
             <span>
               <strong>Ph.D.</strong> from{" "}
               <a href="https://www.bits-pilani.ac.in/">
@@ -759,14 +970,20 @@ function HomePage() {
             </span>
           </p>
           <p>
-            <span className="twin-dot" />
+            <LottieIcon
+              path="/lottie/tiktok-bullet-loader.json"
+              className="about-bullet-lottie"
+            />
             <span>
               <strong>M.Tech.</strong> from{" "}
               <a href="https://www.ipu.ac.in/">USICT, New Delhi, India</a>
             </span>
           </p>
           <p>
-            <span className="twin-dot" />
+            <LottieIcon
+              path="/lottie/tiktok-bullet-loader.json"
+              className="about-bullet-lottie"
+            />
             <span>
               <strong>Research Areas:</strong> Blockchain, IoT, Edge AI,
               Multimodal ML
@@ -800,9 +1017,16 @@ function HomePage() {
           GLOBECOM.
         </p>
         <p>
-          My work is centered on solving real-world problems with secure,
-          scalable, and intelligent systems—especially in transportation,
-          connected environments, and distributed computing.
+          I consider myself a researcher focused on solving real-world
+          problems using advanced technologies. I am particularly interested
+          in developing secure, scalable, and intelligent systems, especially
+          in domains such as transportation and smart environments.
+        </p>
+        <p>
+          As part of my research, I am primarily interested in Blockchain,
+          IoT, Edge AI, Federated Learning, and Multimodal Machine Learning. I
+          also work on topics related to intelligent systems, distributed
+          computing, and emerging technologies.
         </p>
       </article>
 
@@ -819,24 +1043,24 @@ function HomePage() {
             </div>
           ))}
         </div>
-        <a className="text-link" href="/news">
+        <Link className="text-link" href="/news">
           View all news <ChevronRight size={16} />
-        </a>
+        </Link>
       </section>
 
       <section className="home-section">
         <SectionTitle eyebrow="Recent activity">Latest Updates</SectionTitle>
         <div className="updates-grid">
-          <a href="/award-fdp" className="update-card">
+          <Link href="/award-fdp" className="update-card">
             <span>May 17, 2026</span>
             <strong>Wiley Top Viewed Article 2025</strong>
             <small>News</small>
-          </a>
-          <a href="/teaching" className="update-card">
+          </Link>
+          <Link href="/teaching" className="update-card">
             <span>May 08, 2026</span>
             <strong>Operating System Important Interview Questions</strong>
             <small>Teaching</small>
-          </a>
+          </Link>
         </div>
       </section>
 
@@ -856,9 +1080,9 @@ function HomePage() {
             />
           ))}
         </div>
-        <a className="primary-link" href="/publications">
+        <Link className="primary-link" href="/publications">
           Explore all 21 publications <ChevronRight size={17} />
-        </a>
+        </Link>
       </section>
 
       <SocialStrip />
@@ -1007,7 +1231,7 @@ function TeachingPage() {
                   <span key={topic}>{topic}</span>
                 ))}
               </div>
-              <a
+              <Link
                 href={
                   course.title === "Operating Systems"
                     ? "/teaching#operating-systems"
@@ -1016,7 +1240,7 @@ function TeachingPage() {
                 className="text-link"
               >
                 Course resources <ChevronRight size={15} />
-              </a>
+              </Link>
             </div>
           </article>
         ))}
@@ -1095,6 +1319,144 @@ function CvPage() {
               <Award size={20} />
               <strong>{title}</strong>
             </div>
+          ))}
+        </div>
+      </div>
+      <div className="cv-section">
+        <SectionTitle eyebrow="Continuing education">
+          Certificates & FDP
+        </SectionTitle>
+        <div className="detail-grid">
+          {[
+            [
+              "2026",
+              "Advanced Architectures and Real-Time Systems for Intelligent Embedded Applications",
+              "E&ICT Academy, IIT Guwahati",
+            ],
+            [
+              "2025",
+              "Intelligent Systems and Emerging Technologies in Computing and Electronics",
+              "UPES Dehradun with NIT Jamshedpur",
+            ],
+            ["2022", "Project Management", "E&ICT Academy, IIT Kanpur"],
+            [
+              "2022",
+              "Quantum Computing — Building Concepts Advanced FDP",
+              "Amity University Uttar Pradesh",
+            ],
+            [
+              "2020",
+              "Quantum Computing",
+              "Malaviya National Institute of Technology Jaipur",
+            ],
+          ].map(([year, title, issuer]) => (
+            <article key={title}>
+              <span>{year}</span>
+              <h3>{title}</h3>
+              <p>{issuer}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+      <div className="cv-section">
+        <SectionTitle eyebrow="Academic contribution">
+          Professional Service
+        </SectionTitle>
+        <div className="copy cv-copy-list">
+          <p>
+            Reviewer for <em>Expert Systems</em>,{" "}
+            <em>Intelligent Transportation Systems</em>,{" "}
+            <em>Cognitive Computation</em>,{" "}
+            <em>Computers and Electrical Engineering</em>, and{" "}
+            <em>IET Blockchain</em>.
+          </p>
+          <p>
+            Presented research at international venues including IEEE Global
+            Communications Conference (GLOBECOM).
+          </p>
+          <p>
+            Active in academic mentoring, teaching, and interdisciplinary
+            research collaborations.
+          </p>
+        </div>
+      </div>
+      <div className="cv-section">
+        <SectionTitle eyebrow="Communication">Languages</SectionTitle>
+        <div className="detail-grid compact-details">
+          <article>
+            <h3>Hindi</h3>
+            <p>Native / Professional proficiency</p>
+          </article>
+          <article>
+            <h3>English</h3>
+            <p>Professional proficiency</p>
+          </article>
+        </div>
+      </div>
+      <div className="cv-section">
+        <SectionTitle eyebrow="Contact record">Personal Details</SectionTitle>
+        <div className="profile-details">
+          <p>
+            <strong>Date of Birth</strong>
+            <span>04 April 1992</span>
+          </p>
+          <p>
+            <strong>Gender</strong>
+            <span>Male</span>
+          </p>
+          <p>
+            <strong>Marital Status</strong>
+            <span>Married</span>
+          </p>
+          <p>
+            <strong>Current Address</strong>
+            <span>
+              Village and Post Pandari, District Mirzapur, Uttar Pradesh,
+              India — 231001
+            </span>
+          </p>
+          <p>
+            <strong>Additional Emails</strong>
+            <span>
+              mritunjay.peelam@pilani.bits-pilani.ac.in ·
+              mritunjay.peelam@ddn.upes.ac.in
+            </span>
+          </p>
+        </div>
+      </div>
+      <div className="cv-section">
+        <SectionTitle eyebrow="Academic referees">References</SectionTitle>
+        <div className="detail-grid reference-grid">
+          {[
+            [
+              "Prof. Vinay Chamola",
+              "BITS Pilani · vinay.chamola@pilani.bits-pilani.ac.in",
+            ],
+            [
+              "Prof. Biplab Sikdar",
+              "National University of Singapore · bsikdar@nus.edu.sg",
+            ],
+            [
+              "Prof. Mohsen Guizani",
+              "MBZUAI · mohsen.guizani@mbzuai.ac.ae",
+            ],
+            [
+              "Prof. G. Sai Sesha Chalapathi",
+              "BITS Pilani · gssc@pilani.bits-pilani.ac.in",
+            ],
+            [
+              "Prof. Tejasvi Alladi",
+              "BITS Pilani · tejasvi.alladi@pilani.bits-pilani.ac.in",
+            ],
+            [
+              "Prof. Brijesh Kumar Chaurasia",
+              "PSIT Kanpur · brijesh.chaurasia@psit.ac.in",
+            ],
+          ].map(([name, reference]) => (
+            <article key={name}>
+              <h3>{name}</h3>
+              <p>{reference}</p>
+            </article>
           ))}
         </div>
       </div>
@@ -1352,11 +1714,100 @@ function BooksPage() {
   );
 }
 
-function ComingSoonPage({ kind }: { kind: "Projects" | "People" }) {
+function GamePage() {
+  const games = [
+    {
+      kicker: "Classic Arcade",
+      title: "Snake",
+      description:
+        "Eat food, grow longer, and survive as long as you can without hitting the walls or yourself.",
+      overview:
+        "Snake is a timeless reflex game: each food pickup grows your body, makes navigation tighter, and turns every move into a strategy decision.",
+    },
+    {
+      kicker: "Royal Board Game",
+      title: "Ludo King",
+      description:
+        "Roll the dice, race four tokens home, capture rivals, and use safe stars to protect your lead.",
+      overview:
+        "A local 2–4 player match with animated turns, captures, safe squares, home lanes, bonus rolls, and a winner celebration.",
+    },
+  ];
+
+  return (
+    <section className="page-section">
+      <PageIntro
+        eyebrow="Play"
+        title="Game"
+        description="A small set of browser games from the original portfolio."
+      />
+      <div className="game-grid">
+        {games.map((game) => (
+          <article className="game-card" key={game.title}>
+            <p className="eyebrow">{game.kicker}</p>
+            <h2>{game.title}</h2>
+            <p>{game.description}</p>
+            <div className="game-overview">
+              <strong>Overview</strong>
+              <p>{game.overview}</p>
+            </div>
+            <span className="primary-link">Play Now</span>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DailyMantraPage() {
+  const mantras = [
+    [
+      "Shiva Tandava Stotram",
+      "Powerful Sanskrit verses celebrating Lord Shiva’s cosmic dance.",
+    ],
+    ["Shiv Stotram", "Sacred Sanskrit verses with Hindi and English meaning."],
+    ["Shri Hari Stotram", "Devotional praise of Lord Vishnu."],
+    [
+      "Sankat Vinashan Ganapati Stotram",
+      "A prayer to Lord Ganesha for overcoming obstacles.",
+    ],
+    ["Hanuman Chalisa", "Forty devotional verses in praise of Lord Hanuman."],
+  ];
+
+  return (
+    <section className="page-section">
+      <PageIntro
+        eyebrow="Sacred collection"
+        title="Daily Mantra"
+        description="Sacred mantra cards with Sanskrit verses and Hindi and English meanings."
+      />
+      <div className="mantra-grid">
+        {mantras.map(([title, description]) => (
+          <article key={title}>
+            <LottieIcon
+              path="/lottie/tiktok-bullet-loader.json"
+              className="mantra-lottie"
+            />
+            <h2>{title}</h2>
+            <p>{description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ComingSoonPage({ kind }: { kind: string }) {
   return (
     <section className="coming-soon">
       <div className="coming-icon">
-        {kind === "Projects" ? <BriefcaseBusiness /> : <UsersRound />}
+        {kind === "Projects" ? (
+          <BriefcaseBusiness />
+        ) : kind === "People" ? (
+          <UsersRound />
+        ) : (
+          <Sparkles />
+        )}
       </div>
       <p className="eyebrow">{kind}</p>
       <h1>Coming soon</h1>
@@ -1364,9 +1815,9 @@ function ComingSoonPage({ kind }: { kind: "Projects" | "People" }) {
         This section is being prepared and will be available with the next
         content update.
       </p>
-      <a className="secondary-link" href="/">
+      <Link className="secondary-link" href="/">
         Return home
-      </a>
+      </Link>
     </section>
   );
 }
@@ -1435,13 +1886,13 @@ function SearchDialog({ onClose }: { onClose: () => void }) {
         </div>
         <div className="search-results">
           {results.map((item, index) => (
-            <a href={item.href} key={`${item.title}-${index}`}>
+            <Link href={item.href} key={`${item.title}-${index}`}>
               <div>
                 <strong>{item.title}</strong>
                 <span>{item.meta}</span>
               </div>
               <ChevronRight size={17} />
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -1449,13 +1900,332 @@ function SearchDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
+const footerFish = [
+  {
+    top: "8px",
+    size: "20px",
+    duration: "112s",
+    delay: "-38s",
+    from: "-8vw",
+    midA: "34vw",
+    midB: "67vw",
+    midC: "91vw",
+    to: "108vw",
+    face: 1,
+    driftY: "5px",
+    riseY: "-4px",
+    opacity: 0.54,
+    filter: "hue-rotate(18deg) saturate(1.22)",
+    playback: 0.28,
+  },
+  {
+    top: "24px",
+    size: "17px",
+    duration: "136s",
+    delay: "-84s",
+    from: "108vw",
+    midA: "72vw",
+    midB: "39vw",
+    midC: "13vw",
+    to: "-8vw",
+    face: -1,
+    driftY: "4px",
+    riseY: "-3px",
+    opacity: 0.48,
+    filter: "hue-rotate(150deg) saturate(1.18) brightness(1.06)",
+    playback: 0.24,
+  },
+  {
+    top: "15px",
+    size: "23px",
+    duration: "128s",
+    delay: "-12s",
+    from: "-12vw",
+    midA: "29vw",
+    midB: "62vw",
+    midC: "89vw",
+    to: "112vw",
+    face: 1,
+    driftY: "6px",
+    riseY: "-5px",
+    opacity: 0.6,
+    filter: "hue-rotate(285deg) saturate(1.16)",
+    playback: 0.3,
+  },
+  {
+    top: "31px",
+    size: "18px",
+    duration: "104s",
+    delay: "-62s",
+    from: "110vw",
+    midA: "76vw",
+    midB: "43vw",
+    midC: "16vw",
+    to: "-10vw",
+    face: -1,
+    driftY: "4px",
+    riseY: "-3px",
+    opacity: 0.5,
+    filter: "hue-rotate(55deg) saturate(1.24) brightness(1.03)",
+    playback: 0.26,
+  },
+  {
+    top: "3px",
+    size: "16px",
+    duration: "148s",
+    delay: "-111s",
+    from: "104vw",
+    midA: "69vw",
+    midB: "38vw",
+    midC: "12vw",
+    to: "-9vw",
+    face: -1,
+    driftY: "3px",
+    riseY: "-3px",
+    opacity: 0.46,
+    filter: "hue-rotate(215deg) saturate(1.08)",
+    playback: 0.22,
+  },
+  {
+    top: "37px",
+    size: "21px",
+    duration: "119s",
+    delay: "-47s",
+    from: "-10vw",
+    midA: "31vw",
+    midB: "63vw",
+    midC: "87vw",
+    to: "106vw",
+    face: 1,
+    driftY: "5px",
+    riseY: "-4px",
+    opacity: 0.52,
+    filter: "hue-rotate(325deg) saturate(1.12) brightness(1.04)",
+    playback: 0.27,
+  },
+  {
+    top: "12px",
+    size: "26px",
+    duration: "98s",
+    delay: "-23s",
+    from: "-15vw",
+    midA: "25vw",
+    midB: "58vw",
+    midC: "83vw",
+    to: "115vw",
+    face: 1,
+    driftY: "7px",
+    riseY: "-6px",
+    opacity: 0.62,
+    filter: "hue-rotate(200deg) saturate(1.3) brightness(1.1)",
+    playback: 0.32,
+  },
+  {
+    top: "28px",
+    size: "19px",
+    duration: "142s",
+    delay: "-75s",
+    from: "106vw",
+    midA: "70vw",
+    midB: "35vw",
+    midC: "10vw",
+    to: "-12vw",
+    face: -1,
+    driftY: "5px",
+    riseY: "-4px",
+    opacity: 0.55,
+    filter: "hue-rotate(80deg) saturate(1.2)",
+    playback: 0.25,
+  },
+  {
+    top: "18px",
+    size: "22px",
+    duration: "110s",
+    delay: "-50s",
+    from: "-10vw",
+    midA: "33vw",
+    midB: "66vw",
+    midC: "90vw",
+    to: "110vw",
+    face: 1,
+    driftY: "4px",
+    riseY: "-3px",
+    opacity: 0.58,
+    filter: "hue-rotate(340deg) saturate(1.25)",
+    playback: 0.29,
+  },
+  {
+    top: "6px",
+    size: "15px",
+    duration: "130s",
+    delay: "-95s",
+    from: "105vw",
+    midA: "68vw",
+    midB: "36vw",
+    midC: "14vw",
+    to: "-6vw",
+    face: -1,
+    driftY: "3px",
+    riseY: "-2px",
+    opacity: 0.44,
+    filter: "hue-rotate(160deg) saturate(1.1)",
+    playback: 0.21,
+  },
+  {
+    top: "34px",
+    size: "25px",
+    duration: "105s",
+    delay: "-15s",
+    from: "-12vw",
+    midA: "28vw",
+    midB: "60vw",
+    midC: "85vw",
+    to: "112vw",
+    face: 1,
+    driftY: "6px",
+    riseY: "-5px",
+    opacity: 0.65,
+    filter: "hue-rotate(40deg) saturate(1.35) brightness(1.05)",
+    playback: 0.31,
+  },
+  {
+    top: "9px",
+    size: "42px",
+    duration: "46s",
+    delay: "-9s",
+    from: "0",
+    midA: "0",
+    midB: "0",
+    midC: "0",
+    to: "0",
+    face: 1,
+    driftY: "4px",
+    riseY: "-4px",
+    opacity: 0.72,
+    filter: "hue-rotate(95deg) saturate(1.28) brightness(1.08)",
+    playback: 0.23,
+    wander: true,
+  },
+];
+
 function Footer() {
   return (
-    <footer className="site-footer">
-      <span>
-        © 2026 <strong>Dr. Mritunjay Shall Peelam</strong>
-      </span>
-      <span>Independent portfolio · Last updated July 31, 2026</span>
+    <footer className="site-footer" role="contentinfo">
+      <div className="footer-wave-background" aria-hidden="true">
+        <svg
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+          viewBox="0 0 1600 260"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id="footer-wave-back-gradient" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="rgba(126, 194, 255, 0.46)" />
+              <stop offset="100%" stopColor="rgba(74, 139, 226, 0.2)" />
+            </linearGradient>
+            <linearGradient id="footer-wave-mid-gradient" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="rgba(91, 166, 247, 0.58)" />
+              <stop offset="100%" stopColor="rgba(48, 116, 217, 0.34)" />
+            </linearGradient>
+            <linearGradient id="footer-wave-front-gradient" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="rgba(62, 144, 238, 0.68)" />
+              <stop offset="100%" stopColor="rgba(35, 101, 205, 0.54)" />
+            </linearGradient>
+            <path
+              id="footer-wave-back"
+              fill="url(#footer-wave-back-gradient)"
+              d="M-320 46 C-120 10 38 68 230 38 C430 8 586 58 778 34 C1002 6 1138 70 1328 42 C1496 18 1608 28 1760 56 L1760 260 L-320 260 Z"
+            />
+            <path
+              id="footer-wave-mid"
+              fill="url(#footer-wave-mid-gradient)"
+              d="M-320 80 C-98 38 56 100 250 64 C454 28 604 92 798 58 C1012 26 1146 104 1340 68 C1508 40 1610 54 1760 86 L1760 260 L-320 260 Z"
+            />
+            <path
+              id="footer-wave-front"
+              fill="url(#footer-wave-front-gradient)"
+              d="M-320 112 C-98 70 50 132 252 94 C470 52 612 120 810 86 C1018 52 1160 132 1358 96 C1518 70 1624 84 1760 118 L1760 260 L-320 260 Z"
+            />
+          </defs>
+          <g>
+            <use href="#footer-wave-back" opacity=".62">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                dur="7s"
+                values="240 0; -280 14; 240 0"
+                keyTimes="0; .5; 1"
+                repeatCount="indefinite"
+              />
+            </use>
+            <use href="#footer-wave-mid" opacity=".72">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                dur="5s"
+                values="-260 0; 230 -12; -260 0"
+                keyTimes="0; .55; 1"
+                repeatCount="indefinite"
+              />
+            </use>
+            <use href="#footer-wave-front" opacity=".78">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                dur="3.8s"
+                values="80 0; -170 -10; 80 0"
+                keyTimes="0; .45; 1"
+                repeatCount="indefinite"
+              />
+            </use>
+          </g>
+        </svg>
+        <div className="footer-sea-life">
+          {footerFish.map((fish, index) => (
+            <LottieIcon
+              key={index}
+              path="/lottie/fish.json"
+              speed={fish.playback}
+              className={`footer-fish ${fish.wander ? "footer-fish-wander" : ""}`}
+              style={
+                {
+                  "--fish-top": fish.top,
+                  "--fish-size": fish.size,
+                  "--fish-duration": fish.duration,
+                  "--fish-delay": fish.delay,
+                  "--fish-from": fish.from || "0",
+                  "--fish-mid-a": fish.midA || "0",
+                  "--fish-mid-b": fish.midB || "0",
+                  "--fish-mid-c": fish.midC || "0",
+                  "--fish-to": fish.to || "0",
+                  "--fish-face": fish.face || 1,
+                  "--fish-drift-y": fish.driftY || "4px",
+                  "--fish-rise-y": fish.riseY || "-4px",
+                  "--fish-opacity": fish.opacity,
+                  "--fish-filter": fish.filter || "none",
+                } as React.CSSProperties
+              }
+            />
+          ))}
+          <span className="footer-jellyfish footer-jellyfish-1" />
+          <span className="footer-jellyfish footer-jellyfish-2" />
+          <span className="footer-jellyfish footer-jellyfish-3" />
+          <span className="footer-jellyfish footer-jellyfish-4" />
+          <span className="footer-bubble footer-bubble-1" />
+          <span className="footer-bubble footer-bubble-2" />
+          <span className="footer-bubble footer-bubble-3" />
+          <span className="footer-bubble footer-bubble-4" />
+          <span className="footer-bubble footer-bubble-5" />
+          <span className="footer-bubble footer-bubble-6" />
+        </div>
+      </div>
+      <div className="footer-wave-content">
+        <div className="footer-wave-container">
+          © Copyright 2026 Dr. Mritunjay Shall Peelam. Last updated: July 31, 2026.
+        </div>
+      </div>
     </footer>
   );
 }
@@ -1466,6 +2236,10 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       "home",
       ...primaryNav.map((item) => item.key),
       ...moreNav.map((item) => item.key),
+      "news",
+      "repositories",
+      "books",
+      "profiles",
     ].includes(section)
       ? section
       : "home"
@@ -1477,8 +2251,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     const stored = window.localStorage.getItem("portfolio-theme");
     const preferredDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const initial = stored === "dark" || (!stored && preferredDark) ? "dark" : "light";
-    setTheme(initial);
     document.documentElement.dataset.theme = initial;
+    const frame = window.requestAnimationFrame(() => setTheme(initial));
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const toggleTheme = () => {
@@ -1507,6 +2282,30 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "people":
       content = <ComingSoonPage kind="People" />;
+      break;
+    case "game":
+      content = <GamePage />;
+      break;
+    case "daily-mantra":
+      content = <DailyMantraPage />;
+      break;
+    case "bhagwatgita":
+      content = <ComingSoonPage kind="Bhagwatgita" />;
+      break;
+    case "ramayan":
+      content = <ComingSoonPage kind="Ramayan" />;
+      break;
+    case "quantum-computation":
+      content = <ComingSoonPage kind="Quantum Computing" />;
+      break;
+    case "blockchain":
+      content = <ComingSoonPage kind="Blockchain" />;
+      break;
+    case "poems":
+      content = <ComingSoonPage kind="Poems" />;
+      break;
+    case "motivations":
+      content = <ComingSoonPage kind="Motivations" />;
       break;
     case "news":
       content = <NewsPage />;
@@ -1537,6 +2336,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       />
       <main className="site-main">{content}</main>
       <Footer />
+      <ScrollJumpButton pageKey={safeSection} />
       {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
     </div>
   );
