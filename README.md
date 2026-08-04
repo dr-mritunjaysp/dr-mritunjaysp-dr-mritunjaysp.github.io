@@ -3,22 +3,21 @@
 An independent academic portfolio built with Next.js, React, TypeScript, and
 vinext. It does not depend on Jekyll or the al-folio theme.
 
-## Live local development with Docker
+## Open locally with Docker
 
-Docker Desktop must be running. Start the live development site with:
+Docker Desktop must be running. From this folder, use:
 
 ```bash
 docker compose up --build -d portfolio
 ```
 
-Open:
+Then open:
 
 ```text
 http://localhost:3000
 ```
 
-Changes in `app/` and `public/` are detected automatically and update this
-address without rebuilding the container. Follow the development output with:
+Follow the container output:
 
 ```bash
 docker compose logs -f portfolio
@@ -38,16 +37,16 @@ npm run docker:logs
 npm run docker:down
 ```
 
-## Production container preview
+## Live development in Docker
 
-To build the production image separately:
+For automatic browser updates while editing files:
 
 ```bash
-npm run docker:prod
+docker compose --profile dev up --build portfolio-dev
 ```
 
-Open `http://localhost:3002`. The live development site remains available at
-`http://localhost:3000`.
+Open `http://localhost:3001`. Stop it with `Ctrl+C`, followed by
+`docker compose down`.
 
 ## Open locally without Docker
 

@@ -2,16 +2,28 @@ name: mritunjay-portfolio
 
 services:
   portfolio:
+    image: mritunjay-portfolio:local
+    build:
+      context: .
+      target: runner
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    restart: unless-stopped
+
+  portfolio-dev:
+    profiles:
+      - dev
     image: mritunjay-portfolio:dev
     build:
       context: .
       target: development
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       NODE_ENV: development
-      CHOKIDAR_USEPOLLING: "true"
-      CHOKIDAR_INTERVAL: "250"
     volumes:
       - .:/app
       - portfolio_node_modules:/app/node_modules
@@ -24,21 +36,6 @@ services:
       - 0.0.0.0
       - --port
       - "3000"
-    restart: unless-stopped
-
-  portfolio-production:
-    profiles:
-      - production
-    image: mritunjay-portfolio:local
-    build:
-      context: .
-      target: runner
-    ports:
-      - "3002:3000"
-    environment:
-      NODE_ENV: production
-      PORT: "3000"
-    restart: unless-stopped
 
 volumes:
   portfolio_node_modules:
