@@ -28,7 +28,7 @@ import { FaLinkedinIn } from "react-icons/fa6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LiveUpdateRefresh } from "./LiveUpdateRefresh";
 import { LottieIcon } from "./LottieIcon";
-import { ScrollJumpButton } from "./ScrollJumpButton";
+import { ScrollJumpControls } from "./ScrollJumpButton";
 import { subscribeVisitorCounter, subscribeScholarMetrics } from "./firebase";
 import type { ScholarMetrics } from "./firebase";
 
@@ -2338,7 +2338,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       />
       <main className="site-main">{content}</main>
       <Footer />
-      <ScrollJumpButton pageKey={safeSection} />
+      <ScrollJumpControls />
       {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
     </div>
   );
