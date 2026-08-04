@@ -1070,7 +1070,7 @@ function HomePage() {
           Publications
         </SectionTitle>
         <div className="publication-list">
-          {publications.slice(0, 5).map((publication, index) => (
+          {publications.map((publication, index) => (
             <PublicationCard
               compact
               key={publication.title}
@@ -1082,7 +1082,7 @@ function HomePage() {
           ))}
         </div>
         <Link className="primary-link" href="/publications">
-          Explore all 21 publications <ChevronRight size={17} />
+          Search and filter publications <ChevronRight size={17} />
         </Link>
       </section>
 
