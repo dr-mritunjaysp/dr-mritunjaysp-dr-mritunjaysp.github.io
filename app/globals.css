@@ -440,6 +440,9 @@ img {
 
 .bio {
   margin-top: 2px;
+  text-align: justify;
+  text-align-last: left;
+  text-justify: inter-word;
 }
 
 .home-section,

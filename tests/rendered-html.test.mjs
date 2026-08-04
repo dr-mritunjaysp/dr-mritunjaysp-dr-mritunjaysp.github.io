@@ -37,10 +37,11 @@ test("server-renders the finished academic portfolio", async () => {
 });
 
 test("keeps the implementation independent from the retired theme", async () => {
-  const [page, layout, portfolio, scrollControls, liveRefresh, packageJson] = await Promise.all([
+  const [page, layout, portfolio, styles, scrollControls, liveRefresh, packageJson] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/PortfolioApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/ScrollJumpButton.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/LiveUpdateRefresh.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
@@ -48,6 +49,7 @@ test("keeps the implementation independent from the retired theme", async () => 
 
   const combined = `${page}\n${layout}\n${portfolio}\n${scrollControls}\n${liveRefresh}\n${packageJson}`;
   assert.match(combined, /PortfolioApp/);
+  assert.match(styles, /\.bio\s*\{[^}]*text-align:\s*justify/s);
   assert.match(scrollControls, /Go to top/);
   assert.match(scrollControls, /Go to bottom/);
   assert.match(scrollControls, /is-down/);
