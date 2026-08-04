@@ -2858,102 +2858,101 @@ body::before {
   min-height: 310px;
 }
 
-.scroll-jump-controls {
+.scroll-jump-button {
   position: fixed;
   right: 1.25rem;
-  bottom: 5.75rem;
-  z-index: 90;
-  display: grid;
-  gap: 0.65rem;
-}
-
-.scroll-jump-button {
-  min-width: 128px;
-  height: 46px;
-  padding: 0 0.9rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.97);
+  bottom: 1.35rem;
+  z-index: 60;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(71, 85, 105, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 2px solid rgba(59, 130, 246, 0.7);
-  box-shadow:
-    0 6px 18px rgba(37, 99, 235, 0.28),
-    0 0 0 4px rgba(255, 255, 255, 0.4);
-  display: inline-flex;
+  border: 1px solid rgba(59, 130, 246, 0.55);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  color: #1d4ed8;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
   cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .scroll-jump-button.is-down {
-  color: #334155;
-  border-color: rgba(71, 85, 105, 0.7);
-  box-shadow:
-    0 6px 18px rgba(71, 85, 105, 0.28),
-    0 0 0 4px rgba(255, 255, 255, 0.4);
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
-.scroll-jump-arrow {
-  font-size: 1.35rem;
-  line-height: 1;
+.scroll-jump-button .svgIcon {
+  width: 14px;
+  position: absolute;
+  transition: all 0.3s ease;
+}
+
+.scroll-jump-button .svgIcon path {
+  fill: #3b82f6;
+  transition: all 0.3s ease;
+}
+
+.scroll-jump-button.is-down .svgIcon {
+  transform: rotate(180deg);
+}
+
+.scroll-jump-button.is-down .svgIcon path {
+  fill: #3b82f6;
+}
+
+.scroll-jump-button::before {
+  content: "Up";
+  position: absolute;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.scroll-jump-button.is-down::before {
+  content: "Down";
+  color: #93c5fd;
 }
 
 .scroll-jump-button:hover {
-  background-color: #ffffff;
-  box-shadow: 0px 6px 16px rgba(37, 99, 235, 0.25);
+  background-color: #475569;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
   border-color: #3b82f6;
   transform: translateY(-3px);
 }
 
 .scroll-jump-button.is-down:hover {
-  box-shadow: 0px 6px 16px rgba(71, 85, 105, 0.25);
-  border-color: #64748b;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  border-color: #3b82f6;
 }
 
-:root[data-theme="dark"] .scroll-jump-button {
-  background-color: rgba(15, 23, 42, 0.94);
-  color: #93c5fd;
-  box-shadow:
-    0 6px 18px rgba(59, 130, 246, 0.34),
-    0 0 0 4px rgba(15, 23, 42, 0.5);
+.scroll-jump-button:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.55);
+  outline-offset: 2px;
 }
 
-:root[data-theme="dark"] .scroll-jump-button.is-down {
-  color: #cbd5e1;
-  box-shadow:
-    0 6px 18px rgba(148, 163, 184, 0.28),
-    0 0 0 4px rgba(15, 23, 42, 0.5);
+.scroll-jump-button:hover .svgIcon {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.scroll-jump-button.is-down:hover .svgIcon {
+  opacity: 0;
+  transform: rotate(180deg) scale(0.5);
+}
+
+.scroll-jump-button:hover::before {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 @media print {
-  .scroll-jump-controls {
-    display: none !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .scroll-jump-controls {
-    right: 0.75rem;
-    bottom: 4.75rem;
-    gap: 0.5rem;
-  }
-
   .scroll-jump-button {
-    min-width: 108px;
-    height: 42px;
-    padding: 0 0.7rem;
-    font-size: 0.68rem;
+    display: none !important;
   }
 }
 

@@ -33,8 +33,6 @@ test("server-renders the finished academic portfolio", async () => {
   assert.match(html, /Assistant Professor \(Selection Grade\)/);
   assert.match(html, /Publications/);
   assert.match(html, /Teaching/);
-  assert.match(html, /Page up/);
-  assert.match(html, /Page down/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });
 
@@ -50,8 +48,10 @@ test("keeps the implementation independent from the retired theme", async () => 
 
   const combined = `${page}\n${layout}\n${portfolio}\n${scrollControls}\n${liveRefresh}\n${packageJson}`;
   assert.match(combined, /PortfolioApp/);
-  assert.match(scrollControls, /Page up/);
-  assert.match(scrollControls, /Page down/);
+  assert.match(scrollControls, /Go to top/);
+  assert.match(scrollControls, /Go to bottom/);
+  assert.match(scrollControls, /is-down/);
+  assert.match(scrollControls, /is-up/);
   assert.match(liveRefresh, /setInterval/);
   assert.match(liveRefresh, /visibilitychange/);
   assert.match(layout, /og\.png/);
