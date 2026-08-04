@@ -15,7 +15,8 @@
     "docker:up": "docker compose up --build -d portfolio",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f portfolio",
-    "docker:dev": "docker compose --profile dev up --build portfolio-dev"
+    "docker:dev": "docker compose up --build portfolio",
+    "docker:prod": "docker compose --profile production up --build -d portfolio-production"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
