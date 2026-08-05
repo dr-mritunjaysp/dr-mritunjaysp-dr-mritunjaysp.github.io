@@ -1,7 +1,7 @@
 <div align="center">
 
   <a href="https://dr-mritunjaysp.github.io/">
-    <img src="public/media/profile-circle.png?v=3" alt="Dr. Mritunjay Shall Peelam" width="160" height="160" />
+    <img src="public/media/profile-circle.png?v=4" alt="Dr. Mritunjay Shall Peelam" width="160" height="160" />
   </a>
 
   # Dr. Mritunjay Shall Peelam
