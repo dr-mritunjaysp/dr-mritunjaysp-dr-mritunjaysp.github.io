@@ -3492,14 +3492,13 @@ body::before {
   --navbar-pill-sheen-end: rgba(240, 171, 252, 0.12);
 }
 
-.site-page-brand,
 .desktop-page-brand {
   margin-right: 0.75rem;
   background: linear-gradient(90deg, var(--navbar-brand-gradient));
   background-size: 260% 260%;
   background-clip: text;
   color: transparent;
-  font-size: clamp(0.92rem, 3.2vw, 1.16rem);
+  font-size: clamp(0.92rem, 3.2vw, 1.12rem);
   font-weight: 700;
   white-space: nowrap;
   -webkit-background-clip: text;
@@ -3507,6 +3506,23 @@ body::before {
   animation: gradient-flow 6s ease-in-out infinite;
   display: inline-flex;
   align-items: center;
+  text-decoration: none;
+}
+
+.mobile-page-brand {
+  display: none;
+  background: linear-gradient(90deg, var(--navbar-brand-gradient));
+  background-size: 260% 260%;
+  background-clip: text;
+  color: transparent;
+  font-size: clamp(0.8rem, 3.4vw, 0.98rem);
+  font-weight: 700;
+  white-space: nowrap;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-flow 6s ease-in-out infinite;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
 }
 
@@ -4184,11 +4200,18 @@ body::before {
 }
 
 @media (max-width: 1199px) {
-  .site-page-brand,
   .desktop-page-brand {
+    display: none !important;
+  }
+
+  .mobile-page-brand {
     display: inline-flex !important;
-    font-size: clamp(0.85rem, 3.6vw, 1.02rem);
-    margin-right: 0.35rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    pointer-events: auto;
+    text-align: center;
   }
 
   .nav-pill {

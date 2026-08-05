@@ -36,12 +36,15 @@ test("server-renders the finished academic portfolio", async () => {
   assert.equal((html.match(/class="publication-card compact"/g) ?? []).length, 21);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 
-  // Header menu contains brand "Dr. Mritunjay Shall Peelam" across all pages including mobile
-  assert.match(html, /class="site-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
+  // Home page has no desktop header brand, but has mobile centered brand
+  assert.doesNotMatch(html, /class="desktop-page-brand"/);
+  assert.match(html, /class="mobile-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
 
+  // Subpage header menu has desktop-page-brand and mobile-page-brand
   const blogResponse = await render("/blog");
   const blogHtml = await blogResponse.text();
-  assert.match(blogHtml, /class="site-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
+  assert.match(blogHtml, /class="desktop-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
+  assert.match(blogHtml, /class="mobile-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
 });
 
 test("keeps the implementation independent from the retired theme", async () => {

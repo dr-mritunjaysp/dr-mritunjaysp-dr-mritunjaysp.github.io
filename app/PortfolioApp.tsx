@@ -555,7 +555,12 @@ function Header({
   return (
     <header className="site-header">
       <nav className="nav-pill" aria-label="Main navigation">
-        <Link className="site-page-brand" href="/" aria-label="Dr. Mritunjay Shall Peelam Home">
+        {section !== "home" && (
+          <Link className="desktop-page-brand" href="/" aria-label="Dr. Mritunjay Shall Peelam Home">
+            <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
+          </Link>
+        )}
+        <Link className="mobile-page-brand" href="/" aria-label="Dr. Mritunjay Shall Peelam Home">
           <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
         </Link>
 
