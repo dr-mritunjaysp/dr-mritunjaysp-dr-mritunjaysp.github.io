@@ -840,12 +840,12 @@ img {
 
 .publication-card {
   position: relative;
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   overflow: hidden;
-  padding: 8px 12px 8px 14px;
-  border-radius: 10px;
+  padding: 10px 14px 10px 16px;
+  border-radius: 12px;
   border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
   background: color-mix(in srgb, var(--surface-strong) 94%, transparent);
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
@@ -1073,17 +1073,23 @@ img {
 }
 
 .publication-number {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
   border-radius: 50%;
+  aspect-ratio: 1 / 1;
   border: 1.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
   background: color-mix(in srgb, var(--accent) 10%, transparent);
   color: var(--accent);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+  box-sizing: border-box;
   transition: transform 0.25s ease, background 0.25s ease;
 }
 
@@ -1105,6 +1111,7 @@ img {
 .pub-meta-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 3px;
 }

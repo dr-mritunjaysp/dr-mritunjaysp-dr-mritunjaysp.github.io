@@ -756,11 +756,11 @@ function PublicationCard({
 
   return (
     <article className={`publication-card ${compact ? "compact" : ""}`}>
-      <div className="publication-number">
-        {String(index + 1).padStart(2, "0")}
-      </div>
       <div className="publication-body">
         <div className="pub-meta-header">
+          <span className="publication-number">
+            {String(index + 1).padStart(2, "0")}
+          </span>
           <span className="venue-chip">
             <em>{publication.venue}</em>
           </span>
