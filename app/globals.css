@@ -4404,3 +4404,93 @@ body::before {
   }
 }
 
+/* ==========================================================================
+   Mobile-Only Single-Row Layout for Social Icons Strip & Live Metrics Pill
+   ========================================================================== */
+@media (max-width: 768px) {
+  .site-social-strip {
+    gap: 8px;
+    padding: 0 4px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* 7 Social Icons - Forced onto 1 Single Horizontal Row */
+  .social-icons,
+  .contact-icons {
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .social-icons a,
+  .contact-icons a {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    border-width: 2px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .social-icons svg,
+  .contact-icons svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* Live Metrics Counter Pill - Forced onto 1 Single Horizontal Row */
+  .visitor-counter {
+    display: inline-flex !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px 6px !important;
+    padding: 5px 12px !important;
+    max-width: calc(100vw - 12px) !important;
+    font-size: clamp(0.68rem, 2.5vw, 0.8rem) !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .visitor-counter::-webkit-scrollbar {
+    display: none;
+  }
+
+  .visitor-counter-text {
+    display: inline-flex !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: clamp(0.68rem, 2.5vw, 0.8rem) !important;
+  }
+
+  .visitor-counter-item {
+    gap: 4px !important;
+  }
+
+  .visitor-counter-eye img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .visitor-counter-value {
+    font-size: clamp(0.72rem, 2.7vw, 0.86rem) !important;
+  }
+
+  .visitor-counter-separator {
+    margin: 0 1px !important;
+  }
+
+  .contact-note {
+    font-size: clamp(0.72rem, 2.7vw, 0.82rem) !important;
+    text-align: center;
+    padding: 0 8px;
+  }
+}
+
+
