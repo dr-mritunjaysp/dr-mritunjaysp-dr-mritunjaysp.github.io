@@ -1289,9 +1289,6 @@ function HomePage() {
             />
           ))}
         </div>
-        <Link className="primary-link" href="/publications">
-          Search and filter publications <ChevronRight size={17} />
-        </Link>
       </section>
 
       <SocialStrip />

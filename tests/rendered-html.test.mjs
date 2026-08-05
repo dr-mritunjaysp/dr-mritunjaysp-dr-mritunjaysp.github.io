@@ -58,7 +58,7 @@ test("keeps the implementation independent from the retired theme", async () => 
   const combined = `${page}\n${layout}\n${portfolio}\n${scrollControls}\n${liveRefresh}\n${packageJson}`;
   assert.match(combined, /PortfolioApp/);
   assert.doesNotMatch(portfolio, /publications\.slice\(0,\s*5\)/);
-  assert.match(portfolio, /Search and filter publications/);
+  assert.doesNotMatch(portfolio, /Search and filter publications/);
   assert.match(styles, /\.bio\s*\{[^}]*text-align:\s*justify/s);
   assert.match(scrollControls, /Go to top/);
   assert.match(scrollControls, /Go to bottom/);
