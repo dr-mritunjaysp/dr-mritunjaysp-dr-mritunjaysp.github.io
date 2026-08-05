@@ -2928,7 +2928,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
         onSearch={() => setSearchOpen(true)}
       />
       <main className="site-main">{content}</main>
-      <SocialStrip />
+      {safeSection !== "home" && <SocialStrip />}
       <Footer />
       <ScrollJumpButton pageKey={safeSection} />
       {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
