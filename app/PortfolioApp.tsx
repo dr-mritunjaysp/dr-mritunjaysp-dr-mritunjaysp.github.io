@@ -555,11 +555,9 @@ function Header({
   return (
     <header className="site-header">
       <nav className="nav-pill" aria-label="Main navigation">
-        {section !== "home" && (
-          <Link className="desktop-page-brand" href="/" aria-label="Home">
-            <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
-          </Link>
-        )}
+        <Link className="site-page-brand" href="/" aria-label="Dr. Mritunjay Shall Peelam Home">
+          <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
+        </Link>
 
         <div className={`nav-links ${mobileOpen ? "is-open" : ""}`}>
           <Link

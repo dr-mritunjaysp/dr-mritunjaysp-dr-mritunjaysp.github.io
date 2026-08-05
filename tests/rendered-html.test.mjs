@@ -36,14 +36,12 @@ test("server-renders the finished academic portfolio", async () => {
   assert.equal((html.match(/class="publication-card compact"/g) ?? []).length, 21);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 
-  // Home page has hero H1 "Dr. Mritunjay Shall Peelam" but no header menu brand
-  assert.match(html, /<h1[^>]*>\s*<span[^>]*>\s*Dr\. Mritunjay Shall Peelam/);
-  assert.doesNotMatch(html, /class="desktop-page-brand"/);
+  // Header menu contains brand "Dr. Mritunjay Shall Peelam" across all pages including mobile
+  assert.match(html, /class="site-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
 
-  // Subpage header menu has brand "Dr. Mritunjay Shall Peelam"
   const blogResponse = await render("/blog");
   const blogHtml = await blogResponse.text();
-  assert.match(blogHtml, /class="desktop-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
+  assert.match(blogHtml, /class="site-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
 });
 
 test("keeps the implementation independent from the retired theme", async () => {

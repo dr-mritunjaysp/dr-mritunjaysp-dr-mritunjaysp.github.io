@@ -3491,18 +3491,22 @@ body::before {
   --navbar-pill-sheen-end: rgba(240, 171, 252, 0.12);
 }
 
+.site-page-brand,
 .desktop-page-brand {
   margin-right: 0.75rem;
   background: linear-gradient(90deg, var(--navbar-brand-gradient));
   background-size: 260% 260%;
   background-clip: text;
   color: transparent;
-  font-size: 1.16rem;
+  font-size: clamp(0.92rem, 3.2vw, 1.16rem);
   font-weight: 700;
   white-space: nowrap;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient-flow 6s ease-in-out infinite;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .brand-mark {
@@ -4179,8 +4183,11 @@ body::before {
 }
 
 @media (max-width: 1199px) {
+  .site-page-brand,
   .desktop-page-brand {
-    display: none;
+    display: inline-flex !important;
+    font-size: clamp(0.85rem, 3.6vw, 1.02rem);
+    margin-right: 0.35rem;
   }
 
   .nav-pill {
