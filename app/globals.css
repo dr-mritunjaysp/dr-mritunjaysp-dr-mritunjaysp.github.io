@@ -4524,7 +4524,24 @@ body::before {
   .attribute-pill.citation-pill {
     padding: 3px 9px !important;
   }
+
+  /* Footer Wave Container - Single Row in Mobile Mode */
+  .footer-wave-content {
+    padding: 0 6px 6px !important;
+  }
+
+  .footer-wave-container {
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    font-size: clamp(0.52rem, 2.35vw, 0.68rem) !important;
+    letter-spacing: -0.01em !important;
+    padding: 0 2px !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+  }
 }
+
 
 
 
