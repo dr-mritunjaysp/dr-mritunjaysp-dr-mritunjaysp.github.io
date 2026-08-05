@@ -4491,6 +4491,40 @@ body::before {
     text-align: center;
     padding: 0 8px;
   }
+
+  /* Publication Card Tag Pills & Action Pills - Mobile Single Row */
+  .pub-attributes-row,
+  .pub-actions-row {
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding-bottom: 2px !important;
+  }
+
+  .pub-attributes-row::-webkit-scrollbar,
+  .pub-actions-row::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .attribute-pill,
+  .action-pill {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    font-size: clamp(0.66rem, 2.5vw, 0.73rem) !important;
+    padding: 3px 8px !important;
+  }
+
+  .attribute-pill.citation-pill {
+    padding: 3px 9px !important;
+  }
 }
+
 
 
