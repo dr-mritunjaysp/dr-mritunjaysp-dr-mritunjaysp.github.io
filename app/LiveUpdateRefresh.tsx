@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 
-const UPDATE_CHECK_INTERVAL = 60_000;
-const CHECK_DEBOUNCE = 1_500;
+const UPDATE_CHECK_INTERVAL = 5_000;
+const CHECK_DEBOUNCE = 500;
 
 function getAssetSignature(root: ParentNode) {
-  return Array.from(
+  const assets = Array.from(
     root.querySelectorAll("script[src], link[rel='stylesheet'][href]"),
   )
     .map(
@@ -18,6 +18,9 @@ function getAssetSignature(root: ParentNode) {
     )
     .sort()
     .join("|");
+
+  const mainLength = root.querySelector("main")?.textContent?.length ?? 0;
+  return `${assets}::${mainLength}`;
 }
 
 function createFreshUrl() {
@@ -65,7 +68,7 @@ export function LiveUpdateRefresh() {
           nextSignature &&
           currentSignature !== nextSignature
         ) {
-          window.location.replace(freshUrl.toString());
+          window.location.reload();
         }
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {

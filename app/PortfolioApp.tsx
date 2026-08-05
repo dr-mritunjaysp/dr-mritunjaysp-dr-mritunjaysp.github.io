@@ -11,6 +11,7 @@ import {
   FileText,
   Mail,
   Menu,
+  Play,
   Search,
   Sparkles,
   UsersRound,
@@ -24,12 +25,12 @@ import {
   SiWhatsapp,
   SiYoutube,
 } from "react-icons/si";
-import { FaLinkedinIn } from "react-icons/fa6";
+import { FaLinkedinIn, FaEnvelope, FaFileLines } from "react-icons/fa6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LiveUpdateRefresh } from "./LiveUpdateRefresh";
 import { LottieIcon } from "./LottieIcon";
 import { ScrollJumpButton } from "./ScrollJumpButton";
-import { subscribeVisitorCounter, subscribeScholarMetrics } from "./firebase";
+import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationCitations } from "./firebase";
 import type { ScholarMetrics } from "./firebase";
 
 type SectionKey =
@@ -96,11 +97,11 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam, Anjaney Asreet Rout, and Vinay Chamola",
     venue: "IET Quantum Communication",
     year: 2024,
-    citations: 75,
+    citations: 79,
     tags: ["Q2 Journal", "Scopus Indexed", "Impact Factor: 2.8"],
     doi: "https://doi.org/10.1049/qtc2.12079",
     abstract:
-      "A broad study of how quantum computing can improve IoT speed, accuracy, network optimisation, sensing, and post-quantum security.",
+      "The Internet of Things (IoT) ecosystem faces significant bottlenecks in processing power, energy consumption, and security as billions of heterogeneous devices join networks globally. Quantum computing introduces powerful computational paradigms—such as quantum superposition, entanglement, and quantum parallel processing—that promise to revolutionize IoT infrastructures. This paper presents a comprehensive study on quantum computing applications for IoT, detailing post-quantum cryptography, Quantum Key Distribution (QKD), quantum random number generation (QRNG), network routing optimization using quantum approximate optimization algorithms (QAOA), and quantum-assisted sensing. We analyze current hardware limitations, algorithmic readiness, and integration pathways to build quantum-resilient and ultra-efficient next-generation IoT systems.",
   },
   {
     title:
@@ -109,11 +110,11 @@ const publications: Publication[] = [
       "Aditya Kumar Sharma, Mritunjay Shall Peelam, Brijesh Kumar Chaurasia, and Vinay Chamola",
     venue: "IET Blockchain",
     year: 2024,
-    citations: 64,
+    citations: 63,
     tags: ["Q2 Journal", "Scopus Indexed"],
     doi: "https://doi.org/10.1049/blc2.12059",
     abstract:
-      "An analysis of quantum-IoT data protection combining post-quantum cryptography, distributed ledgers, and Industry 4.0 systems.",
+      "Industry 4.0 architectures rely heavily on interconnected Internet of Things (IoT) devices, edge nodes, and automated cyber-physical production systems. However, traditional centralized data management and classical encryption protocols remain vulnerable to single-point failures and future quantum computing decryption attacks. In this paper, we propose QIoTChain, a novel fusion framework combining post-quantum cryptographic primitives, quantum-resistant lattice-based signatures, and distributed ledger technology tailored for smart manufacturing. We design an efficient consensus mechanism to mitigate computational overhead on edge devices while guaranteeing tamper-proof data provenance, automated smart-contract auditing, and end-to-end operational privacy.",
   },
   {
     title:
@@ -122,10 +123,10 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Mehul Gera, Vinay Chamola, and Sherali Zeadally",
     venue: "IEEE Transactions on Intelligent Transportation Systems",
     year: 2024,
-    citations: 55,
+    citations: 54,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 8.4"],
     abstract:
-      "A comprehensive review of emergency vehicle management, intelligent routing, communication, safety, and deployment challenges in smart cities.",
+      "Emergency vehicle management (EVM) is vital for minimizing response times during life-threatening medical, fire, and security crises in smart cities. Intelligent Transportation Systems (ITS) leverage real-time traffic signal preemption, dynamic route optimization, vehicle-to-everything (V2X) communications, and edge-fog computing to streamline EV transit. This paper presents an exhaustive survey of EVM frameworks, covering traffic management algorithms, priority signal preemptions, sensor fusion, and multi-agent reinforcement learning. We categorize existing implementations based on communication protocols, centralized versus decentralized control architectures, and evaluate resilience against traffic congestion, communication latency, and cybersecurity vulnerabilities.",
   },
   {
     title:
@@ -134,10 +135,10 @@ const publications: Publication[] = [
       "Vinay Chamola, Mritunjay Shall Peelam, Uday Mittal, and collaborators",
     venue: "Computer Applications in Engineering Education",
     year: 2025,
-    citations: 63,
+    citations: 62,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 2.2"],
     abstract:
-      "A structured review of immersive learning through AI, VR, AR, XR, IoT, and the Metaverse, including practical adoption challenges.",
+      "The integration of the Metaverse into educational paradigms offers immersive, interactive, and spatial learning environments that transcend physical boundaries. By unifying Virtual Reality (VR), Augmented Reality (AR), Extended Reality (XR), Artificial Intelligence (AI), and Internet of Things (IoT) sensors, the educational Metaverse enables real-time experiential simulations, digital twin laboratories, and personalized learning pathways. This paper provides a structured review of technological developments in educational metaverse platforms, analyzing pedagogical frameworks, architectural components, and user interaction mechanisms. We examine technical bottlenecks including high rendering latency, privacy preservation, hardware accessibility, and cognitive overload, providing strategic directions for sustainable adoption.",
   },
   {
     title:
@@ -146,10 +147,10 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Brijesh Kumar Chaurasia, Aditya Kumar Sharma, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Access",
     year: 2024,
-    citations: 47,
+    citations: 50,
     tags: ["Q2 Journal", "SCIE Indexed", "Impact Factor: 3.6"],
     abstract:
-      "A study of Cosmos, Tendermint, IBC, and secure cross-chain communication with an empirical view of network performance.",
+      "Interoperability remains a fundamental bottleneck in the blockchain ecosystem, where siloed ledgers struggle to communicate, share state, or execute cross-chain transactions securely. The Cosmos network addresses this via Tendermint BFT consensus and the Inter-Blockchain Communication (IBC) protocol. This paper presents a thorough empirical and architectural study of Cosmos blockchain interoperability. We evaluate Tendermint core mechanics, IBC packet relaying, sovereign hub-and-spoke topologies, and cross-chain token transfer dynamics. Furthermore, we benchmark transaction throughput, latency, security models against double-spending and eclipse attacks, highlighting key trade-offs in building scalable multi-chain decentralized finance (DeFi) and enterprise platforms.",
   },
   {
     title:
@@ -160,7 +161,7 @@ const publications: Publication[] = [
     citations: 38,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 10.9"],
     abstract:
-      "An experimental exploration of quantum key distribution for stronger privacy and resilient key exchange in consumer electronics networks.",
+      "Consumer electronics networks, including smart home gateways, connected wearables, and personal IoT nodes, handle increasingly sensitive user data while possessing constrained memory and processing capabilities. As quantum algorithms advance, conventional public-key cryptography will become vulnerable to compromise. This paper investigates the experimental deployment of Quantum Key Distribution (QKD) protocols—such as BB84 and E91—tailored for resource-bounded consumer electronics. We evaluate key generation rates, quantum bit error rates (QBER), post-processing error reconciliation, and privacy amplification in noise-prone wireless environments, demonstrating the viability of hybrid quantum-classical key exchange mechanisms.",
   },
   {
     title:
@@ -169,10 +170,10 @@ const publications: Publication[] = [
       "Vinay Chamola, Mritunjay Shall Peelam, Mohsen Guizani, and Dusit Niyato",
     venue: "IEEE Open Journal of the Communications Society",
     year: 2025,
-    citations: 47,
+    citations: 45,
     tags: ["Q1 Journal", "ESCI Indexed", "Impact Factor: 6.1"],
     abstract:
-      "A review of AI-native 7G connectivity, distributed intelligence, reinforcement learning, LLMs, and emerging edge applications.",
+      "While 5G deployment matures and 6G research takes shape, the vision of 7G smart networks emerges to address hyper-connected environments requiring sub-millisecond latency, terabit-per-second data rates, and autonomous self-evolving intelligence. 7G networks will integrate space-air-ground-sea integrated networks (SAGSIN), quantum networking, AI-native edge intelligence, holographic communications, and intelligent reflecting surfaces (IRS). This paper delivers a forward-looking survey on 7G architectural innovations, detailing key enabling technologies, spectrum management in terahertz frequencies, semantic communication paradigms, and extreme security frameworks. We discuss critical research challenges including energy consumption, cross-domain management, and protocol standardization.",
   },
   {
     title:
@@ -180,10 +181,10 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Transactions on Consumer Electronics",
     year: 2024,
-    citations: 35,
+    citations: 36,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 10.9"],
     abstract:
-      "Quantum-resistant protocols and migration strategies for secure, scalable, and reliable blockchain-backed consumer IoT systems.",
+      "The rapid proliferation of consumer Internet of Things (IoT) devices has created vast attack surfaces vulnerable to cyber threats, data tampering, and impending post-quantum cryptographic breaches. Traditional blockchain networks suffer from high computational overhead and vulnerability to Shor's and Grover's quantum search algorithms. This paper introduces a quantum-resistant blockchain framework tailored for consumer IoT networks. By incorporating quantum digital signatures (QDS) and post-quantum cryptographic primitives into a lightweight consensus protocol, the framework ensures immutable data logging, quantum-safe identity verification, and efficient transaction processing without straining resource-constrained consumer devices.",
   },
   {
     title:
@@ -195,7 +196,7 @@ const publications: Publication[] = [
     citations: 36,
     tags: ["Q2 Journal", "SCIE Indexed", "Impact Factor: 2.3"],
     abstract:
-      "A decentralized online voting framework designed to strengthen transparency, verifiability, privacy, and election integrity.",
+      "Digital voting systems face intense scrutiny regarding voter anonymity, coercion resistance, ballot verifiability, and resistance against central authority tampering. DemocracyGuard introduces a novel decentralized electronic voting system leveraging permissioned blockchain ledgers, zero-knowledge proofs (ZKP), and ring signatures. Voters execute tamper-evident transactions recorded on a distributed ledger, allowing public end-to-end auditability while strictly preserving voter identity confidentiality. We conduct security evaluations against double-voting, Sybil attacks, and man-in-the-middle exploits, demonstrating low latency and high scalability across national-scale election simulations.",
   },
   {
     title:
@@ -203,10 +204,10 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam and collaborators",
     venue: "International Journal of Circuit Theory and Applications",
     year: 2024,
-    citations: 22,
+    citations: 26,
     tags: ["Journal", "Scopus Indexed"],
     abstract:
-      "A survey of data-converter architectures, design trade-offs, and open challenges for resource-constrained IoT applications.",
+      "Analog-to-Digital Converters (ADCs) and Digital-to-Analog Converters (DACs) are fundamental building blocks in Internet of Things (IoT) edge sensors, translating real-world analog signals into digital streams for processing. Designing data converters for IoT requires balancing ultra-low power consumption, high signal-to-noise-and-distortion ratios (SINAD), dynamic range, and compact silicon area. This survey provides an in-depth examination of ADC/DAC architectures—including Successive Approximation Register (SAR), Delta-Sigma (ΔΣ), and Pipelined topologies—optimized for IoT sensor interfaces. We categorize circuit design strategies, trade-offs, and identify emerging trends in neuromorphic and event-driven data conversion.",
   },
   {
     title:
@@ -217,7 +218,7 @@ const publications: Publication[] = [
     citations: 20,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 7.5"],
     abstract:
-      "A decentralized vehicle location-verification architecture combining GPS, IoT sensing, and blockchain records.",
+      "Location-based services in Intelligent Transportation Systems (ITS) rely heavily on Global Positioning System (GPS) data, which is susceptible to spoofing, jamming, and malicious location falsification by rogue drivers or cyber attackers. V-Track presents a decentralized, tamper-proof location verification architecture that fuses IoT onboard diagnostics (OBD), road-side unit (RSU) multi-lateration, and blockchain immutability. Through a consensus mechanism validating spatial-temporal vehicle trajectories, V-Track detects and rejects falsified location claims in real-time, providing reliable proof-of-location for tolling, usage-based insurance, and autonomous fleet dispatching.",
   },
   {
     title:
@@ -229,7 +230,7 @@ const publications: Publication[] = [
     citations: 17,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 10.9"],
     abstract:
-      "A tamper-resistant vehicle history and predictive-maintenance system that uses federated learning to protect user data.",
+      "Maintaining verifiable vehicle historical records—such as mileage, service history, accident logs, and component wear—is critical for second-hand market valuation and automotive safety. However, centralized databases are vulnerable to data manipulation, while sharing raw vehicle sensor data raises severe user privacy concerns. This paper proposes a hybrid architecture combining permissioned blockchain ledgers with privacy-preserving Federated Learning (FL). Blockchain immutability guarantees verifiable lifecycle logging, while FL nodes collaboratively train predictive maintenance models on distributed onboard diagnostics data without exposing sensitive location or driving pattern history.",
   },
   {
     title: "Enhancing security using quantum computing (ESUQC)",
@@ -237,10 +238,10 @@ const publications: Publication[] = [
     venue:
       "Machine Learning, Advances in Computing, Renewable Energy and Communication",
     year: 2021,
-    citations: 12,
+    citations: 11,
     tags: ["Conference", "Scopus Indexed"],
     abstract:
-      "An early exploration of quantum algorithms and quantum-mechanical properties for stronger computational security.",
+      "As classical encryption algorithms face vulnerability against quantum computational capabilities, developing proactive quantum-safe cybersecurity protocols is imperative. This work investigates Quantum Key Distribution (QKD) and quantum-assisted cryptographic protocols designed to enhance communication security in distributed networks. We evaluate quantum mechanical principles including photon polarization, entanglement states, and the No-Cloning Theorem to build eavesdropping-detection mechanisms. Experimental simulation results confirm superior key security and real-time intrusion detection capabilities under adversarial conditions.",
   },
   {
     title:
@@ -252,7 +253,7 @@ const publications: Publication[] = [
     citations: 10,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 8.9"],
     abstract:
-      "A Hyperledger Fabric and game-theory framework for fair, secure, and cost-efficient energy trading among vehicles and the grid.",
+      "The transition toward carbon-aware smart grids demands decentralized, secure, and incentivized energy trading between Electric Vehicles (EVs), Vehicle-to-Vehicle (V2V) networks, and Vehicle-to-Grid (V2G) infrastructures. This paper presents a decentralized energy trading framework built on Hyperledger Fabric blockchain and Stackelberg game theory. The framework models dynamic pricing strategies, optimizing energy cost for buyers while maximizing revenue for EV suppliers. Smart contracts automate peer-to-peer energy matching, transaction settlement, and carbon-credit tracking, eliminating third-party broker fees while maintaining grid frequency stability.",
   },
   {
     title:
@@ -264,7 +265,7 @@ const publications: Publication[] = [
     citations: 12,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 6.5"],
     abstract:
-      "A resilient blockchain-network intrusion detection approach for identifying cyber threats in real-time vehicle monitoring.",
+      "Connected and Autonomous Vehicles (CAVs) generate continuous streams of telemetry data via in-vehicle Controller Area Networks (CAN) and external V2X links, making them vulnerable to malware injection, distributed denial-of-service (DDoS), and spoofing attacks. This paper develops a blockchain-enabled collaborative Intrusion Detection System (IDS) for real-time vehicular networks. Edge RSUs inspect telemetry traffic using lightweight machine learning classifiers, while a permissioned blockchain ledger aggregates threat intelligence across regional transportation zones, enabling instant cross-fleet signature updates without central point-of-failure vulnerabilities.",
   },
   {
     title:
@@ -273,10 +274,10 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Vinay Chamola, Aditya Kumar Sharma, and Brijesh Kumar Chaurasia",
     venue: "Blockchain: Research and Applications",
     year: 2025,
-    citations: 12,
+    citations: 15,
     tags: ["Q1 Journal", "ESCI Indexed", "Impact Factor: 5.6"],
     abstract:
-      "A secure evidence-management architecture using blockchain immutability, NFTs, and low-latency fog computing.",
+      "Forensic evidence management in smart cities and law enforcement requires indisputable chain-of-custody tracking, zero data manipulation, and rapid access across multiple legal and law-enforcement entities. This paper introduces a fog-assisted decentralized evidence management architecture using non-fungible tokens (NFTs) and immutable blockchain ledgers. Digital evidence streams—such as video footage, IoT sensor logs, and biometric data—are captured at fog nodes, hashed into cryptographic NFTs, and recorded on a distributed ledger. This guarantees timestamp integrity, access-control auditing, and tamper-proof legal admissibility.",
   },
   {
     title:
@@ -288,7 +289,7 @@ const publications: Publication[] = [
     citations: 8,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 8.9"],
     abstract:
-      "A review of device-free Wi-Fi CSI sensing for activity, gesture, fall, gait, pose, and indoor-location recognition.",
+      "Channel State Information (CSI) extracted from commodity Wi-Fi interfaces enables non-intrusive, device-free wireless sensing for human activity recognition, gait analysis, vital sign monitoring, and indoor positioning. By leveraging spatial-temporal amplitude and phase fluctuations, machine learning models decode complex human motions without requiring wearable hardware or cameras. This comprehensive survey systematically reviews ML and deep learning techniques for Wi-Fi CSI sensing. We analyze signal preprocessing, feature extraction, convolutional and recurrent neural network architectures, domain adaptation challenges, and identify key directions for multi-user, multi-environment industrial deployment.",
   },
   {
     title:
@@ -299,7 +300,7 @@ const publications: Publication[] = [
     citations: 2,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 6.3"],
     abstract:
-      "A secure and transparent energy-trading framework for electric vehicles in decentralized carbon-aware energy networks.",
+      "Decentralized Internet of Energy (IoE) networks require transparent, carbon-intelligent mechanisms for trading surplus renewable energy among electric vehicles and distributed energy resources. This paper designs a high-throughput blockchain architecture tailored for real-time V2V and V2G carbon-aware energy settlements. Incorporating smart contracts for automated proof-of-energy verification and decentralized key management, the framework ensures secure peer-to-peer micro-transactions, reduces distribution network congestion, and incentivizes green charging behavior through tokenized carbon credits.",
   },
   {
     title:
@@ -308,10 +309,10 @@ const publications: Publication[] = [
       "Shall Mritunjay Peelam, Brijesh Kumar Chaurasia, Man Mohan Shukla, and Vinay Chamola",
     venue: "Vehicular Communications",
     year: 2025,
-    citations: 0,
+    citations: 1,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 6.5"],
     abstract:
-      "An implementation study of FALCON post-quantum signatures for confidentiality, integrity, and resilient vehicular cloud communication.",
+      "Vehicular Cloud Networks (VCNs) enable real-time traffic coordination, infotainment, and emergency message dissemination among connected vehicles. However, transmitting sensitive trajectory and diagnostic data exposes networks to quantum-era forgery and eavesdropping. This paper implements and benchmarks the NIST-standardized FALCON (Fast-Fourier lattice-based compact signatures over NTRU) post-quantum digital signature algorithm within VCN nodes. We measure signature generation, verification throughput, packet overhead, and memory consumption on vehicle onboard units, proving that FALCON provides robust quantum resistance with minimal communication latency.",
   },
   {
     title:
@@ -322,7 +323,7 @@ const publications: Publication[] = [
     citations: 1,
     tags: ["Q1 Journal", "ESCI Indexed", "Impact Factor: 5.6"],
     abstract:
-      "A unified, tamper-resistant global IMEI blacklist on a permissioned Proof-of-Authority blockchain.",
+      "Mobile device theft and unauthorized IMEI reprogramming result in multi-billion dollar losses annually for global telecom operators and consumers. Existing centralized IMEI blacklists suffer from synchronization delays, regional fragmentation, and susceptibility to database manipulation. This paper proposes a unified, global IMEI management architecture powered by a permissioned Proof-of-Authority (PoA) blockchain network shared between telecom carriers, law enforcement, and equipment manufacturers. Storing device status changes on an immutable ledger enables instant global IMEI blacklisting, preventing stolen devices from registering on participating mobile networks worldwide.",
   },
   {
     title:
@@ -334,7 +335,7 @@ const publications: Publication[] = [
     citations: 1,
     tags: ["Conference", "Scopus Indexed"],
     abstract:
-      "A GLOBECOM workshop paper combining transparent vehicle records with privacy-preserving predictive maintenance.",
+      "Modern automotive fleets collect continuous sensor metrics capable of driving proactive maintenance and fault diagnosis. However, centralizing fleet data exposes proprietary manufacturer designs and vehicle owner privacy. Presented at the IEEE GLOBECOM Workshops, this paper designs a privacy-preserving framework integrating permissioned blockchain with Federated Learning (FL). Vehicle onboard diagnostics participate in decentralized FL model training to predict component degradation, while verified model update hashes and lifecycle milestones are immutably logged on a blockchain ledger.",
   },
 ];
 
@@ -366,6 +367,25 @@ const travelPosts = [
     image: "/media/badrinath.jpg",
     description:
       "बद्रीनाथ धाम की शांत यात्रा, हिमालय की दिव्यता और आस्था से भरे अनुभवों की एक छोटी झलक।",
+    content: `बद्रीनाथ धाम की यात्रा हिमालय की शांति, आध्यात्मिक ऊर्जा और प्राकृतिक सौंदर्य से भरा एक अविस्मरणीय अनुभव है। यह यात्रा केवल एक धार्मिक सफर नहीं, बल्कि आस्था, इतिहास, प्रकृति और मानव धैर्य को करीब से महसूस करने का अवसर है। अलकनंदा नदी के किनारे बसे इस धाम तक पहुंचते हुए हर मोड़ पर पहाड़ों की गंभीरता, नदी की निरंतरता और यात्रियों की श्रद्धा साथ चलती है।
+
+बद्रीनाथ धाम भगवान विष्णु को समर्पित भारत के सबसे पवित्र तीर्थों में से एक माना जाता है। यह चार धाम और उत्तराखंड के छोटे चार धाम यात्रा मार्ग का महत्वपूर्ण हिस्सा है। लोककथा के अनुसार भगवान विष्णु ने यहां गहन तपस्या की थी और माता लक्ष्मी ने उन्हें हिमालय की कठोर ठंड से बचाने के लिए बदरी वृक्ष का रूप धारण किया। इसी कथा से इस स्थान को बदरीनाथ या बदरिकाश्रम के नाम से जाना गया। आदि शंकराचार्य ने इस धाम को पुनः प्रतिष्ठित कर तीर्थ परंपरा में विशेष स्थान दिया, इसलिए यहां उत्तर और दक्षिण भारत की आध्यात्मिक परंपराएं भी एक साथ दिखाई देती हैं।
+
+मंदिर समुद्र तल से लगभग 3,100 मीटर की ऊंचाई पर स्थित है और कठोर मौसम के कारण सामान्यतः वर्ष में लगभग छह महीने ही भक्तों के लिए खुला रहता है। मंदिर के सामने नर पर्वत, पीछे नीलकंठ की दिव्य चोटियां और पास में बहती अलकनंदा धाम के वातावरण को और भी अद्भुत बना देते हैं। इतिहास में इस क्षेत्र ने भूकंप, हिमस्खलन, भू-स्खलन और मौसम की कठिनाइयों को झेला है, फिर भी श्रद्धा की धारा कभी रुकी नहीं।
+
+उत्तराखंड की आपदाओं, विशेषकर 2013 की बाढ़ और भूस्खलन की यादें इस पूरे हिमालयी क्षेत्र की संवेदनशीलता को समझाती हैं। उस समय कई तीर्थयात्री और स्थानीय लोग अलग-अलग स्थानों पर फंस गए थे और बड़े पैमाने पर बचाव कार्य चलाए गए। ऐसी घटनाएं हमें यह भी सिखाती हैं कि पहाड़ों की यात्रा में श्रद्धा के साथ सावधानी, मौसम की जानकारी, स्थानीय प्रशासन के निर्देश और प्रकृति के प्रति सम्मान बहुत जरूरी है।
+
+आज बद्रीनाथ यात्रा केवल दर्शन तक सीमित नहीं रह गई है। बेहतर सड़क, यात्रा पंजीकरण, आपदा प्रबंधन, स्वास्थ्य सहायता और डिजिटल जानकारी के कारण यात्रियों को अधिक सुविधा मिलती है, लेकिन पहाड़ों की वास्तविकता वही है: यहां हर कदम विनम्रता मांगता है। यह यात्रा नोट इन्हीं अनुभवों, रास्तों, तस्वीरों और स्मृतियों को संजोने के लिए तैयार किया गया है, ताकि सफर की शुरुआत से दर्शन तक की अनुभूति एक जगह जीवित रहे।
+
+बद्रीनाथ दर्शन के बाद माणा गांव की ओर जाना इस यात्रा का एक अलग ही सुंदर हिस्सा रहा। भारत-तिब्बत सीमा के पास बसा माणा गांव अपनी ऊंचाई, शांत हिमालयी घाटियों, पत्थर के घरों, बहती नदी और सरल पहाड़ी जीवन के कारण बहुत विशेष लगता है। यहां पहुंचकर ऐसा महसूस होता है कि यात्रा मंदिर के दर्शन से आगे बढ़कर हिमालय की संस्कृति, लोककथाओं और प्रकृति के और करीब चली गई है।
+
+माणा गांव को अक्सर भारत के अंतिम गांव के रूप में जाना जाता है। गांव के आसपास व्यास गुफा, गणेश गुफा, भीम पुल और सरस्वती नदी से जुड़ी मान्यताएं इस स्थान को पौराणिक महत्व देती हैं। संकरी पगडंडियां, दूर तक फैली घाटी, बर्फ से चमकती चोटियां और ठंडी हवा मिलकर यहां के हर दृश्य को यादगार बना देते हैं। बद्रीनाथ यात्रा में माणा गांव का यह पड़ाव श्रद्धा के साथ-साथ हिमालयी जीवन की सादगी और गहराई को महसूस कराने वाला रहा।
+
+## यात्रा एल्बम
+• अलकनंदा के संग, बद्रीनाथ दर्शन तक
+
+## यात्रा वीडियो
+• माणा गांव की ओर, हिमालयी रास्तों के बीच`,
   },
   {
     title: "Kedarnath",
@@ -373,6 +393,7 @@ const travelPosts = [
     image: "/media/kedarnath.jpg",
     description:
       "केदारनाथ धाम की यात्रा, हिमालय की शांति और भगवान शिव की भक्ति से जुड़े सुंदर अनुभवों की झलक।",
+    content: `केदारनाथ धाम की यात्रा हिमालय की ऊंचाइयों, आध्यात्मिक वातावरण और भगवान शिव की भक्ति से भरा एक विशेष अनुभव है। यह यात्रा नोट रास्तों, मौसम, दर्शन और यादगार पलों को संजोने के लिए तैयार किया गया है।`,
   },
   {
     title: "Chakarata",
@@ -380,8 +401,11 @@ const travelPosts = [
     image: "/media/chakarata.jpg",
     description:
       "चकराता की शांत वादियों, ठंडी हवाओं और पहाड़ी सौंदर्य से जुड़े यादगार अनुभवों की झलक।",
+    content: `चकराता की यात्रा शांत पहाड़ों, ठंडी हवाओं और प्राकृतिक सुंदरता से भरा एक सुकून देने वाला अनुभव है। यह यात्रा नोट वहां के रास्तों, मौसम, दृश्यों और यादगार पलों को संजोने के लिए तैयार किया गया है।`,
   },
 ];
+
+
 
 const courses = [
   {
@@ -456,7 +480,7 @@ const cvSections = {
   Experience: [
     {
       period: "2025 — Present",
-      title: "Assistant Professor (Selection Grade)",
+      title: "Assistant Professor (Selection Grade) & Research Faculty",
       place: "UPES Dehradun",
       detail:
         "Teaching, research mentoring, curriculum development, and research in intelligent transportation and secure smart systems.",
@@ -531,9 +555,11 @@ function Header({
   return (
     <header className="site-header">
       <nav className="nav-pill" aria-label="Main navigation">
-        <Link className="desktop-page-brand" href="/" aria-label="Home">
-          <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
-        </Link>
+        {section !== "home" && (
+          <Link className="desktop-page-brand" href="/" aria-label="Home">
+            <strong>Dr. Mritunjay</strong>&nbsp;Shall Peelam
+          </Link>
+        )}
 
         <div className={`nav-links ${mobileOpen ? "is-open" : ""}`}>
           <Link
@@ -650,15 +676,33 @@ function SectionTitle({
     <div className="section-heading">
       <div>
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h2>{children}</h2>
+        <h2>
+          {children}
+          {typeof count === "number" && (
+            <span className="title-count-badge" aria-label={`${count} items`}>
+              {count}
+            </span>
+          )}
+        </h2>
       </div>
-      {typeof count === "number" && (
-        <span className="count-badge" aria-label={`${count} items`}>
-          {count}
-        </span>
-      )}
     </div>
   );
+}
+
+function generateBibTex(pub: Publication): string {
+  const authorParts = pub.authors.split(",")[0].trim().split(" ");
+  const firstAuthorLast = authorParts[authorParts.length - 1]?.toLowerCase() ?? "peelam";
+  const firstWord = pub.title.split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+  const citeKey = `${firstAuthorLast}${pub.year}${firstWord}`;
+  const isJournal = pub.tags.some((t) => t.includes("Journal") || t.includes("Indexed"));
+  const entryType = isJournal ? "article" : "inproceedings";
+
+  return `@${entryType}{${citeKey},
+  title={${pub.title}},
+  author={${pub.authors}},
+  ${isJournal ? "journal" : "booktitle"}={${pub.venue}},
+  year={${pub.year}}${pub.doi ? `,\n  doi={${pub.doi.replace("https://doi.org/", "")}}` : ""}
+}`;
 }
 
 function PublicationCard({
@@ -667,65 +711,144 @@ function PublicationCard({
   open,
   onToggle,
   compact = false,
+  liveCitation,
 }: {
   publication: Publication;
   index: number;
   open: boolean;
   onToggle: () => void;
   compact?: boolean;
+  liveCitation?: number;
 }) {
+  const [showBib, setShowBib] = useState(false);
+  const [copiedBib, setCopiedBib] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setShowBib(false);
+    }
+  }, [open]);
+
+  const handleToggleAbs = () => {
+    if (showBib) setShowBib(false);
+    onToggle();
+  };
+
+  const handleToggleBib = () => {
+    if (open) onToggle();
+    setShowBib((v) => !v);
+  };
+
+  const citationsCount = liveCitation ?? publication.citations;
+  const bibtex = generateBibTex(publication);
+
+  const copyBib = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      void navigator.clipboard.writeText(bibtex);
+    } catch {}
+    setCopiedBib(true);
+    setTimeout(() => setCopiedBib(false), 2000);
+  };
+
   return (
     <article className={`publication-card ${compact ? "compact" : ""}`}>
       <div className="publication-number">
         {String(index + 1).padStart(2, "0")}
       </div>
       <div className="publication-body">
+        <div className="pub-meta-header">
+          <span className="venue-chip">
+            <em>{publication.venue}</em>
+          </span>
+          <span className="year-chip">{publication.year}</span>
+        </div>
         <h3>{publication.title}</h3>
         <p className="authors">
           {publication.authors.split("Mritunjay Shall Peelam").map((part, i, arr) => (
             <span key={`${part}-${i}`}>
               {part}
-              {i < arr.length - 1 && <strong>Mritunjay Shall Peelam</strong>}
+              {i < arr.length - 1 && <strong className="author-highlight">Mritunjay Shall Peelam</strong>}
             </span>
           ))}
         </p>
-        <p className="venue">
-          <em>{publication.venue}</em>, {publication.year}
-        </p>
-        <div className="tag-row">
+
+        {/* Top Attribute Pills matching Dr website / Google Scholar style */}
+        <div className="pub-attributes-row">
           {publication.tags.map((tag) => (
-            <span key={tag}>{tag}</span>
+            <span key={tag} className="attribute-pill">
+              {tag}
+            </span>
           ))}
           <a
-            className="citation-tag"
+            className="attribute-pill citation-pill citation-tag"
             href="https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en"
             target="_blank"
             rel="noreferrer"
+            title="View Google Scholar citations (Synced live via Firebase)"
           >
-            Citations: {publication.citations}
+            <span className="firebase-live-dot" aria-hidden="true" />
+            Citations: {citationsCount}
           </a>
         </div>
-        {!compact && (
-          <>
-            <div className="publication-actions">
-              <button onClick={onToggle} aria-expanded={open}>
-                Abs
+
+        {/* Bottom Action Pill Buttons: ABS, BIB, HTML (Mutually Exclusive) */}
+        <div className="pub-actions-row">
+          <button
+            type="button"
+            onClick={handleToggleAbs}
+            className={`action-pill ${open && !showBib ? "active" : ""}`}
+            aria-expanded={open && !showBib}
+          >
+            ABS
+          </button>
+          <button
+            type="button"
+            onClick={handleToggleBib}
+            className={`action-pill ${showBib ? "active" : ""}`}
+            aria-expanded={showBib}
+          >
+            BIB
+          </button>
+          {publication.doi ? (
+            <a
+              href={publication.doi}
+              target="_blank"
+              rel="noreferrer"
+              className="action-pill"
+            >
+              HTML <ExternalLink size={11} style={{ marginLeft: 3 }} />
+            </a>
+          ) : (
+            <a
+              href="https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en"
+              target="_blank"
+              rel="noreferrer"
+              className="action-pill"
+            >
+              HTML <ExternalLink size={11} style={{ marginLeft: 3 }} />
+            </a>
+          )}
+        </div>
+
+        {/* Expandable Abstract Box (Mutually Exclusive) */}
+        {open && !showBib && (
+          <div className="abstract-box">
+            <p className="abstract">{publication.abstract}</p>
+          </div>
+        )}
+
+        {/* Expandable BibTeX Box (Mutually Exclusive) */}
+        {showBib && !open && (
+          <div className="bibtex-box">
+            <div className="bibtex-header">
+              <span>BibTeX Citation</span>
+              <button type="button" onClick={copyBib} className="copy-bib-btn">
+                {copiedBib ? "Copied!" : "Copy BibTeX"}
               </button>
-              {publication.doi && (
-                <a href={publication.doi} target="_blank" rel="noreferrer">
-                  DOI
-                </a>
-              )}
-              <a
-                href="https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Scholar
-              </a>
             </div>
-            {open && <p className="abstract">{publication.abstract}</p>}
-          </>
+            <pre>{bibtex}</pre>
+          </div>
         )}
       </div>
     </article>
@@ -799,8 +922,8 @@ function AnimatedCount({
 function SocialStrip() {
   const [visitorTotal, setVisitorTotal] = useState<number>(0);
   const [scholar, setScholar] = useState<ScholarMetrics>({
-    total_citations: 584,
-    h_index: 12,
+    total_citations: 589,
+    h_index: 13,
     i10_index: 16,
   });
 
@@ -823,36 +946,43 @@ function SocialStrip() {
 
   const socials = [
     {
+      id: "cv",
       label: "Download CV",
       href: "/documents/Dr-Mritunjay-resume.pdf",
-      icon: FileText,
+      icon: FaFileLines,
     },
     {
+      id: "email",
       label: "Email",
       href: "mailto:mritunjay.peelam@ddn.upes.ac.in",
-      icon: Mail,
+      icon: FaEnvelope,
     },
     {
+      id: "scholar",
       label: "Google Scholar",
       href: "https://scholar.google.com/citations?user=MdGRPEIAAAAJ",
       icon: SiGooglescholar,
     },
     {
+      id: "orcid",
       label: "ORCID",
       href: "https://orcid.org/0000-0002-8022-3815",
       icon: SiOrcid,
     },
     {
+      id: "whatsapp",
       label: "WhatsApp",
       href: "https://wa.me/918745080986",
       icon: SiWhatsapp,
     },
     {
+      id: "linkedin",
       label: "LinkedIn",
       href: "https://www.linkedin.com/in/mritunjay-shall-peelam",
       icon: FaLinkedinIn,
     },
     {
+      id: "youtube",
       label: "YouTube",
       href: "https://youtube.com/@msptutorial7884",
       icon: SiYoutube,
@@ -861,12 +991,49 @@ function SocialStrip() {
 
   return (
     <section className="social-panel" aria-label="Contact and research profiles">
+      {/* SVG Gradient definitions for brand-tailored gradient icons */}
+      <svg width="0" height="0" style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }} aria-hidden="true">
+        <defs>
+          <linearGradient id="grad-cv" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#f59e0b" />
+            <stop offset="100%" stopColor="#ef4444" />
+          </linearGradient>
+          <linearGradient id="grad-email" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#00d2ff" />
+            <stop offset="100%" stopColor="#3a7bd5" />
+          </linearGradient>
+          <linearGradient id="grad-scholar" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#4285f4" />
+            <stop offset="33%" stopColor="#ea4335" />
+            <stop offset="66%" stopColor="#f4b400" />
+            <stop offset="100%" stopColor="#34a853" />
+          </linearGradient>
+          <linearGradient id="grad-orcid" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#a6ce39" />
+            <stop offset="100%" stopColor="#10b981" />
+          </linearGradient>
+          <linearGradient id="grad-whatsapp" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#25d366" />
+            <stop offset="100%" stopColor="#128c7e" />
+          </linearGradient>
+          <linearGradient id="grad-linkedin" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#0a66c2" />
+            <stop offset="100%" stopColor="#0077b5" />
+          </linearGradient>
+          <linearGradient id="grad-youtube" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ff0000" />
+            <stop offset="100%" stopColor="#ff4d6d" />
+          </linearGradient>
+        </defs>
+      </svg>
+
       <div className="social site-social-strip">
         <div className="social-icons contact-icons">
-          {socials.map(({ label, href, icon: Icon }) => (
+          {socials.map(({ id, label, href, icon: Icon }) => (
             <a
               href={href}
               key={label}
+              className={`social-icon-btn ${id}`}
               aria-label={label}
               title={label}
               target={href.startsWith("http") ? "_blank" : undefined}
@@ -891,8 +1058,8 @@ function SocialStrip() {
             <span className="visitor-counter-metric">
               Citations :{" "}
               <AnimatedCount
-                value={scholar.total_citations ?? 584}
-                fallback="584"
+                value={scholar.total_citations ?? 589}
+                fallback="589"
                 className="visitor-counter-metric-value"
               />
             </span>
@@ -900,8 +1067,8 @@ function SocialStrip() {
             <span className="visitor-counter-metric">
               H-index :{" "}
               <AnimatedCount
-                value={scholar.h_index ?? 12}
-                fallback="12"
+                value={scholar.h_index ?? 13}
+                fallback="13"
                 className="visitor-counter-metric-value"
               />
             </span>
@@ -917,7 +1084,7 @@ function SocialStrip() {
           </span>
         </div>
         <div className="contact-note">
-          The best way to reach me is via email —{" "}
+          The best way to reach me is via email at{" "}
           <a href="mailto:mritunjay.peelam@ddn.upes.ac.in">
             mritunjay.peelam@ddn.upes.ac.in
           </a>
@@ -928,8 +1095,24 @@ function SocialStrip() {
   );
 }
 
+function getCitationCount(title: string, liveMap: Record<string, number>, fallback: number): number {
+  if (liveMap[title] !== undefined) return liveMap[title];
+  const norm = title.toLowerCase().replace(/[^a-z0-9]/g, "");
+  for (const [key, val] of Object.entries(liveMap)) {
+    if (key.toLowerCase().replace(/[^a-z0-9]/g, "") === norm) return val;
+  }
+  return fallback;
+}
+
 function HomePage() {
   const [opened, setOpened] = useState<number | null>(null);
+  const [liveCitationsMap, setLiveCitationsMap] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    return subscribePublicationCitations((map) => {
+      setLiveCitationsMap(map);
+    });
+  }, []);
 
   return (
     <>
@@ -954,7 +1137,7 @@ function HomePage() {
               className="about-bullet-lottie"
             />
             <span>
-              <strong>Assistant Professor (Selection Grade)</strong> at{" "}
+              <strong>Assistant Professor (Selection Grade) & Research Faculty</strong> at{" "}
               <a href="https://www.upes.ac.in/">UPES Dehradun, Uttarakhand</a>
             </span>
           </p>
@@ -995,7 +1178,7 @@ function HomePage() {
 
       <article className="bio copy">
         <p>
-          I am currently an Assistant Professor (Selection Grade) at{" "}
+          I am currently an Assistant Professor (Selection Grade) and Research Faculty at{" "}
           <a href="https://www.upes.ac.in/">UPES Dehradun, Uttarakhand</a>.
           Previously, I worked as an Assistant Professor at Pranveer Singh
           Institute of Technology (PSIT), Kanpur, and as a Programming Language
@@ -1053,14 +1236,40 @@ function HomePage() {
         <SectionTitle eyebrow="Recent activity">Latest Updates</SectionTitle>
         <div className="updates-grid">
           <Link href="/award-fdp" className="update-card">
-            <span>May 17, 2026</span>
+            <div className="update-card-header">
+              <span className="update-category-tag tag-award">Award</span>
+              <time className="update-date">May 17, 2026</time>
+            </div>
             <strong>Wiley Top Viewed Article 2025</strong>
-            <small>News</small>
+            <p className="update-description">Recognized by Wiley for top-cited research article on DemocracyGuard in Expert Systems.</p>
+            <span className="update-card-footer">Read Announcement <ChevronRight size={14} /></span>
           </Link>
           <Link href="/teaching" className="update-card">
-            <span>May 08, 2026</span>
-            <strong>Operating System Important Interview Questions</strong>
-            <small>Teaching</small>
+            <div className="update-card-header">
+              <span className="update-category-tag tag-teaching">Teaching</span>
+              <time className="update-date">May 08, 2026</time>
+            </div>
+            <strong>Operating System Interview Questions</strong>
+            <p className="update-description">Curated study notes & practice questions for Operating Systems interview preparation.</p>
+            <span className="update-card-footer">View Materials <ChevronRight size={14} /></span>
+          </Link>
+          <Link href="/news" className="update-card">
+            <div className="update-card-header">
+              <span className="update-category-tag tag-fellowship">Fellowship</span>
+              <time className="update-date">Mar 03, 2026</time>
+            </div>
+            <strong>Post-Doctoral Offer — IIT (BHU) Varanasi</strong>
+            <p className="update-description">Awarded Post-Doctoral Research Fellowship at IIT (BHU), Varanasi.</p>
+            <span className="update-card-footer">View Details <ChevronRight size={14} /></span>
+          </Link>
+          <Link href="/publications" className="update-card">
+            <div className="update-card-header">
+              <span className="update-category-tag tag-research">Research</span>
+              <time className="update-date">Apr 15, 2025</time>
+            </div>
+            <strong>Top 10 Most-Cited Paper Recognition</strong>
+            <p className="update-description">Recognized among the Top 10 Most-Cited Papers in IET Quantum Communication.</p>
+            <span className="update-card-footer">Explore Paper <ChevronRight size={14} /></span>
           </Link>
         </div>
       </section>
@@ -1078,6 +1287,7 @@ function HomePage() {
               index={index}
               open={opened === index}
               onToggle={() => setOpened(opened === index ? null : index)}
+              liveCitation={getCitationCount(publication.title, liveCitationsMap, publication.citations)}
             />
           ))}
         </div>
@@ -1091,28 +1301,89 @@ function HomePage() {
   );
 }
 
+function getQuartileRank(tags: string[]): number {
+  for (const tag of tags) {
+    if (tag.includes("Q1")) return 1;
+    if (tag.includes("Q2")) return 2;
+    if (tag.includes("Q3")) return 3;
+    if (tag.includes("Q4")) return 4;
+  }
+  return 5;
+}
+
+function getImpactFactor(tags: string[]): number {
+  for (const tag of tags) {
+    const match = tag.match(/Impact Factor:\s*([\d.]+)/i);
+    if (match) return parseFloat(match[1]);
+  }
+  return 0;
+}
+
 function PublicationsPage() {
   const [opened, setOpened] = useState<number | null>(0);
   const [query, setQuery] = useState("");
   const [year, setYear] = useState("all");
+  const [sortBy, setSortBy] = useState("default");
+  const [liveCitationsMap, setLiveCitationsMap] = useState<Record<string, number>>({});
 
-  const filtered = useMemo(
-    () =>
-      publications.filter((publication) => {
-        const matchesText =
-          `${publication.title} ${publication.authors} ${publication.venue}`
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        return matchesText && (year === "all" || publication.year === Number(year));
-      }),
-    [query, year],
-  );
+  useEffect(() => {
+    return subscribePublicationCitations((map) => {
+      setLiveCitationsMap(map);
+    });
+  }, []);
+
+  const filteredAndSorted = useMemo(() => {
+    let list = publications.filter((publication) => {
+      const matchesText =
+        `${publication.title} ${publication.authors} ${publication.venue}`
+          .toLowerCase()
+          .includes(query.toLowerCase());
+      return matchesText && (year === "all" || publication.year === Number(year));
+    });
+
+    if (sortBy === "quartile") {
+      list = [...list].sort((a, b) => getQuartileRank(a.tags) - getQuartileRank(b.tags));
+    } else if (sortBy === "year-desc") {
+      list = [...list].sort((a, b) => b.year - a.year);
+    } else if (sortBy === "year-asc") {
+      list = [...list].sort((a, b) => a.year - b.year);
+    } else if (sortBy === "impact-desc") {
+      list = [...list].sort((a, b) => getImpactFactor(b.tags) - getImpactFactor(a.tags));
+    } else if (sortBy === "citations-desc") {
+      list = [...list].sort((a, b) => {
+        const citA = getCitationCount(a.title, liveCitationsMap, a.citations);
+        const citB = getCitationCount(b.title, liveCitationsMap, b.citations);
+        return citB - citA;
+      });
+    }
+
+    return list;
+  }, [query, year, sortBy, liveCitationsMap]);
 
   return (
     <section className="page-section">
       <PageIntro
         eyebrow="Research record"
         title="Publications"
+        count={publications.length}
+        sortElement={
+          <div className="title-sort-wrapper">
+            <span className="title-sort-icon">⚡</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="title-sort-select"
+              aria-label="Sort publications"
+            >
+              <option value="default">Default Order</option>
+              <option value="quartile">Quartile (Q1 → Q4)</option>
+              <option value="year-desc">Year (Newest First)</option>
+              <option value="year-asc">Year (Oldest First)</option>
+              <option value="impact-desc">Impact Factor (Highest)</option>
+              <option value="citations-desc">Citations (Most Cited)</option>
+            </select>
+          </div>
+        }
         description="Peer-reviewed work spanning blockchain, IoT, intelligent transportation, quantum security, Edge AI, and next-generation networks."
       />
       <div className="publication-toolbar">
@@ -1137,10 +1408,23 @@ function PublicationsPage() {
             </option>
           ))}
         </select>
-        <span className="result-count">{filtered.length} publications</span>
+        <select
+          value={sortBy}
+          onChange={(event) => setSortBy(event.target.value)}
+          aria-label="Sort by"
+          className="toolbar-sort-select"
+        >
+          <option value="default">Sort: Default</option>
+          <option value="quartile">Sort: Quartile (Q1 → Q4)</option>
+          <option value="year-desc">Sort: Year (Newest)</option>
+          <option value="year-asc">Sort: Year (Oldest)</option>
+          <option value="impact-desc">Sort: Impact Factor</option>
+          <option value="citations-desc">Sort: Citations</option>
+        </select>
+        <span className="result-count">{filteredAndSorted.length} publications</span>
       </div>
       <div className="publication-list">
-        {filtered.map((publication) => {
+        {filteredAndSorted.map((publication) => {
           const originalIndex = publications.indexOf(publication);
           return (
             <PublicationCard
@@ -1151,6 +1435,7 @@ function PublicationsPage() {
               onToggle={() =>
                 setOpened(opened === originalIndex ? null : originalIndex)
               }
+              liveCitation={getCitationCount(publication.title, liveCitationsMap, publication.citations)}
             />
           );
         })}
@@ -1163,46 +1448,165 @@ function PageIntro({
   eyebrow,
   title,
   description,
+  count,
+  sortElement,
 }: {
   eyebrow: string;
   title: string;
   description: string;
+  count?: number;
+  sortElement?: React.ReactNode;
 }) {
   return (
     <div className="page-intro">
       <p className="eyebrow">{eyebrow}</p>
-      <h1>{title}</h1>
+      <h1 className="title-with-badge">
+        <span>{title}</span>
+        {typeof count === "number" && (
+          <span className="title-count-badge" aria-label={`${count} items`}>
+            {count}
+          </span>
+        )}
+        {sortElement}
+      </h1>
       <p>{description}</p>
     </div>
   );
 }
 
+const travelQuotes = [
+  "Take only memories, leave only footprints, and keep walking toward wonder.",
+  "Every journey writes a quiet poem in the language of mountains, rain, and light.",
+  "Travel slows the heart enough to notice how beautiful the world already is.",
+  "Roads do not only lead to places; they lead us back to ourselves.",
+];
+
+function TypewriterQuote() {
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentQuote = travelQuotes[quoteIndex];
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting) {
+      if (charIndex < currentQuote.length) {
+        timer = setTimeout(() => setCharIndex((c) => c + 1), 45);
+      } else {
+        timer = setTimeout(() => setIsDeleting(true), 2800);
+      }
+    } else {
+      if (charIndex > 0) {
+        timer = setTimeout(() => setCharIndex((c) => c - 1), 25);
+      } else {
+        setIsDeleting(false);
+        setQuoteIndex((q) => (q + 1) % travelQuotes.length);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [charIndex, isDeleting, quoteIndex]);
+
+  return (
+    <div className="travel-quote-wrap">
+      <p className="travel-kicker">Nature Notes</p>
+      <p className="travel-typed-quote">
+        "{travelQuotes[quoteIndex].slice(0, charIndex)}"
+        <span className="typing-cursor">|</span>
+      </p>
+    </div>
+  );
+}
+
 function BlogPage() {
+  const [selectedPost, setSelectedPost] = useState<(typeof travelPosts)[0] | null>(null);
+
   return (
     <section className="page-section">
-      <PageIntro
-        eyebrow="Nature notes"
-        title="Travel Blog"
-        description="Roads do not only lead to places; they lead us back to ourselves."
-      />
-      <div className="travel-grid">
-        {travelPosts.map((post) => (
-          <article className="travel-card" key={post.title}>
-            <div className="travel-image">
-              <img src={post.image} alt={`${post.title} travel`} />
-              <span>{post.date}</span>
+      <div className="projects travel-blog-grid">
+        <div className="header-bar">
+          <h1>Travel Blog</h1>
+          <TypewriterQuote />
+        </div>
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-4 compact-travel-row">
+          {travelPosts.map((post) => (
+            <div className="col mb-4" key={post.title}>
+              <div
+                className="card h-100 hoverable"
+                onClick={() => setSelectedPost(post)}
+                style={{ cursor: "pointer" }}
+              >
+                <figure>
+                  <picture>
+                    <img
+                      src={post.image}
+                      className="card-img-top"
+                      alt={post.title}
+                      loading="eager"
+                    />
+                  </picture>
+                </figure>
+                <div className="card-body">
+                  <h2 className="card-title">{post.title}</h2>
+                  <p className="card-text">{post.description}</p>
+                  <p className="post-meta mb-0">{post.date}</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="eyebrow">Himalayan journal</p>
-              <h2>{post.title}</h2>
-              <p>{post.description}</p>
-              <span className="text-link">
-                Read travel note <ChevronRight size={15} />
-              </span>
-            </div>
-          </article>
-        ))}
+          ))}
+        </div>
       </div>
+
+      {/* Interactive Travel Story Reader Modal */}
+      {selectedPost && (
+        <div
+          className="blog-modal-backdrop"
+          onClick={() => setSelectedPost(null)}
+        >
+          <div
+            className="blog-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="blog-modal-close"
+              onClick={() => setSelectedPost(null)}
+            >
+              <X size={18} />
+            </button>
+            <div style={{ marginBottom: "16px" }}>
+              <span className="venue-chip" style={{ marginRight: "8px" }}>
+                Himalayan Journal
+              </span>
+              <span className="year-chip">{selectedPost.date}</span>
+            </div>
+            <h2 style={{ fontSize: "1.6rem", marginBottom: "14px", fontWeight: 800 }}>
+              {selectedPost.title}
+            </h2>
+            <img
+              src={selectedPost.image}
+              alt={selectedPost.title}
+              style={{
+                width: "100%",
+                maxHeight: "380px",
+                objectFit: "cover",
+                borderRadius: "16px",
+                marginBottom: "20px",
+              }}
+            />
+            <div
+              style={{
+                fontSize: "0.95rem",
+                lineHeight: "1.75",
+                whiteSpace: "pre-line",
+                color: "var(--text)",
+              }}
+            >
+              {selectedPost.content}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -1254,11 +1658,13 @@ function CvPage() {
   return (
     <section className="page-section cv-page">
       <div className="cv-hero">
-        <img src="/media/profile-color.jpg" alt="Dr. Mritunjay Shall Peelam" />
+        <div className="cv-avatar-ring">
+          <img src="/media/profile-color.jpg" alt="Dr. Mritunjay Shall Peelam" />
+        </div>
         <div>
           <p className="eyebrow">Academic curriculum vitae</p>
           <h1>Dr. Mritunjay Shall Peelam</h1>
-          <strong>Assistant Professor (Selection Grade), UPES Dehradun</strong>
+          <strong>Assistant Professor (Selection Grade) & Research Faculty, UPES Dehradun</strong>
           <p>
             Ph.D. researcher working at the intersection of blockchain,
             intelligent transportation, IoT, Edge AI, federated learning, and
@@ -1760,40 +2166,225 @@ function GamePage() {
   );
 }
 
+interface MantraItem {
+  id: string;
+  deity: string;
+  symbol: string;
+  title: string;
+  sanskrit: string;
+  description: string;
+  fullVerses: string;
+  englishMeaning: string;
+}
+
+const dailyMantraList: MantraItem[] = [
+  {
+    id: "shiva-tandava",
+    deity: "Lord Shiva",
+    symbol: "ॐ",
+    title: "Shiva Tandava Stotram",
+    sanskrit: "जटाटवीगलज्जलप्रवाहपावितस्थले गलेऽवलम्ब्य लम्बितां भुजङ्गतुङ्गमालिकाम्। तरत्तुरङ्गमालिकानिनादवद् डमड्डमद् डमड्डमन्निनादवद् डमर्युगं चकार चण्डताण्डवं तनोतु नः शिवः शिवम्॥",
+    description: "Powerful Sanskrit verses composed by King Ravana celebrating Lord Shiva's cosmic dance, divine energy, and eternal rhythm.",
+    fullVerses: `जटाटवीगलज्जलप्रवाहपावितस्थले
+गलेऽवलम्ब्य लम्बितां भुजङ्गतुङ्गमालिकाम् ।
+डमड्डमड्डमड्डमन्निनादवड्डमर्वयं
+चकार चण्डताण्डवं तनोतु नः शिवः शिवम् ॥१॥
+
+जटाकटाहसम्भ्रमभ्रमन्निलिम्पनिर्झरी-
+विलोलवीचिवल्लरीविराजमानमूर्धनि ।
+धगद्धगद्धगज्ज्वलल्ललाटपट्टपावके
+किशोरचन्द्रशेखरे रतिः प्रतिक्षणं मम ॥२॥
+
+धराधरेन्द्रनन्दिनीविलासबन्धुबन्धुर-
+स्फुरद्दिगन्तसन्ततिप्रमोदमानमानसे ।
+कृपाकटाक्षधोरणीनिरुद्धदुर्धरापदि
+क्वचिद्दिगम्बरे मनो विनोदमेतु वस्तुनि ॥३॥`,
+    englishMeaning: "With his neck consecrated by the flow of water that flows from his matted hair, and a garland of high snakes hanging around his neck, Lord Shiva performed his fierce cosmic dance to the sound of damaru.",
+  },
+  {
+    id: "shiv-stotram",
+    deity: "Lord Shiva",
+    symbol: "ॐ",
+    title: "Shiv Stotram (Karpura Gauram)",
+    sanskrit: "कर्पूरगौरं करुणावतारं संसारसारम् भुजगेन्द्रहारम्। सदावसन्तं हृदयारविन्दे भवं भवानीसहितं नमामि॥",
+    description: "Sacred ancient Sanskrit verse extolling Lord Shiva's compassionate form, pure as camphor, residing in the heart.",
+    fullVerses: `कर्पूरगौरं करुणावतारं
+संसारसारम् भुजगेन्द्रहारम् ।
+सदावसन्तं हृदयारविन्दे
+भवं भवानीसहितं नमामि ॥
+
+ध्यायेन्नित्यं महेशं रजतगिरिनिभं चारुचंद्रावतंसं
+रत्नाकल्पोज्ज्वलांगं परशुमृगवराभीतिहस्तं प्रसन्नम् ।
+पद्मासीनं समन्तात स्तुतममरगणैर्व्याघ्रकृत्तिं वसानं
+विश्वाद्यं विश्ववंद्यं निखिलभयहरं पंचवक्त्रं त्रिनेत्रम् ॥`,
+    englishMeaning: "I bow to that Lord Shiva together with Goddess Bhavani, who is white as camphor, the incarnation of compassion, the essence of worldly existence, and who resides forever in the lotus heart.",
+  },
+  {
+    id: "shri-hari",
+    deity: "Lord Vishnu",
+    symbol: "ॐ",
+    title: "Shri Hari Stotram",
+    sanskrit: "जगज्जालपालं चलत्कण्ठमालं शरद्चन्द्रफालं महादैत्यकालम्। गले मुण्डमालं तनौ रत्नजालं भजे हं भजे हं नृसिंहं विशालम्॥",
+    description: "Devotional praise of Lord Vishnu protecting the cosmic order, showering grace, and destroying darkness.",
+    fullVerses: `जगज्जालपालं चलत्कण्ठमालं शरद्चन्द्रफालं महादैत्यकालम् ।
+गले मुण्डमालं तनौ रत्नजालं भजे हं भजे हं नृसिंहं विशालम् ॥१॥
+
+सुराधीशलीलं जगत्प्राणनीलं घनाकारकालं सुरारिप्रशस्तम् ।
+प्रसन्नास्यपद्मं महादैत्यमर्द्यं भजे हं भजे हं मुकुन्दं मुरारिम् ॥२॥
+
+त्रिविक्रमं विशालं महाभैरवाभं महाचक्रधारीं महादिव्यतेजम् ।
+सुरेन्द्रैः सुगीतं शरण्यं वरेण्यं भजे हं भजे हं श्रीहरिम् ॥३॥`,
+    englishMeaning: "I worship Shri Hari, the protector of the cosmic web, adorned with shimmering garlands, radiant like the autumn moon, and the eternal refuge of all beings.",
+  },
+  {
+    id: "ganapati-stotram",
+    deity: "Lord Ganesha",
+    symbol: "卐",
+    title: "Sankat Vinashan Ganapati Stotram",
+    sanskrit: "प्रणम्य शिरसा देवं गौरीपुत्रं विनायकम्। भक्तावासं स्मरेन्नित्यमायुःकामार्थसिद्धये॥ प्रथमं वक्रतुण्डं च एकदन्तं द्वितीयकम्...",
+    description: "A sacred prayer to Lord Ganesha for destroying all obstacles, granting intellect, peace, and spiritual fulfillment.",
+    fullVerses: `प्रणम्य शिरसा देवं गौरीपुत्रं विनायकम् ।
+भक्तावासं स्मरेन्नित्यमायुःकामार्थसिद्धये ॥१॥
+
+प्रथमं वक्रतुण्डं च एकदन्तं द्वितीयकम् ।
+तृतीयं कृष्णपिङ्गाक्षं गजवक्त्रं चतुर्थकम् ॥२॥
+
+लम्बोदरं पञ्चमं च षष्ठं विकटमेव च ।
+सप्तमं विघ्नराजेन्द्रं धूम्रवर्णं तथाष्टमम् ॥३॥
+
+नवमं भालचन्द्रं च दशमं तु विनायकम् ।
+एकादशं गणपतिं द्वादशं तु गजाननम् ॥४॥`,
+    englishMeaning: "Bow your head in reverence to Vinayaka, the son of Goddess Gauri. Reciting the twelve names of Ganesha daily removes all obstacles and grants success in every endeavor.",
+  },
+  {
+    id: "hanuman-chalisa",
+    deity: "Lord Hanuman",
+    symbol: "🚩",
+    title: "Hanuman Chalisa",
+    sanskrit: "जय हनुमान ज्ञान गुण सागर। जय कपीस तिहुँ लोक उजागर॥ राम दूत अतुलित बल धामा। अंजनि पुत्र पवनसुत नामा॥",
+    description: "Forty devotional verses composed by Goswami Tulsidas in praise of Lord Hanuman's strength, wisdom, and devotion.",
+    fullVerses: `श्रीगुरु चरन सरोज रज निज मनु मुकुरु सुधारि ।
+बरनउँ रघुबर बिमल जसु जो दायकु फल चारि ॥
+
+बुद्धिहीन तनु जानिके सुमिरौं पवन-कुमार ।
+बल बुद्धि बिकार ॥
+
+जय हनुमान ज्ञान गुन सागर । जय कपीस तिहुँ लोक उजागर ॥
+राम दूत अतुलित बल धामा । अंजनि-पुत्र पवनसुत नामा ॥
+महाबीर बिक्रम बजरंगी । कुमति निवार सुमति के संगी ॥
+कंचन बरन बिराज सुबेसा । कानन कुंडल कुंचित केसा ॥`,
+    englishMeaning: "Victory to Hanuman, ocean of wisdom and virtue! Messenger of Lord Rama, possessor of immeasurable strength, remover of difficulties and bestower of wisdom.",
+  },
+];
+
 function DailyMantraPage() {
-  const mantras = [
-    [
-      "Shiva Tandava Stotram",
-      "Powerful Sanskrit verses celebrating Lord Shiva’s cosmic dance.",
-    ],
-    ["Shiv Stotram", "Sacred Sanskrit verses with Hindi and English meaning."],
-    ["Shri Hari Stotram", "Devotional praise of Lord Vishnu."],
-    [
-      "Sankat Vinashan Ganapati Stotram",
-      "A prayer to Lord Ganesha for overcoming obstacles.",
-    ],
-    ["Hanuman Chalisa", "Forty devotional verses in praise of Lord Hanuman."],
-  ];
+  const [selectedMantra, setSelectedMantra] = useState<MantraItem | null>(null);
 
   return (
     <section className="page-section">
-      <PageIntro
-        eyebrow="Sacred collection"
-        title="Daily Mantra"
-        description="Sacred mantra cards with Sanskrit verses and Hindi and English meanings."
-      />
-      <div className="mantra-grid">
-        {mantras.map(([title, description]) => (
-          <article key={title}>
-            <LottieIcon
-              path="/lottie/tiktok-bullet-loader.json"
-              className="mantra-lottie"
-            />
-            <h2>{title}</h2>
-            <p>{description}</p>
-          </article>
+      <div className="daily-mantra-hero">
+        <p className="daily-mantra-hero-kicker">Sacred Collection</p>
+        <h1 className="daily-mantra-hero-title">Daily Mantra</h1>
+        <div className="daily-mantra-hero-line">
+          <p>
+            "Sacred mantra cards with Shiva Tandava Stotram, Sanskrit verses, and Hindi and English meanings."
+          </p>
+        </div>
+        <div className="daily-mantra-hero-rule" />
+      </div>
+
+      <div className="daily-mantra-grid">
+        {dailyMantraList.map((item) => (
+          <div
+            key={item.id}
+            className="daily-mantra-card"
+            onClick={() => setSelectedMantra(item)}
+          >
+            <div className="daily-mantra-symbol-wrapper">
+              <span className="daily-mantra-symbol">{item.symbol}</span>
+            </div>
+            <span className="daily-mantra-card-deity">{item.deity}</span>
+            <h3 className="daily-mantra-card-title">{item.title}</h3>
+            <p className="daily-mantra-card-desc">{item.description}</p>
+            <div className="daily-mantra-card-sanskrit">{item.sanskrit}</div>
+            <div className="daily-mantra-card-footer">
+              <span>Read Full Stotram & Meaning</span>
+              <ChevronRight size={15} />
+            </div>
+          </div>
         ))}
       </div>
+
+      {/* Interactive Stotram Reader Modal */}
+      {selectedMantra && (
+        <div
+          className="blog-modal-backdrop"
+          onClick={() => setSelectedMantra(null)}
+        >
+          <div
+            className="blog-modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "700px" }}
+          >
+            <button
+              className="blog-modal-close"
+              onClick={() => setSelectedMantra(null)}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "10px" }}>
+              <div className="daily-mantra-symbol-wrapper" style={{ width: "42px", height: "42px", margin: 0 }}>
+                <span className="daily-mantra-symbol" style={{ fontSize: "1.3rem" }}>{selectedMantra.symbol}</span>
+              </div>
+              <div>
+                <span className="venue-chip">{selectedMantra.deity}</span>
+              </div>
+            </div>
+
+            <h2 style={{ fontSize: "1.65rem", marginBottom: "16px", fontWeight: 800 }}>
+              {selectedMantra.title}
+            </h2>
+
+            <div style={{ marginBottom: "20px" }}>
+              <h4 style={{ fontSize: "0.85rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "8px", fontWeight: 800 }}>
+                Sanskrit Verses (संस्कृत श्लोक)
+              </h4>
+              <div
+                style={{
+                  fontSize: "1.05rem",
+                  lineHeight: "1.8",
+                  fontWeight: 700,
+                  whiteSpace: "pre-line",
+                  padding: "16px 20px",
+                  borderRadius: "16px",
+                  background: "color-mix(in srgb, var(--surface) 90%, transparent)",
+                  border: "1px solid color-mix(in srgb, var(--accent) 25%, transparent)",
+                  color: "var(--text)",
+                }}
+              >
+                {selectedMantra.fullVerses}
+              </div>
+            </div>
+
+            <div>
+              <h4 style={{ fontSize: "0.85rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "8px", fontWeight: 800 }}>
+                English Meaning & Significance
+              </h4>
+              <p
+                style={{
+                  fontSize: "0.92rem",
+                  lineHeight: "1.68",
+                  color: "var(--muted)",
+                  margin: 0,
+                }}
+              >
+                {selectedMantra.englishMeaning}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
