@@ -63,6 +63,7 @@ textarea {
 
 html {
   scroll-behavior: smooth;
+  font-size: 92.5%;
 }
 
 body {
@@ -4408,6 +4409,10 @@ body::before {
    Mobile-Only Single-Row Layout for Social Icons Strip & Live Metrics Pill
    ========================================================================== */
 @media (max-width: 768px) {
+  html {
+    font-size: 87.5%;
+  }
+
   .site-social-strip {
     gap: 8px;
     padding: 0 4px;
