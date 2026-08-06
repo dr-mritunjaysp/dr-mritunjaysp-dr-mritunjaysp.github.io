@@ -193,6 +193,27 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
   if (getPending(PENDING_VIEWS_KEY) > 0) void flushViews();
   if (getPending(PENDING_CLICKS_KEY) > 0) void flushClicks();
 
+  // Immediate REST fetch for instantaneous synchronized count across all devices
+  fetch("https://portfolio-6a1b9-default-rtdb.firebaseio.com/visitor-counter/site-total-views.json")
+    .then((res) => res.json())
+    .then((d) => {
+      if (!destroyed && d) {
+        latestViews = Math.max(14280, parseCounterValue(d));
+        broadcastTotal();
+      }
+    })
+    .catch(() => {});
+
+  fetch("https://portfolio-6a1b9-default-rtdb.firebaseio.com/visitor-counter/site-total-clicks.json")
+    .then((res) => res.json())
+    .then((d) => {
+      if (!destroyed && d) {
+        latestClicks = Math.max(570, parseCounterValue(d));
+        broadcastTotal();
+      }
+    })
+    .catch(() => {});
+
   // Start Firebase
   initFirebase().then(async () => {
     if (destroyed) return;
