@@ -24,6 +24,9 @@ import {
   Gauge,
   ArrowUpDown,
   FileSpreadsheet,
+  Plus,
+  X,
+  Trash2,
 } from "lucide-react";
 
 export function SortingVisualizer() {
@@ -39,8 +42,9 @@ export function SortingVisualizer() {
   const [customSwapColor, setCustomSwapColor] = useState<string>("#ef4444");
   const [customSortedColor, setCustomSortedColor] = useState<string>("#10b981");
 
-  // Array inputs & controls
+  // Array inputs & manual data manager
   const [arrayInput, setArrayInput] = useState<string>("64, 34, 25, 12, 22, 11, 90, 45, 78, 5");
+  const [singleElementVal, setSingleElementVal] = useState<string>("");
   const [arraySize, setArraySize] = useState<number>(10);
   const [speed, setSpeed] = useState<number>(20); // 1 = Very Slow (1800ms), 100 = High Speed (5ms)
   const [showValues, setShowValues] = useState<boolean>(true);
@@ -88,6 +92,34 @@ export function SortingVisualizer() {
     const finalArr = nums.length > 0 ? nums : [64, 34, 25, 12, 22, 11, 90, 45, 78, 5];
     setArray(finalArr);
     setArraySize(finalArr.length);
+    resetPlaybackState();
+  };
+
+  const handleAddSingleElement = () => {
+    const val = parseInt(singleElementVal.trim(), 10);
+    if (!isNaN(val)) {
+      const updated = [...array, val];
+      setArray(updated);
+      setArrayInput(updated.join(", "));
+      setArraySize(updated.length);
+      setSingleElementVal("");
+      resetPlaybackState();
+    }
+  };
+
+  const handleRemoveElementAt = (index: number) => {
+    const updated = array.filter((_, i) => i !== index);
+    const finalArr = updated.length > 0 ? updated : [10];
+    setArray(finalArr);
+    setArrayInput(finalArr.join(", "));
+    setArraySize(finalArr.length);
+    resetPlaybackState();
+  };
+
+  const handleClearAllElements = () => {
+    setArray([10]);
+    setArrayInput("10");
+    setArraySize(1);
     resetPlaybackState();
   };
 
@@ -305,15 +337,15 @@ export function SortingVisualizer() {
       </div>
 
       <div className="sorting-workbench">
-        {/* Intuitive 4-Section Control Dashboard for Mobile & Desktop */}
+        {/* Intuitive Colorful Border Control Dashboard for Mobile & Desktop */}
         <div className="sorting-control-panel">
           <div className="control-dashboard-grid">
 
-            {/* Section 1: Algorithm & Category */}
-            <div className="control-card-section">
+            {/* Section 1: Algorithm & Category (Cyan-Blue Border) */}
+            <div className="control-card-section gradient-border-cyan">
               <div className="control-card-header">
-                <span className="control-card-badge">Step 1</span>
-                <span className="control-card-title"><BookOpen size={15} color="var(--accent)" /> Algorithm & View</span>
+                <span className="control-card-badge cyan-badge">Step 1</span>
+                <span className="control-card-title"><BookOpen size={15} color="#06b6d4" /> Algorithm & View</span>
               </div>
               <div className="control-inputs-stack">
                 <div className="sorting-select-group">
@@ -361,61 +393,100 @@ export function SortingVisualizer() {
               </div>
             </div>
 
-            {/* Section 2: Dataset & Input Array */}
-            <div className="control-card-section">
-              <div className="control-card-header">
-                <span className="control-card-badge">Step 2</span>
-                <span className="control-card-title"><FileSpreadsheet size={15} color="#3b82f6" /> Dataset Array</span>
+            {/* Section 2: Dataset & Manual Data Manager (Emerald-Teal Border) */}
+            <div className="control-card-section gradient-border-emerald">
+              <div className="control-card-header" style={{ justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span className="control-card-badge emerald-badge">Step 2</span>
+                  <span className="control-card-title"><FileSpreadsheet size={15} color="#10b981" /> Manual Data Manager</span>
+                </div>
+                <button className="subdomain-copy-btn" style={{ color: "#ef4444" }} onClick={handleClearAllElements} title="Clear All">
+                  <Trash2 size={12} /> Clear
+                </button>
               </div>
+
               <div className="control-inputs-stack">
+                {/* 1. Add Single Element Input */}
                 <div>
-                  <label style={{ fontSize: "0.75rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "4px" }}>
-                    Custom Elements Input:
+                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "4px" }}>
+                    Add Single Number Manually:
+                  </label>
+                  <div style={{ display: "flex", gap: "6px" }}>
+                    <input
+                      type="number"
+                      className="sorting-select"
+                      style={{ flex: 1, padding: "8px 10px", fontSize: "0.86rem" }}
+                      placeholder="e.g. 42"
+                      value={singleElementVal}
+                      onChange={(e) => setSingleElementVal(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleAddSingleElement()}
+                    />
+                    <button className="btn-sort-primary" style={{ padding: "8px 14px", fontSize: "0.84rem" }} onClick={handleAddSingleElement}>
+                      <Plus size={14} /> Add
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Interactive Element Chips */}
+                <div>
+                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "4px" }}>
+                    Active Array Elements ({array.length}):
+                  </label>
+                  <div className="chips-container-box">
+                    {array.map((val, idx) => (
+                      <span key={idx} className="array-element-chip">
+                        <span className="chip-val">{val}</span>
+                        <button className="chip-remove-btn" onClick={() => handleRemoveElementAt(idx)} title="Delete number">
+                          <X size={10} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Bulk Text Input & Presets */}
+                <div>
+                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "4px" }}>
+                    Bulk Paste Array (Comma-Separated):
                   </label>
                   <div style={{ display: "flex", gap: "6px" }}>
                     <input
                       type="text"
                       className="sorting-select"
-                      style={{ flex: 1, padding: "8px 10px", fontSize: "0.86rem" }}
+                      style={{ flex: 1, padding: "7px 10px", fontSize: "0.82rem" }}
                       value={arrayInput}
                       onChange={(e) => {
                         setArrayInput(e.target.value);
                         parseArrayInput(e.target.value);
                       }}
                     />
-                    <button className="btn-sort-secondary" style={{ padding: "8px 12px" }} onClick={() => parseArrayInput(arrayInput)}>
+                    <button className="btn-sort-secondary" style={{ padding: "7px 12px", fontSize: "0.8rem" }} onClick={() => parseArrayInput(arrayInput)}>
                       Apply
                     </button>
                   </div>
                 </div>
 
-                <div>
-                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "6px" }}>
-                    Quick Presets:
-                  </label>
-                  <div className="scrollable-presets-row">
-                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("default")}>Default (10)</button>
-                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("nearly")}>Nearly Sorted</button>
-                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("reverse")}>Reverse</button>
-                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("duplicates")}>Duplicates</button>
-                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("negative")}>Negatives</button>
-                    <button className="preset-pill-btn" onClick={() => handleRandomize(20)}>Random 20</button>
-                    <button className="preset-pill-btn" onClick={() => handleRandomize(40)}>Random 40</button>
-                  </div>
+                <div className="scrollable-presets-row" style={{ marginTop: "2px" }}>
+                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("default")}>Default (10)</button>
+                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("nearly")}>Nearly Sorted</button>
+                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("reverse")}>Reverse</button>
+                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("duplicates")}>Duplicates</button>
+                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("negative")}>Negatives</button>
+                  <button className="preset-pill-btn" onClick={() => handleRandomize(20)}>Random 20</button>
                 </div>
 
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <button className="btn-sort-secondary" style={{ padding: "6px 12px", fontSize: "0.8rem" }} onClick={() => setIsAscending(!isAscending)}>
-                    <ArrowUpDown size={13} /> {isAscending ? "Sort: Ascending ↑" : "Sort: Descending ↓"}
+                  <button className="btn-sort-secondary" style={{ padding: "5px 10px", fontSize: "0.78rem" }} onClick={() => setIsAscending(!isAscending)}>
+                    <ArrowUpDown size={12} /> {isAscending ? "Ascending ↑" : "Descending ↓"}
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Section 3: Color Palette Customizer */}
-            <div className="control-card-section">
+            {/* Section 3: Color Palette (Pink-Magenta Border) */}
+            <div className="control-card-section gradient-border-pink">
               <div className="control-card-header">
-                <span className="control-card-badge">Step 3</span>
+                <span className="control-card-badge pink-badge">Step 3</span>
                 <span className="control-card-title"><Palette size={15} color="#ec4899" /> Color Palette</span>
               </div>
               <div className="control-inputs-stack">
@@ -460,11 +531,11 @@ export function SortingVisualizer() {
               </div>
             </div>
 
-            {/* Section 4: Master Execution & Speed */}
-            <div className="control-card-section highlight-card">
+            {/* Section 4: Master Execution & Speed (Gold-Amber Border) */}
+            <div className="control-card-section gradient-border-amber highlight-card">
               <div className="control-card-header">
-                <span className="control-card-badge" style={{ background: "var(--accent)", color: "#fff" }}>Step 4</span>
-                <span className="control-card-title"><Gauge size={15} color="var(--accent)" /> Execution & Speed</span>
+                <span className="control-card-badge amber-badge">Step 4</span>
+                <span className="control-card-title"><Gauge size={15} color="#f59e0b" /> Execution & Speed</span>
               </div>
               <div className="control-inputs-stack">
                 <div className="sorting-slider-group">
