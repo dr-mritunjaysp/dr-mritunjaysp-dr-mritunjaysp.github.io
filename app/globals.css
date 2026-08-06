@@ -4926,42 +4926,41 @@ body::before {
   border-top-right-radius: 4px;
   transform-origin: bottom center;
   will-change: height, transform;
-  transition: height 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.18s ease, box-shadow 0.18s ease;
+  transition: height 0.18s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 750;
-  color: rgba(255, 255, 255, 0.95);
-  padding-bottom: 3px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #ffffff;
+  padding-bottom: 4px;
   user-select: none;
+  box-shadow: none !important;
+  filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .sorting-bar.default {
-  background: linear-gradient(180deg, #06b6d4, #3b82f6);
-  box-shadow: 0 0 6px rgba(6, 182, 212, 0.3);
+  background: #3b82f6;
 }
 
 .sorting-bar.compare {
-  background: linear-gradient(180deg, #fbbf24, #f59e0b) !important;
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.8) !important;
-  transform: scaleY(1.03);
+  background: #f59e0b !important;
+  border-color: #fef08a !important;
 }
 
 .sorting-bar.swap {
-  background: linear-gradient(180deg, #f43f5e, #e11d48) !important;
-  box-shadow: 0 0 14px rgba(244, 63, 94, 0.85) !important;
-  transform: scaleY(1.04);
+  background: #ef4444 !important;
+  border-color: #fecdd3 !important;
 }
 
 .sorting-bar.pivot {
-  background: linear-gradient(180deg, #c084fc, #9333ea) !important;
-  box-shadow: 0 0 14px rgba(192, 132, 252, 0.85) !important;
+  background: #a855f7 !important;
 }
 
 .sorting-bar.sorted {
-  background: linear-gradient(180deg, #34d399, #059669) !important;
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6) !important;
+  background: #10b981 !important;
+  border-color: #a7f3d0 !important;
 }
 
 .algo-info-card {
@@ -5474,88 +5473,88 @@ body::before {
 .theme-neon .sorting-bar.default,
 .theme-neon .viz-horizontal-bar.default {
   background: linear-gradient(180deg, #ec4899, #06b6d4) !important;
-  box-shadow: 0 0 10px rgba(236, 72, 153, 0.4) !important;
+  box-shadow: none !important;
 }
 .theme-neon .viz-block-item.default,
 .theme-neon .viz-cell-box.default {
   border-color: #ec4899 !important;
   color: #ec4899 !important;
   background: rgba(236, 72, 153, 0.1) !important;
-  box-shadow: 0 0 10px rgba(236, 72, 153, 0.3) !important;
+  box-shadow: none !important;
 }
 .theme-neon .viz-scatter-dot.default {
   background: #ec4899 !important;
-  box-shadow: 0 0 10px #ec4899 !important;
+  box-shadow: none !important;
 }
 .theme-neon .viz-radial-line.default {
   background: linear-gradient(0deg, #ec4899, #06b6d4) !important;
-  box-shadow: 0 0 8px #ec4899 !important;
+  box-shadow: none !important;
 }
 
 /* 2. Emerald Mint */
 .theme-emerald .sorting-bar.default,
 .theme-emerald .viz-horizontal-bar.default {
   background: linear-gradient(180deg, #10b981, #14b8a6) !important;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.35) !important;
+  box-shadow: none !important;
 }
 .theme-emerald .viz-block-item.default,
 .theme-emerald .viz-cell-box.default {
   border-color: #10b981 !important;
   color: #10b981 !important;
   background: rgba(16, 185, 129, 0.1) !important;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3) !important;
+  box-shadow: none !important;
 }
 .theme-emerald .viz-scatter-dot.default {
   background: #10b981 !important;
-  box-shadow: 0 0 10px #10b981 !important;
+  box-shadow: none !important;
 }
 .theme-emerald .viz-radial-line.default {
   background: linear-gradient(0deg, #10b981, #14b8a6) !important;
-  box-shadow: 0 0 8px #10b981 !important;
+  box-shadow: none !important;
 }
 
 /* 3. Sunset Glow */
 .theme-sunset .sorting-bar.default,
 .theme-sunset .viz-horizontal-bar.default {
   background: linear-gradient(180deg, #f97316, #8b5cf6) !important;
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.4) !important;
+  box-shadow: none !important;
 }
 .theme-sunset .viz-block-item.default,
 .theme-sunset .viz-cell-box.default {
   border-color: #f97316 !important;
   color: #f97316 !important;
   background: rgba(249, 115, 22, 0.1) !important;
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.3) !important;
+  box-shadow: none !important;
 }
 .theme-sunset .viz-scatter-dot.default {
   background: #f97316 !important;
-  box-shadow: 0 0 10px #f97316 !important;
+  box-shadow: none !important;
 }
 .theme-sunset .viz-radial-line.default {
   background: linear-gradient(0deg, #f97316, #8b5cf6) !important;
-  box-shadow: 0 0 8px #f97316 !important;
+  box-shadow: none !important;
 }
 
 /* 4. Royal Amethyst */
 .theme-purple .sorting-bar.default,
 .theme-purple .viz-horizontal-bar.default {
   background: linear-gradient(180deg, #a855f7, #6366f1) !important;
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4) !important;
+  box-shadow: none !important;
 }
 .theme-purple .viz-block-item.default,
 .theme-purple .viz-cell-box.default {
   border-color: #a855f7 !important;
   color: #a855f7 !important;
   background: rgba(168, 85, 247, 0.1) !important;
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3) !important;
+  box-shadow: none !important;
 }
 .theme-purple .viz-scatter-dot.default {
   background: #a855f7 !important;
-  box-shadow: 0 0 10px #a855f7 !important;
+  box-shadow: none !important;
 }
 .theme-purple .viz-radial-line.default {
   background: linear-gradient(0deg, #a855f7, #6366f1) !important;
-  box-shadow: 0 0 8px #a855f7 !important;
+  box-shadow: none !important;
 }
 
 /* Intuitive Step-by-Step Control Dashboard Styles */
