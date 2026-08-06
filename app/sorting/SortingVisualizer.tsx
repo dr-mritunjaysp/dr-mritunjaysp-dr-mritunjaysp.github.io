@@ -600,31 +600,51 @@ export function SortingVisualizer() {
 
           {/* Render selected Visualization Type */}
           {vizType === "histogram" && (
-            <div className="sorting-bars-frame">
-              {array.map((val, idx) => {
-                const isComp = comparedIndices.includes(idx);
-                const isSwap = swappedIndices.includes(idx);
-                const isSorted = sortedIndices.includes(idx);
-                const isPivot = pivotIndex === idx;
+            <div className="histogram-scalable-wrapper">
+              {/* Y-Axis Value Scale */}
+              <div className="histogram-y-axis">
+                <div className="y-tick"><span>{maxVal}</span></div>
+                <div className="y-tick"><span>{Math.round(maxVal * 0.75)}</span></div>
+                <div className="y-tick"><span>{Math.round(maxVal * 0.50)}</span></div>
+                <div className="y-tick"><span>{Math.round(maxVal * 0.25)}</span></div>
+                <div className="y-tick"><span>0</span></div>
+              </div>
 
-                let barClass = "default";
-                if (isSorted) barClass = "sorted";
-                else if (isSwap) barClass = "swap";
-                else if (isComp) barClass = "compare";
-                else if (isPivot) barClass = "pivot";
+              {/* Background Reference Grid Lines */}
+              <div className="histogram-grid-overlay">
+                <div className="grid-line" style={{ top: "0%" }}></div>
+                <div className="grid-line" style={{ top: "25%" }}></div>
+                <div className="grid-line" style={{ top: "50%" }}></div>
+                <div className="grid-line" style={{ top: "75%" }}></div>
+                <div className="grid-line" style={{ top: "100%" }}></div>
+              </div>
 
-                const heightPercent = Math.max(8, Math.round((Math.abs(val) / maxVal) * 100));
+              <div className="sorting-bars-frame">
+                {array.map((val, idx) => {
+                  const isComp = comparedIndices.includes(idx);
+                  const isSwap = swappedIndices.includes(idx);
+                  const isSorted = sortedIndices.includes(idx);
+                  const isPivot = pivotIndex === idx;
 
-                return (
-                  <div
-                    key={idx}
-                    className={`sorting-bar ${barClass} ${getHatchClass()}`}
-                    style={{ height: `${heightPercent}%`, ...getCustomStyle(isSorted, isSwap, isComp, isPivot) }}
-                  >
-                    {showValues && array.length <= 40 && val}
-                  </div>
-                );
-              })}
+                  let barClass = "default";
+                  if (isSorted) barClass = "sorted";
+                  else if (isSwap) barClass = "swap";
+                  else if (isComp) barClass = "compare";
+                  else if (isPivot) barClass = "pivot";
+
+                  const heightPercent = Math.max(8, Math.round((Math.abs(val) / maxVal) * 100));
+
+                  return (
+                    <div
+                      key={idx}
+                      className={`sorting-bar ${barClass} ${getHatchClass()}`}
+                      style={{ height: `${heightPercent}%`, ...getCustomStyle(isSorted, isSwap, isComp, isPivot) }}
+                    >
+                      {showValues && array.length <= 40 && val}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 

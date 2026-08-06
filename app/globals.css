@@ -5989,6 +5989,59 @@ body::before {
   background: none;
 }
 
+/* Y-Axis Value Scale & Reference Grid Lines Overlay for Histogram */
+.histogram-scalable-wrapper {
+  position: relative;
+  width: 100%;
+  padding-left: 36px;
+  height: 300px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.histogram-y-axis {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 0;
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-right: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--muted);
+  user-select: none;
+  z-index: 3;
+}
+
+.y-tick {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.histogram-grid-overlay {
+  position: absolute;
+  left: 36px;
+  right: 0;
+  top: 10px;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.grid-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed rgba(255, 255, 255, 0.14);
+}
+
+
 
 
 
