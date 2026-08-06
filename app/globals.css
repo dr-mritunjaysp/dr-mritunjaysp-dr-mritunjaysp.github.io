@@ -4259,8 +4259,8 @@ body::before {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(0.95rem, 3.8vw, 1.15rem);
-    font-weight: 750;
+    font-size: clamp(1.08rem, 4.3vw, 1.32rem);
+    font-weight: 800;
     letter-spacing: -0.01em;
     z-index: 10;
   }
