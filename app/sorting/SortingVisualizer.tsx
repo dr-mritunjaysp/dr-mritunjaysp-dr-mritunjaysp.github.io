@@ -413,18 +413,17 @@ export function SortingVisualizer() {
 
               <div className="control-inputs-stack">
                 <div>
-                  <div style={{ display: "flex", gap: "6px" }}>
+                  <div className="compact-inline-add-group">
                     <input
                       type="number"
-                      className="sorting-select"
-                      style={{ flex: 1, padding: "7px 10px", fontSize: "0.84rem" }}
-                      placeholder="Single element e.g. 42"
+                      className="sorting-select-inline"
+                      placeholder="Add single number e.g. 42"
                       value={singleElementVal}
                       onChange={(e) => setSingleElementVal(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleAddSingleElement()}
                     />
-                    <button className="btn-add-element-emerald-sm" onClick={handleAddSingleElement}>
-                      <Plus size={12} /> Add
+                    <button className="btn-add-circle-icon" onClick={handleAddSingleElement} title="Add Number to Array">
+                      <Plus size={14} />
                     </button>
                   </div>
                 </div>

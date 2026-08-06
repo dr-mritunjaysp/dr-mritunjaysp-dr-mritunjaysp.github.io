@@ -5628,28 +5628,49 @@ body::before {
   text-overflow: ellipsis;
 }
 
-.btn-add-element-emerald-sm {
+.compact-inline-add-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.sorting-select-inline {
+  width: 100%;
+  padding: 6px 36px 6px 10px;
+  font-size: 0.82rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.sorting-select-inline:focus {
+  border-color: #10b981;
+}
+
+.btn-add-circle-icon {
+  position: absolute;
+  right: 4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #ffffff;
-  font-weight: 750;
-  font-size: 0.78rem;
-  border: none;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-  transition: all 0.15s ease;
-  white-space: nowrap !important;
-  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.btn-add-element-emerald-sm:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.45);
+.btn-add-circle-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.6);
 }
 
 .control-inputs-stack {
