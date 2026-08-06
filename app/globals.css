@@ -5468,29 +5468,94 @@ body::before {
   background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.4) 3px, transparent 3px, transparent 7px) !important;
 }
 
-/* Color Palette Themes */
+/* Comprehensive Color Palette Themes across ALL 6 Visualization Views */
+
+/* 1. Cyberpunk Neon */
 .theme-neon .sorting-bar.default,
 .theme-neon .viz-horizontal-bar.default {
   background: linear-gradient(180deg, #ec4899, #06b6d4) !important;
   box-shadow: 0 0 10px rgba(236, 72, 153, 0.4) !important;
 }
+.theme-neon .viz-block-item.default,
+.theme-neon .viz-cell-box.default {
+  border-color: #ec4899 !important;
+  color: #ec4899 !important;
+  background: rgba(236, 72, 153, 0.1) !important;
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.3) !important;
+}
+.theme-neon .viz-scatter-dot.default {
+  background: #ec4899 !important;
+  box-shadow: 0 0 10px #ec4899 !important;
+}
+.theme-neon .viz-radial-line.default {
+  background: linear-gradient(0deg, #ec4899, #06b6d4) !important;
+  box-shadow: 0 0 8px #ec4899 !important;
+}
 
+/* 2. Emerald Mint */
 .theme-emerald .sorting-bar.default,
 .theme-emerald .viz-horizontal-bar.default {
   background: linear-gradient(180deg, #10b981, #14b8a6) !important;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.35) !important;
 }
+.theme-emerald .viz-block-item.default,
+.theme-emerald .viz-cell-box.default {
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3) !important;
+}
+.theme-emerald .viz-scatter-dot.default {
+  background: #10b981 !important;
+  box-shadow: 0 0 10px #10b981 !important;
+}
+.theme-emerald .viz-radial-line.default {
+  background: linear-gradient(0deg, #10b981, #14b8a6) !important;
+  box-shadow: 0 0 8px #10b981 !important;
+}
 
+/* 3. Sunset Glow */
 .theme-sunset .sorting-bar.default,
 .theme-sunset .viz-horizontal-bar.default {
   background: linear-gradient(180deg, #f97316, #8b5cf6) !important;
   box-shadow: 0 0 10px rgba(249, 115, 22, 0.4) !important;
 }
+.theme-sunset .viz-block-item.default,
+.theme-sunset .viz-cell-box.default {
+  border-color: #f97316 !important;
+  color: #f97316 !important;
+  background: rgba(249, 115, 22, 0.1) !important;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.3) !important;
+}
+.theme-sunset .viz-scatter-dot.default {
+  background: #f97316 !important;
+  box-shadow: 0 0 10px #f97316 !important;
+}
+.theme-sunset .viz-radial-line.default {
+  background: linear-gradient(0deg, #f97316, #8b5cf6) !important;
+  box-shadow: 0 0 8px #f97316 !important;
+}
 
+/* 4. Royal Amethyst */
 .theme-purple .sorting-bar.default,
 .theme-purple .viz-horizontal-bar.default {
   background: linear-gradient(180deg, #a855f7, #6366f1) !important;
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.4) !important;
+}
+.theme-purple .viz-block-item.default,
+.theme-purple .viz-cell-box.default {
+  border-color: #a855f7 !important;
+  color: #a855f7 !important;
+  background: rgba(168, 85, 247, 0.1) !important;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3) !important;
+}
+.theme-purple .viz-scatter-dot.default {
+  background: #a855f7 !important;
+  box-shadow: 0 0 10px #a855f7 !important;
+}
+.theme-purple .viz-radial-line.default {
+  background: linear-gradient(0deg, #a855f7, #6366f1) !important;
+  box-shadow: 0 0 8px #a855f7 !important;
 }
 
 
