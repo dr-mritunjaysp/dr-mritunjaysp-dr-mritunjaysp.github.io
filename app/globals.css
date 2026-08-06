@@ -523,15 +523,16 @@ img {
 
 .count-badge {
   display: grid;
-  min-width: 43px;
-  height: 43px;
+  min-width: 28px;
+  height: 28px;
   place-items: center;
-  border: 1px solid transparent;
+  border: 1.5px solid transparent;
   border-radius: 50%;
   background:
     linear-gradient(var(--surface), var(--surface)) padding-box,
     linear-gradient(135deg, var(--accent), var(--accent-2), var(--pink)) border-box;
   color: var(--accent);
+  font-size: 0.78rem;
   font-weight: 800;
 }
 
@@ -539,7 +540,7 @@ img {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 6px;
 }
 
@@ -547,24 +548,24 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  margin-left: 14px;
-  margin-right: 4px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  margin-left: 10px;
+  margin-right: 2px;
   flex-shrink: 0;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
   background:
     linear-gradient(#161b22, #161b22) padding-box,
     linear-gradient(135deg, #22c55e, #3b82f6, #ec4899) border-box;
   color: #4ade80 !important;
   -webkit-text-fill-color: #4ade80 !important;
-  font-size: 1rem !important;
+  font-size: 0.78rem !important;
   font-weight: 850 !important;
   letter-spacing: normal !important;
   line-height: 1 !important;
-  box-shadow: 0 0 14px rgba(34, 197, 94, 0.35);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
   animation: badge-pop-glow 2.5s ease-in-out infinite alternate;
 }
 
@@ -579,15 +580,15 @@ img {
 @keyframes badge-pop-glow {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.25);
   }
   50% {
-    transform: scale(1.08);
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.65), 0 0 30px rgba(59, 130, 246, 0.4);
+    transform: scale(1.06);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), 0 0 16px rgba(59, 130, 246, 0.3);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.25);
   }
 }
 
