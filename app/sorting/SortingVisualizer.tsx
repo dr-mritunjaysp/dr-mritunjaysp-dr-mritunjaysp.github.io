@@ -612,11 +612,11 @@ export function SortingVisualizer() {
 
               {/* Background Reference Grid Lines */}
               <div className="histogram-grid-overlay">
-                <div className="grid-line" style={{ top: "0%" }}></div>
-                <div className="grid-line" style={{ top: "25%" }}></div>
-                <div className="grid-line" style={{ top: "50%" }}></div>
-                <div className="grid-line" style={{ top: "75%" }}></div>
-                <div className="grid-line" style={{ top: "100%" }}></div>
+                <div className="grid-line grid-line-cyan" style={{ top: "0%" }}></div>
+                <div className="grid-line grid-line-emerald" style={{ top: "25%" }}></div>
+                <div className="grid-line grid-line-amber" style={{ top: "50%" }}></div>
+                <div className="grid-line grid-line-pink" style={{ top: "75%" }}></div>
+                <div className="grid-line grid-line-purple" style={{ top: "100%" }}></div>
               </div>
 
               <div className="sorting-bars-frame">
