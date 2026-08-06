@@ -5562,6 +5562,7 @@ body::before {
 .control-dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  align-items: start;
   gap: 16px;
 }
 
@@ -5850,11 +5851,58 @@ body::before {
   line-height: 1.25;
 }
 
+/* Step 3 Theme Pills Wrap & Swatches Bar */
+.theme-pills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.theme-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.oceanic-dot { background: #06b6d4; }
+.neon-dot { background: #ec4899; }
+.emerald-dot { background: #10b981; }
+.sunset-dot { background: #f97316; }
+.purple-dot { background: #a855f7; }
+
+.theme-swatches-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.swatch-item {
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.theme-oceanic .default-swatch { background: rgba(59, 130, 246, 0.18); color: #3b82f6; }
+.theme-oceanic .compare-swatch { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+.theme-oceanic .swap-swatch { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+.theme-oceanic .sorted-swatch { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+
+.theme-neon .default-swatch { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+.theme-neon .compare-swatch { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+.theme-neon .swap-swatch { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+.theme-neon .sorted-swatch { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+
 @media (max-width: 768px) {
   .sorting-page .page-intro-title {
     font-size: 1.15rem !important;
   }
 }
+
 
 
 

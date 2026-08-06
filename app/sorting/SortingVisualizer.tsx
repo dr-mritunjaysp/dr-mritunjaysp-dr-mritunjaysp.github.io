@@ -483,36 +483,36 @@ export function SortingVisualizer() {
               </div>
             </div>
 
-            {/* Section 3: Color Palette (Pink-Magenta Border) */}
+            {/* Section 3: Color Palette & Visual Styling (Pink-Magenta Border) */}
             <div className="control-card-section gradient-border-pink">
               <div className="control-card-header">
                 <span className="control-card-badge pink-badge">Step 3</span>
-                <span className="control-card-title"><Palette size={15} color="#ec4899" /> Color Palette</span>
+                <span className="control-card-title"><Palette size={15} color="#ec4899" /> Color Palette & Styling</span>
               </div>
               <div className="control-inputs-stack">
                 <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)" }}>Select Theme Preset:</label>
-                <div className="scrollable-presets-row">
+                <div className="theme-pills-wrap">
                   <button className={`theme-pill-btn ${colorTheme === "oceanic" ? "active" : ""}`} onClick={() => setColorTheme("oceanic")}>
-                    Oceanic Cyan
+                    <span className="theme-dot oceanic-dot"></span> Oceanic Cyan
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "neon" ? "active" : ""}`} onClick={() => setColorTheme("neon")}>
-                    Cyberpunk Neon
+                    <span className="theme-dot neon-dot"></span> Cyberpunk Neon
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "emerald" ? "active" : ""}`} onClick={() => setColorTheme("emerald")}>
-                    Emerald Mint
+                    <span className="theme-dot emerald-dot"></span> Emerald Mint
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "sunset" ? "active" : ""}`} onClick={() => setColorTheme("sunset")}>
-                    Sunset Glow
+                    <span className="theme-dot sunset-dot"></span> Sunset Glow
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "purple" ? "active" : ""}`} onClick={() => setColorTheme("purple")}>
-                    Royal Amethyst
+                    <span className="theme-dot purple-dot"></span> Royal Amethyst
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "custom" ? "active" : ""}`} onClick={() => setColorTheme("custom")}>
-                    Custom Pick
+                    🎨 Custom Pick
                   </button>
                 </div>
 
-                {colorTheme === "custom" && (
+                {colorTheme === "custom" ? (
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", paddingTop: "6px", borderTop: "1px solid var(--border)" }}>
                     <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
                       Default: <input type="color" value={customDefaultColor} onChange={(e) => setCustomDefaultColor(e.target.value)} />
@@ -527,7 +527,25 @@ export function SortingVisualizer() {
                       Sorted: <input type="color" value={customSortedColor} onChange={(e) => setCustomSortedColor(e.target.value)} />
                     </label>
                   </div>
+                ) : (
+                  <div className="theme-swatches-bar">
+                    <span className="swatch-item default-swatch">Default</span>
+                    <span className="swatch-item compare-swatch">Compare</span>
+                    <span className="swatch-item swap-swatch">Swap</span>
+                    <span className="swatch-item sorted-swatch">Sorted</span>
+                  </div>
                 )}
+
+                <div className="sorting-select-group" style={{ marginTop: "4px" }}>
+                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)" }}>Bar Hatch Pattern:</label>
+                  <select className="sorting-select" style={{ padding: "6px 10px", fontSize: "0.8rem" }} value={hatchPattern} onChange={(e) => setHatchPattern(e.target.value as HatchPattern)}>
+                    <option value="none">Solid Colors (Clean)</option>
+                    <option value="stripes">Diagonal Stripes</option>
+                    <option value="dots">Polka Dots</option>
+                    <option value="waves">Wave Texture</option>
+                    <option value="zigzag">Zigzag Cross</option>
+                  </select>
+                </div>
               </div>
             </div>
 
