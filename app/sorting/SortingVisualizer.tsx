@@ -22,6 +22,7 @@ import {
   CheckCircle2,
   Layers,
   Sparkles,
+  Palette,
 } from "lucide-react";
 
 export function SortingVisualizer() {
@@ -29,6 +30,13 @@ export function SortingVisualizer() {
   const [selectedAlgoId, setSelectedAlgoId] = useState<string>("bubble");
   const [vizType, setVizType] = useState<VisualizationType>("histogram");
   const [hatchPattern, setHatchPattern] = useState<HatchPattern>("none");
+
+  // Professional Color Customizer & Palette Presets
+  const [colorTheme, setColorTheme] = useState<"oceanic" | "neon" | "emerald" | "sunset" | "purple" | "custom">("oceanic");
+  const [customDefaultColor, setCustomDefaultColor] = useState<string>("#3b82f6");
+  const [customCompareColor, setCustomCompareColor] = useState<string>("#f59e0b");
+  const [customSwapColor, setCustomSwapColor] = useState<string>("#ef4444");
+  const [customSortedColor, setCustomSortedColor] = useState<string>("#10b981");
 
   // Array inputs & controls
   const [arrayInput, setArrayInput] = useState<string>("64, 34, 25, 12, 22, 11, 90, 45, 78, 5");
@@ -269,6 +277,18 @@ export function SortingVisualizer() {
     return `hatch-${hatchPattern}`;
   };
 
+  const getThemeClass = () => {
+    return `theme-${colorTheme}`;
+  };
+
+  const getCustomStyle = (isSorted: boolean, isSwap: boolean, isComp: boolean, isPivot: boolean) => {
+    if (colorTheme !== "custom") return {};
+    if (isSorted) return { background: customSortedColor, borderColor: customSortedColor, boxShadow: `0 0 12px ${customSortedColor}` };
+    if (isSwap) return { background: customSwapColor, borderColor: customSwapColor, boxShadow: `0 0 14px ${customSwapColor}` };
+    if (isComp) return { background: customCompareColor, borderColor: customCompareColor, boxShadow: `0 0 12px ${customCompareColor}` };
+    return { background: customDefaultColor, borderColor: customDefaultColor };
+  };
+
   return (
     <section className="sorting-page">
       <div className="page-intro" style={{ marginBottom: "20px" }}>
@@ -339,6 +359,52 @@ export function SortingVisualizer() {
             </div>
           </div>
 
+          {/* Professional Color Palette Customizer */}
+          <div style={{ marginTop: "16px", padding: "12px 14px", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", marginBottom: "8px" }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: 750, color: "var(--muted)", display: "flex", alignItems: "center", gap: "6px" }}>
+                <Palette size={14} color="var(--accent)" /> Color Palette Theme:
+              </span>
+              <div className="language-tabs-row" style={{ margin: 0 }}>
+                <button className={`lang-tab-btn ${colorTheme === "oceanic" ? "active" : ""}`} onClick={() => setColorTheme("oceanic")}>
+                  Oceanic Cyan
+                </button>
+                <button className={`lang-tab-btn ${colorTheme === "neon" ? "active" : ""}`} onClick={() => setColorTheme("neon")}>
+                  Cyberpunk Neon
+                </button>
+                <button className={`lang-tab-btn ${colorTheme === "emerald" ? "active" : ""}`} onClick={() => setColorTheme("emerald")}>
+                  Emerald Mint
+                </button>
+                <button className={`lang-tab-btn ${colorTheme === "sunset" ? "active" : ""}`} onClick={() => setColorTheme("sunset")}>
+                  Sunset Glow
+                </button>
+                <button className={`lang-tab-btn ${colorTheme === "purple" ? "active" : ""}`} onClick={() => setColorTheme("purple")}>
+                  Royal Amethyst
+                </button>
+                <button className={`lang-tab-btn ${colorTheme === "custom" ? "active" : ""}`} onClick={() => setColorTheme("custom")}>
+                  Custom Pick
+                </button>
+              </div>
+            </div>
+
+            {colorTheme === "custom" && (
+              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", paddingTop: "8px", borderTop: "1px solid var(--border)" }}>
+                <label style={{ fontSize: "0.75rem", fontWeight: 650 }}>
+                  Default: <input type="color" value={customDefaultColor} onChange={(e) => setCustomDefaultColor(e.target.value)} />
+                </label>
+                <label style={{ fontSize: "0.75rem", fontWeight: 650 }}>
+                  Compare: <input type="color" value={customCompareColor} onChange={(e) => setCustomCompareColor(e.target.value)} />
+                </label>
+                <label style={{ fontSize: "0.75rem", fontWeight: 650 }}>
+                  Swap: <input type="color" value={customSwapColor} onChange={(e) => setCustomSwapColor(e.target.value)} />
+                </label>
+                <label style={{ fontSize: "0.75rem", fontWeight: 650 }}>
+                  Sorted: <input type="color" value={customSortedColor} onChange={(e) => setCustomSortedColor(e.target.value)} />
+                </label>
+              </div>
+            )}
+          </div>
+
           <div style={{ marginTop: "16px" }}>
             <label style={{ fontSize: "0.78rem", fontWeight: 750, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)", display: "block", marginBottom: "6px" }}>
               Array Dataset Input (Comma/Space Separated):
@@ -398,7 +464,7 @@ export function SortingVisualizer() {
         </div>
 
         {/* Dynamic Multi-View Visualization Canvas */}
-        <div className="sorting-canvas-container">
+        <div className={`sorting-canvas-container ${getThemeClass()}`}>
           <div className="sorting-status-bar">
             <div className="sorting-telemetry">
               <span>Comparisons: <strong style={{ color: "#f59e0b" }}>{comparisons}</strong></span>
@@ -431,7 +497,7 @@ export function SortingVisualizer() {
                   <div
                     key={idx}
                     className={`sorting-bar ${barClass} ${getHatchClass()}`}
-                    style={{ height: `${heightPercent}%` }}
+                    style={{ height: `${heightPercent}%`, ...getCustomStyle(isSorted, isSwap, isComp, isPivot) }}
                   >
                     {showValues && array.length <= 40 && val}
                   </div>
@@ -455,7 +521,10 @@ export function SortingVisualizer() {
                 return (
                   <div key={idx} className="viz-horizontal-row">
                     <span className="viz-row-idx">[{idx}]</span>
-                    <div className={`viz-horizontal-bar ${barClass} ${getHatchClass()}`} style={{ width: `${widthPercent}%` }}>
+                    <div
+                      className={`viz-horizontal-bar ${barClass} ${getHatchClass()}`}
+                      style={{ width: `${widthPercent}%`, ...getCustomStyle(isSorted, isSwap, isComp, false) }}
+                    >
                       {val}
                     </div>
                   </div>
@@ -476,7 +545,11 @@ export function SortingVisualizer() {
                 else if (isComp) blockClass = "compare";
 
                 return (
-                  <div key={idx} className={`viz-block-item ${blockClass} ${getHatchClass()}`}>
+                  <div
+                    key={idx}
+                    className={`viz-block-item ${blockClass} ${getHatchClass()}`}
+                    style={getCustomStyle(isSorted, isSwap, isComp, false)}
+                  >
                     <span className="viz-block-val">{val}</span>
                     <span className="viz-block-idx">#{idx}</span>
                   </div>
@@ -503,7 +576,7 @@ export function SortingVisualizer() {
                   <div
                     key={idx}
                     className={`viz-scatter-dot ${dotClass}`}
-                    style={{ left: `${leftPercent}%`, bottom: `${bottomPercent}%` }}
+                    style={{ left: `${leftPercent}%`, bottom: `${bottomPercent}%`, ...getCustomStyle(isSorted, isSwap, isComp, false) }}
                     title={`Index ${idx}: ${val}`}
                   />
                 );
@@ -532,6 +605,7 @@ export function SortingVisualizer() {
                     style={{
                       transform: `rotate(${angle}deg)`,
                       height: `${length}px`,
+                      ...getCustomStyle(isSorted, isSwap, isComp, false),
                     }}
                   />
                 );
@@ -553,7 +627,12 @@ export function SortingVisualizer() {
                 return (
                   <div key={idx} className="viz-cell-wrapper">
                     <span className="viz-cell-header">idx {idx}</span>
-                    <div className={`viz-cell-box ${cellClass} ${getHatchClass()}`}>{val}</div>
+                    <div
+                      className={`viz-cell-box ${cellClass} ${getHatchClass()}`}
+                      style={getCustomStyle(isSorted, isSwap, isComp, false)}
+                    >
+                      {val}
+                    </div>
                   </div>
                 );
               })}
