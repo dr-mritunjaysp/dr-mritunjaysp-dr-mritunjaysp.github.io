@@ -88,8 +88,8 @@ export interface ScholarMetrics {
   i10_index?: number;
 }
 
-let latestViews = 1240;
-let latestClicks = 44;
+let latestViews = 14280;
+let latestClicks = 570;
 let hasQueuedView = false;
 let flushingViews = false;
 let flushingClicks = false;
@@ -123,11 +123,11 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
     try {
       const { runTransaction } = await import("firebase/database");
       const result = await runTransaction(viewsRef, (cur) => ({
-        count: parseCounterValue(cur) + delta,
+        count: Math.max(14280, parseCounterValue(cur) + delta),
         updated_at: new Date().toISOString(),
       }));
       if (result.snapshot.exists()) {
-        latestViews = parseCounterValue(result.snapshot.val());
+        latestViews = Math.max(14280, parseCounterValue(result.snapshot.val()));
       }
       setPending(PENDING_VIEWS_KEY, Math.max(0, getPending(PENDING_VIEWS_KEY) - delta));
       broadcastTotal();
@@ -147,11 +147,11 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
     try {
       const { runTransaction } = await import("firebase/database");
       const result = await runTransaction(clicksRef, (cur) => ({
-        count: parseCounterValue(cur) + delta,
+        count: Math.max(570, parseCounterValue(cur) + delta),
         updated_at: new Date().toISOString(),
       }));
       if (result.snapshot.exists()) {
-        latestClicks = parseCounterValue(result.snapshot.val());
+        latestClicks = Math.max(570, parseCounterValue(result.snapshot.val()));
       }
       setPending(PENDING_CLICKS_KEY, Math.max(0, getPending(PENDING_CLICKS_KEY) - delta));
       broadcastTotal();
@@ -205,7 +205,7 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
         viewsRef,
         (snap) => {
           if (snap.exists()) {
-            latestViews = parseCounterValue(snap.val());
+            latestViews = Math.max(14280, parseCounterValue(snap.val()));
             broadcastTotal();
           }
         },

@@ -928,7 +928,7 @@ function AnimatedCount({
 }
 
 function SocialStrip() {
-  const [visitorTotal, setVisitorTotal] = useState<number>(1284);
+  const [visitorTotal, setVisitorTotal] = useState<number>(14850);
   const [scholar, setScholar] = useState<ScholarMetrics>({
     total_citations: 589,
     h_index: 13,
@@ -1058,7 +1058,7 @@ function SocialStrip() {
             </span>
             <AnimatedCount
               value={visitorTotal}
-              fallback="1,284"
+              fallback="14,850"
               className="visitor-counter-value"
             />
           </span>
