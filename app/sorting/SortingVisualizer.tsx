@@ -504,19 +504,26 @@ export function SortingVisualizer() {
                 </div>
 
                 {colorTheme === "custom" ? (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", paddingTop: "4px", borderTop: "1px solid var(--border)" }}>
-                    <label style={{ fontSize: "0.7rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
-                      Default: <input type="color" value={customDefaultColor} onChange={(e) => setCustomDefaultColor(e.target.value)} />
-                    </label>
-                    <label style={{ fontSize: "0.7rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
-                      Compare: <input type="color" value={customCompareColor} onChange={(e) => setCustomCompareColor(e.target.value)} />
-                    </label>
-                    <label style={{ fontSize: "0.7rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
-                      Swap: <input type="color" value={customSwapColor} onChange={(e) => setCustomSwapColor(e.target.value)} />
-                    </label>
-                    <label style={{ fontSize: "0.7rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
-                      Sorted: <input type="color" value={customSortedColor} onChange={(e) => setCustomSortedColor(e.target.value)} />
-                    </label>
+                  <div className="custom-color-picker-box">
+                    <div className="custom-box-title">Custom Palette Swatches</div>
+                    <div className="custom-pickers-grid">
+                      <label className="picker-label">
+                        <span>Default</span>
+                        <input type="color" className="color-swatch-input" value={customDefaultColor} onChange={(e) => setCustomDefaultColor(e.target.value)} />
+                      </label>
+                      <label className="picker-label">
+                        <span>Compare</span>
+                        <input type="color" className="color-swatch-input" value={customCompareColor} onChange={(e) => setCustomCompareColor(e.target.value)} />
+                      </label>
+                      <label className="picker-label">
+                        <span>Swap</span>
+                        <input type="color" className="color-swatch-input" value={customSwapColor} onChange={(e) => setCustomSwapColor(e.target.value)} />
+                      </label>
+                      <label className="picker-label">
+                        <span>Sorted</span>
+                        <input type="color" className="color-swatch-input" value={customSortedColor} onChange={(e) => setCustomSortedColor(e.target.value)} />
+                      </label>
+                    </div>
                   </div>
                 ) : (
                   <div className="theme-swatches-bar">
