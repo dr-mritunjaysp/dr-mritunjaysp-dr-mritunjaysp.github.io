@@ -1659,6 +1659,15 @@ function TeachingPage() {
 }
 
 function CvPage() {
+  const [openedPub, setOpenedPub] = useState<number | null>(null);
+  const [liveCitationsMap, setLiveCitationsMap] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    return subscribePublicationCitations((map) => {
+      setLiveCitationsMap(map);
+    });
+  }, []);
+
   return (
     <section className="page-section cv-page">
       <div className="cv-hero">
@@ -1699,6 +1708,96 @@ function CvPage() {
       <div className="cv-section">
         <SectionTitle eyebrow="Academic journey">Experience</SectionTitle>
         <Timeline items={cvSections.Experience} />
+      </div>
+
+      <div className="cv-section">
+        <SectionTitle count={publications.length} eyebrow="Scholarly output">
+          Peer-Reviewed Publications
+        </SectionTitle>
+        <div className="publication-list">
+          {publications.map((publication, index) => (
+            <PublicationCard
+              compact
+              key={publication.title}
+              publication={publication}
+              index={index}
+              open={openedPub === index}
+              onToggle={() => setOpenedPub(openedPub === index ? null : index)}
+              liveCitation={getCitationCount(publication.title, liveCitationsMap, publication.citations)}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="cv-section">
+        <SectionTitle eyebrow="Key technical & research systems">
+          Research Projects & Systems
+        </SectionTitle>
+        <div className="detail-grid">
+          {[
+            [
+              "QIoTChain",
+              "Quantum IoT-Blockchain fusion framework combining post-quantum cryptographic primitives, lattice-based signatures, and distributed ledgers for Industry 4.0 data protection.",
+              "IET Blockchain · 2024",
+            ],
+            [
+              "EVM ITS",
+              "Emergency vehicle priority signal preemption and dynamic route optimization using real-time V2X communications and edge computing.",
+              "IEEE Transactions on ITS · 2024",
+            ],
+            [
+              "DemocracyGuard",
+              "Decentralized electronic voting framework leveraging permissioned blockchain ledgers, zero-knowledge proofs (ZKP), and ring signatures.",
+              "Expert Systems · Wiley Top Viewed 2025",
+            ],
+            [
+              "V-Track",
+              "Blockchain-enabled IoT system for reliable vehicle location verification, fusing OBD sensors, RSU multi-lateration, and spatial-temporal consensus.",
+              "Digital Communications and Networks · 2024",
+            ],
+            [
+              "V2V & V2G Energy Trading",
+              "Hyperledger Fabric blockchain & Stackelberg game theoretical model for carbon-intelligent electric vehicle peer-to-peer energy settlements.",
+              "IEEE Internet of Things Journal · 2025",
+            ],
+            [
+              "Quantum-Safe Consumer IoT",
+              "Explorative deployment of Quantum Key Distribution (QKD) BB84/E91 protocols and quantum digital signatures for resource-constrained smart home nodes.",
+              "IEEE Transactions on Consumer Electronics · 2024",
+            ],
+            [
+              "Vehicular Predictive Maintenance",
+              "Privacy-preserving Federated Learning (FL) combined with immutable blockchain ledgers for decentralized vehicle component fault diagnosis.",
+              "IEEE Transactions on Consumer Electronics · 2024",
+            ],
+            [
+              "FALCON Post-Quantum Signatures",
+              "NIST-qualified lattice-based compact signatures for high-speed signature generation and verification in Vehicular Cloud Networks.",
+              "Vehicular Communications · 2025",
+            ],
+          ].map(([title, desc, meta]) => (
+            <article key={title}>
+              <span>{meta}</span>
+              <h3>{title}</h3>
+              <p>{desc}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div className="cv-section">
+        <SectionTitle eyebrow="Pedagogy & core instruction">
+          Teaching Portfolio
+        </SectionTitle>
+        <div className="detail-grid">
+          {courses.map((course) => (
+            <article key={course.title}>
+              <span>{course.year}</span>
+              <h3>{course.title}</h3>
+              <p>{course.description}</p>
+            </article>
+          ))}
+        </div>
       </div>
       <div className="cv-section">
         <SectionTitle eyebrow="Capabilities">Research & Skills</SectionTitle>
