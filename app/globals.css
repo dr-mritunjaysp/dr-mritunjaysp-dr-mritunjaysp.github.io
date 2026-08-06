@@ -287,9 +287,14 @@ img {
   font-weight: 620;
 }
 
-.more-menu a:hover {
-  background: color-mix(in srgb, var(--accent) 9%, transparent);
-  color: var(--accent);
+.more-menu a:hover,
+.more-menu a.active {
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface-strong)) !important;
+  color: var(--accent) !important;
+  -webkit-text-fill-color: var(--accent) !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  font-weight: 800 !important;
 }
 
 .nav-actions {
@@ -3711,6 +3716,15 @@ body::before {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient-flow 3s linear infinite;
+}
+
+.more-menu a:hover,
+.more-menu a.active {
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface-strong)) !important;
+  color: var(--accent) !important;
+  -webkit-text-fill-color: var(--accent) !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
 }
 
 .nav-actions {
