@@ -5434,30 +5434,32 @@ body::before {
   color: #10b981 !important;
 }
 
-/* Hatch Patterns for Histogram and Bars */
+/* HD Hatch Patterns for Histogram and Bars */
 .hatch-diagonal {
-  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.25), rgba(255,255,255,0.25) 4px, transparent 4px, transparent 8px) !important;
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.4), rgba(255,255,255,0.4) 3px, transparent 3px, transparent 7px),
+                    linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 70%) !important;
 }
 .hatch-reverse-diagonal {
-  background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.25), rgba(255,255,255,0.25) 4px, transparent 4px, transparent 8px) !important;
+  background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.4), rgba(255,255,255,0.4) 3px, transparent 3px, transparent 7px),
+                    linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 70%) !important;
 }
 .hatch-crosshatch {
-  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 4px, transparent 4px, transparent 8px),
-                    repeating-linear-gradient(-45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 4px, transparent 4px, transparent 8px) !important;
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.35), rgba(255,255,255,0.35) 3px, transparent 3px, transparent 7px),
+                    repeating-linear-gradient(-45deg, rgba(255,255,255,0.35), rgba(255,255,255,0.35) 3px, transparent 3px, transparent 7px) !important;
 }
 .hatch-grid {
-  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 2px, transparent 2px, transparent 6px),
-                    repeating-linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 2px, transparent 2px, transparent 6px) !important;
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.35), rgba(255,255,255,0.35) 2px, transparent 2px, transparent 6px),
+                    repeating-linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.35) 2px, transparent 2px, transparent 6px) !important;
 }
 .hatch-dots {
-  background-image: radial-gradient(rgba(255,255,255,0.4) 1.5px, transparent 1.5px) !important;
-  background-size: 6px 6px !important;
+  background-image: radial-gradient(rgba(255,255,255,0.6) 2px, transparent 2px) !important;
+  background-size: 8px 8px !important;
 }
 .hatch-waves {
-  background-image: repeating-linear-gradient(60deg, rgba(255,255,255,0.25), rgba(255,255,255,0.25) 3px, transparent 3px, transparent 6px) !important;
+  background-image: repeating-linear-gradient(60deg, rgba(255,255,255,0.4), rgba(255,255,255,0.4) 3px, transparent 3px, transparent 7px) !important;
 }
 .hatch-zigzag {
-  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.25) 4px, transparent 4px, transparent 8px) !important;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.4) 3px, transparent 3px, transparent 7px) !important;
 }
 
 /* Color Palette Themes */

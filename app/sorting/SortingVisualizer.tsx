@@ -23,13 +23,14 @@ import {
   Layers,
   Sparkles,
   Palette,
+  Gauge,
 } from "lucide-react";
 
 export function SortingVisualizer() {
   const [category, setCategory] = useState<AlgorithmCategory>("basic");
   const [selectedAlgoId, setSelectedAlgoId] = useState<string>("bubble");
   const [vizType, setVizType] = useState<VisualizationType>("histogram");
-  const [hatchPattern, setHatchPattern] = useState<HatchPattern>("none");
+  const [hatchPattern, setHatchPattern] = useState<HatchPattern>("diagonal");
 
   // Professional Color Customizer & Palette Presets
   const [colorTheme, setColorTheme] = useState<"oceanic" | "neon" | "emerald" | "sunset" | "purple" | "custom">("oceanic");
@@ -41,7 +42,7 @@ export function SortingVisualizer() {
   // Array inputs & controls
   const [arrayInput, setArrayInput] = useState<string>("64, 34, 25, 12, 22, 11, 90, 45, 78, 5");
   const [arraySize, setArraySize] = useState<number>(10);
-  const [speed, setSpeed] = useState<number>(35);
+  const [speed, setSpeed] = useState<number>(20); // 1 = Very Slow (1800ms), 100 = High Speed (5ms)
   const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
   const [showValues, setShowValues] = useState<boolean>(true);
   const [showIndices, setShowIndices] = useState<boolean>(true);
@@ -72,6 +73,13 @@ export function SortingVisualizer() {
   const timerRef = useRef<any>(null);
 
   const currentAlgo = ALGORITHMS[selectedAlgoId] || ALGORITHMS.bubble;
+
+  // Calculate step delay (Speed 1 = 1800ms slow, Speed 100 = 5ms ultra fast)
+  const getDelayFromSpeed = (spd: number) => {
+    if (spd <= 10) return Math.round(1800 - spd * 120); // 1800ms down to 600ms
+    if (spd <= 50) return Math.round(600 - (spd - 10) * 12.5); // 600ms down to 100ms
+    return Math.max(5, Math.round(100 - (spd - 50) * 1.9)); // 100ms down to 5ms
+  };
 
   const parseArrayInput = (str: string) => {
     const nums = str
@@ -142,7 +150,7 @@ export function SortingVisualizer() {
             type: "compare",
             indices: [j, j + 1],
             array: [...a],
-            message: `Comparing element ${a[j]} and ${a[j + 1]}`,
+            message: `Comparing adjacent index [${j}] (${a[j]}) and [${j + 1}] (${a[j + 1]})`,
           });
           if (comp) {
             [a[j], a[j + 1]] = [a[j + 1], a[j]];
@@ -150,7 +158,7 @@ export function SortingVisualizer() {
               type: "swap",
               indices: [j, j + 1],
               array: [...a],
-              message: `Swapped ${a[j + 1]} and ${a[j]}`,
+              message: `Swapped out-of-order pair: ${a[j + 1]} ↔ ${a[j]}`,
             });
           }
         }
@@ -158,7 +166,7 @@ export function SortingVisualizer() {
           type: "sorted",
           indices: [n - 1 - i],
           array: [...a],
-          message: `Element ${a[n - 1 - i]} locked in final position.`,
+          message: `Pass ${i + 1} complete. Largest unplaced element (${a[n - 1 - i]}) locked in final index ${n - 1 - i}.`,
         });
       }
       steps.push({ type: "sorted", indices: [0], array: [...a], message: "Array completely sorted!" });
@@ -170,7 +178,7 @@ export function SortingVisualizer() {
             type: "compare",
             indices: [targetIdx, j],
             array: [...a],
-            message: `Scanning unsorted region: comparing ${a[j]} with current candidate ${a[targetIdx]}`,
+            message: `Scanning unsorted range [${i}..${n - 1}]: comparing element at index [${j}] (${a[j]}) with current minimum candidate at index [${targetIdx}] (${a[targetIdx]})`,
           });
           if (isAscending ? a[j] < a[targetIdx] : a[j] > a[targetIdx]) {
             targetIdx = j;
@@ -182,10 +190,10 @@ export function SortingVisualizer() {
             type: "swap",
             indices: [i, targetIdx],
             array: [...a],
-            message: `Placed element ${a[i]} into position ${i}`,
+            message: `Swapped minimum element (${a[i]}) into sorted index [${i}]`,
           });
         }
-        steps.push({ type: "sorted", indices: [i], array: [...a], message: `Position ${i} sorted.` });
+        steps.push({ type: "sorted", indices: [i], array: [...a], message: `Index [${i}] sorted.` });
       }
       steps.push({ type: "sorted", indices: [n - 1], array: [...a], message: "Array completely sorted!" });
     } else {
@@ -193,13 +201,13 @@ export function SortingVisualizer() {
       for (let i = 0; i < n - 1; i++) {
         for (let j = 0; j < n - i - 1; j++) {
           const comp = isAscending ? a[j] > a[j + 1] : a[j] < a[j + 1];
-          steps.push({ type: "compare", indices: [j, j + 1], array: [...a], message: `Comparing ${a[j]} and ${a[j + 1]}` });
+          steps.push({ type: "compare", indices: [j, j + 1], array: [...a], message: `Comparing [${j}] (${a[j]}) and [${j + 1}] (${a[j + 1]})` });
           if (comp) {
             [a[j], a[j + 1]] = [a[j + 1], a[j]];
-            steps.push({ type: "swap", indices: [j, j + 1], array: [...a], message: `Swapped ${a[j + 1]} and ${a[j]}` });
+            steps.push({ type: "swap", indices: [j, j + 1], array: [...a], message: `Swapped ${a[j + 1]} ↔ ${a[j]}` });
           }
         }
-        steps.push({ type: "sorted", indices: [n - 1 - i], array: [...a], message: `Sorted element ${a[n - 1 - i]}` });
+        steps.push({ type: "sorted", indices: [n - 1 - i], array: [...a], message: `Locked sorted element ${a[n - 1 - i]}` });
       }
       steps.push({ type: "sorted", indices: [0], array: [...a], message: "Array completely sorted!" });
     }
@@ -255,7 +263,7 @@ export function SortingVisualizer() {
       }
 
       setElapsedTime(Date.now() - st);
-      const delay = Math.max(5, 250 - speed * 4.6);
+      const delay = getDelayFromSpeed(speed);
       timerRef.current = setTimeout(runStep, delay);
     };
 
@@ -335,7 +343,7 @@ export function SortingVisualizer() {
             <div className="sorting-select-group">
               <label>3. Visualization View</label>
               <select className="sorting-select" value={vizType} onChange={(e) => setVizType(e.target.value as VisualizationType)}>
-                <option value="histogram">Vertical Histogram</option>
+                <option value="histogram">HD Vertical Histogram</option>
                 <option value="horizontal">Horizontal Bars</option>
                 <option value="blocks">Number Blocks</option>
                 <option value="scatter">Scatter Dots</option>
@@ -345,16 +353,16 @@ export function SortingVisualizer() {
             </div>
 
             <div className="sorting-select-group">
-              <label>4. Bar Hatch Pattern</label>
+              <label>4. HD Bar Pattern Fill</label>
               <select className="sorting-select" value={hatchPattern} onChange={(e) => setHatchPattern(e.target.value as HatchPattern)}>
-                <option value="none">Solid (None)</option>
-                <option value="diagonal">Diagonal Lines</option>
-                <option value="reverse-diagonal">Reverse Diagonal</option>
-                <option value="crosshatch">Crosshatch</option>
-                <option value="grid">Grid Pattern</option>
-                <option value="dots">Dots Pattern</option>
-                <option value="waves">Waves Pattern</option>
-                <option value="zigzag">Zigzag Pattern</option>
+                <option value="diagonal">HD Diagonal Hatch</option>
+                <option value="reverse-diagonal">HD Reverse Diagonal</option>
+                <option value="crosshatch">HD Crosshatch Mesh</option>
+                <option value="grid">HD Grid Matrix</option>
+                <option value="dots">HD Polka Dots</option>
+                <option value="waves">HD Wave Stripes</option>
+                <option value="zigzag">HD Zigzag Weave</option>
+                <option value="none">Solid (No Pattern)</option>
               </select>
             </div>
           </div>
@@ -437,10 +445,28 @@ export function SortingVisualizer() {
             <button className="subdomain-copy-btn" onClick={() => handleRandomize(40)}>Random 40</button>
           </div>
 
+          {/* Speed Control Slider spanning Slow (1800ms) to Ultra High Speed (5ms) */}
           <div className="sorting-controls-grid" style={{ marginTop: "16px" }}>
             <div className="sorting-slider-group">
-              <label>Animation Speed: {speed}%</label>
-              <input type="range" className="sorting-slider" min={1} max={50} value={speed} onChange={(e) => setSpeed(Number(e.target.value))} />
+              <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span><Gauge size={14} style={{ display: "inline", marginRight: "4px" }} /> Animation Speed: {speed}%</span>
+                <span style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
+                  {speed <= 10 ? `Slow (${getDelayFromSpeed(speed)}ms)` : speed >= 80 ? `Ultra Fast (${getDelayFromSpeed(speed)}ms)` : `Normal (${getDelayFromSpeed(speed)}ms)`}
+                </span>
+              </label>
+              <input
+                type="range"
+                className="sorting-slider"
+                min={1}
+                max={100}
+                value={speed}
+                onChange={(e) => setSpeed(Number(e.target.value))}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", color: "var(--muted)" }}>
+                <span>1 (Step-by-Step 1.8s)</span>
+                <span>50 (100ms)</span>
+                <span>100 (Ultra Fast 5ms)</span>
+              </div>
             </div>
 
             <div className="sorting-actions-row" style={{ margin: 0 }}>
@@ -470,6 +496,7 @@ export function SortingVisualizer() {
               <span>Comparisons: <strong style={{ color: "#f59e0b" }}>{comparisons}</strong></span>
               <span>Swaps/Writes: <strong style={{ color: "#ef4444" }}>{swaps}</strong></span>
               <span>Time: <strong>{(elapsedTime / 1000).toFixed(2)}s</strong></span>
+              <span>Delay: <strong style={{ color: "var(--accent)" }}>{getDelayFromSpeed(speed)}ms</strong></span>
               <span>Algorithm: <strong style={{ color: "var(--accent)" }}>{currentAlgo.name}</strong></span>
               <span>View: <strong style={{ color: "var(--text)" }}>{vizType.toUpperCase()}</strong></span>
             </div>
@@ -645,7 +672,7 @@ export function SortingVisualizer() {
           <div className="code-runner-header" style={{ marginBottom: "18px" }}>
             <div className="language-tabs-row" style={{ overflowX: "auto" }}>
               <button className={`lang-tab-btn ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>
-                <BookOpen size={14} style={{ display: "inline", marginRight: "4px" }} /> Deep Overview
+                <BookOpen size={14} style={{ display: "inline", marginRight: "4px" }} /> Deep Academic Overview
               </button>
               <button className={`lang-tab-btn ${activeTab === "history" ? "active" : ""}`} onClick={() => setActiveTab("history")}>
                 <History size={14} style={{ display: "inline", marginRight: "4px" }} /> Origin & History

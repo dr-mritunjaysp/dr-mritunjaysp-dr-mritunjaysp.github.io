@@ -38,13 +38,14 @@ export const ALGORITHMS: Record<string, AlgorithmInfo> = {
     adaptive: true,
     comparisonBased: true,
     tagline: "Repeatedly swaps adjacent out-of-order elements until array is sorted.",
-    overview: "Bubble Sort is one of the simplest sorting algorithms. It works by repeatedly swapping adjacent elements if they are in the wrong order. Small elements 'bubble' to the top while large elements settle at the bottom.",
-    history: "First analyzed by computer scientist Edward H. Friend in 1956. The term 'bubble sort' was coined by Iverson in 1962.",
+    overview: "Bubble Sort is a classical comparison-based algorithm that operates by repeatedly traversing the input sequence and swapping adjacent out-of-order elements. In each pass, the largest unplaced element 'bubbles' up to its final correct position at the right boundary. While simple to conceptualize, its quadratic asymptotic performance O(n²) makes it inefficient for large datasets. However, with an early-exit optimization flag (checking if any swaps occurred in a pass), it achieves linear O(n) performance on pre-sorted arrays, demonstrating adaptive behavior.",
+    history: "Bubble Sort was first analyzed in computer science literature by Edward H. Friend in 1956 under the name 'sorting by exchange'. The formal name 'Bubble Sort' was coined by Kenneth E. Iverson in 1962 in his seminal book 'A Programming Language'. Donald Knuth noted in 'The Art of Computer Programming' (Vol. 3) that while Bubble Sort holds great pedagogical value for teaching algorithmic analysis and invariants, it is rarely chosen for production systems due to high total swap overhead.",
     howItWorks: [
-      "Compare adjacent elements arr[j] and arr[j+1].",
-      "If arr[j] > arr[j+1], swap them.",
-      "After pass i, the i-th largest element is in its final position.",
-      "Repeat for n-1 passes, or stop early if no swaps occurred during a pass.",
+      "Set pass index i from 0 to n-2.",
+      "Scan sub-array from index 0 to n-i-2, comparing adjacent elements arr[j] and arr[j+1].",
+      "If arr[j] > arr[j+1], swap them immediately and mark swapped flag as true.",
+      "If a full pass finishes with zero swaps, terminate early as array is fully sorted.",
+      "Repeat until all passes complete.",
     ],
     pseudocode: `procedure bubbleSort(A : list of sortable items)
     n := length(A)
