@@ -1466,16 +1466,16 @@ function PageIntro({
   return (
     <div className="page-intro">
       <p className="eyebrow">{eyebrow}</p>
-      <h1 className="title-with-badge">
-        <span>{title}</span>
+      <div className="title-header-row">
+        <h1 className="page-intro-title">{title}</h1>
         {typeof count === "number" && (
-          <span className="title-count-badge" aria-label={`${count} items`}>
+          <span className="title-count-badge" title={`Total ${count} Publications`} aria-label={`${count} items`}>
             {count}
           </span>
         )}
         {sortElement}
-      </h1>
-      <p>{description}</p>
+      </div>
+      {description && <p>{description}</p>}
     </div>
   );
 }
