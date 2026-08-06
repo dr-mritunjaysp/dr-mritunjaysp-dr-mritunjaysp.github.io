@@ -684,8 +684,8 @@ function SectionTitle({
     <div className="section-heading">
       <div>
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h2>
-          {children}
+        <h2 className="section-title-with-badge">
+          <span>{children}</span>
           {typeof count === "number" && (
             <span className="title-count-badge" aria-label={`${count} items`}>
               {count}
