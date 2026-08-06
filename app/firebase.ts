@@ -307,6 +307,15 @@ const DEFAULT_PUBLICATION_CITATIONS: Record<string, number> = {
   "Enhancing Vehicle Lifecycle Management Through Blockchain-Driven Predictive Maintenance and Federated Learning": 1,
 };
 
+function sanitizeFirebaseKey(key: string): string {
+  return key.replace(/[.#$\[\]\/]/g, "_");
+}
+
+const SANITIZED_DEFAULT_CITATIONS: Record<string, number> = {};
+Object.entries(DEFAULT_PUBLICATION_CITATIONS).forEach(([k, v]) => {
+  SANITIZED_DEFAULT_CITATIONS[sanitizeFirebaseKey(k)] = v;
+});
+
 export function subscribePublicationCitations(cb: (m: Record<string, number>) => void): () => void {
   if (typeof window === "undefined") return () => {};
 
@@ -325,9 +334,21 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
       });
     } else if (typeof items === "object") {
       Object.entries(items).forEach(([key, val]) => {
-        if (typeof val === "number") map[key] = val;
-        else if (val && typeof val === "object" && "citations" in val) {
-          map[key] = parseCounterValue((val as any).citations);
+        if (typeof val === "number") {
+          map[key] = val;
+          Object.keys(DEFAULT_PUBLICATION_CITATIONS).forEach((origTitle) => {
+            if (sanitizeFirebaseKey(origTitle) === key) {
+              map[origTitle] = val;
+            }
+          });
+        } else if (val && typeof val === "object" && "citations" in val) {
+          const parsed = parseCounterValue((val as any).citations);
+          map[key] = parsed;
+          Object.keys(DEFAULT_PUBLICATION_CITATIONS).forEach((origTitle) => {
+            if (sanitizeFirebaseKey(origTitle) === key) {
+              map[origTitle] = parsed;
+            }
+          });
         }
       });
     }
@@ -356,13 +377,17 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
       unsub = onValue(
         pubRef,
         (snap) => {
-          if (!snap.exists()) {
-            // Seed default citations into Firebase RTDB if node is empty
-            void set(pubRef, DEFAULT_PUBLICATION_CITATIONS);
-            cb(DEFAULT_PUBLICATION_CITATIONS);
-            return;
+          try {
+            if (!snap.exists()) {
+              // Seed default citations into Firebase RTDB using sanitized keys
+              void set(pubRef, SANITIZED_DEFAULT_CITATIONS).catch(() => {});
+              cb(DEFAULT_PUBLICATION_CITATIONS);
+              return;
+            }
+            handlePubData(snap.val());
+          } catch (e) {
+            console.warn("Error processing publication citations:", e);
           }
-          handlePubData(snap.val());
         },
         () => {}
       );
@@ -377,12 +402,13 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
 
 export async function updatePublicationCitation(title: string, count: number): Promise<void> {
   if (typeof window === "undefined") return;
-  await initFirebase();
-  if (!db) return;
   try {
+    await initFirebase();
+    if (!db) return;
     const { ref, update } = await import("firebase/database");
     const pubRef = ref(db, "visitor-counter/publication-citations");
-    await update(pubRef, { [title]: count });
+    const safeKey = sanitizeFirebaseKey(title);
+    await update(pubRef, { [safeKey]: count });
   } catch (e) {
     console.warn("Failed to update publication citation:", e);
   }
