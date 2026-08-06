@@ -4607,11 +4607,20 @@ body::before {
     justify-content: center !important;
     gap: 4px 6px !important;
     padding: 5px 12px !important;
-    max-width: calc(100vw - 12px) !important;
-    font-size: clamp(0.68rem, 2.5vw, 0.8rem) !important;
+    max-width: calc(100vw - 60px) !important;
+    margin: 0 auto !important;
+    font-size: clamp(0.66rem, 2.3vw, 0.78rem) !important;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+  }
+
+  .scroll-jump-button {
+    right: 8px !important;
+    bottom: 12px !important;
+    width: 36px !important;
+    height: 36px !important;
+    z-index: 100 !important;
   }
   .visitor-counter::-webkit-scrollbar {
     display: none;
