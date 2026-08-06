@@ -390,6 +390,12 @@ export function SortingVisualizer() {
                     <option value="cells">Array Cells</option>
                   </select>
                 </div>
+
+                <div className="card-footer-info">
+                  <span className="mini-info-tag">Stable: {currentAlgo.stable ? "Yes" : "No"}</span>
+                  <span className="mini-info-tag">Space: {currentAlgo.space}</span>
+                  <span className="mini-info-tag">Worst: {currentAlgo.worstTime}</span>
+                </div>
               </div>
             </div>
 
@@ -406,33 +412,25 @@ export function SortingVisualizer() {
               </div>
 
               <div className="control-inputs-stack">
-                {/* 1. Add Single Element Input */}
                 <div>
-                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "4px" }}>
-                    Add Single Number Manually:
-                  </label>
                   <div style={{ display: "flex", gap: "6px" }}>
                     <input
                       type="number"
                       className="sorting-select"
-                      style={{ flex: 1, padding: "8px 10px", fontSize: "0.86rem" }}
-                      placeholder="e.g. 42"
+                      style={{ flex: 1, padding: "7px 10px", fontSize: "0.84rem" }}
+                      placeholder="Single element e.g. 42"
                       value={singleElementVal}
                       onChange={(e) => setSingleElementVal(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleAddSingleElement()}
                     />
                     <button className="btn-add-element-emerald" onClick={handleAddSingleElement}>
-                      <Plus size={15} /> Add Element
+                      <Plus size={14} /> Add
                     </button>
                   </div>
                 </div>
 
-                {/* 2. Interactive Element Chips */}
                 <div>
-                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "4px" }}>
-                    Active Array Elements ({array.length}):
-                  </label>
-                  <div className="chips-container-box">
+                  <div className="chips-container-box" style={{ maxHeight: "72px", overflowY: "auto" }}>
                     {array.map((val, idx) => (
                       <span key={idx} className="array-element-chip">
                         <span className="chip-val">{val}</span>
@@ -444,40 +442,35 @@ export function SortingVisualizer() {
                   </div>
                 </div>
 
-                {/* 3. Bulk Text Input & Presets */}
                 <div>
-                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "4px" }}>
-                    Bulk Paste Array (Comma-Separated):
-                  </label>
                   <div style={{ display: "flex", gap: "6px" }}>
                     <input
                       type="text"
                       className="sorting-select"
-                      style={{ flex: 1, padding: "7px 10px", fontSize: "0.82rem" }}
+                      style={{ flex: 1, padding: "6px 8px", fontSize: "0.8rem" }}
                       value={arrayInput}
                       onChange={(e) => {
                         setArrayInput(e.target.value);
                         parseArrayInput(e.target.value);
                       }}
                     />
-                    <button className="btn-sort-secondary" style={{ padding: "7px 12px", fontSize: "0.8rem" }} onClick={() => parseArrayInput(arrayInput)}>
+                    <button className="btn-sort-secondary" style={{ padding: "6px 10px", fontSize: "0.78rem" }} onClick={() => parseArrayInput(arrayInput)}>
                       Apply
                     </button>
                   </div>
                 </div>
 
                 <div className="scrollable-presets-row" style={{ marginTop: "2px" }}>
-                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("default")}>Default (10)</button>
-                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("nearly")}>Nearly Sorted</button>
+                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("default")}>Default</button>
+                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("nearly")}>Nearly</button>
                   <button className="preset-pill-btn" onClick={() => handlePresetSelect("reverse")}>Reverse</button>
                   <button className="preset-pill-btn" onClick={() => handlePresetSelect("duplicates")}>Duplicates</button>
-                  <button className="preset-pill-btn" onClick={() => handlePresetSelect("negative")}>Negatives</button>
                   <button className="preset-pill-btn" onClick={() => handleRandomize(20)}>Random 20</button>
                 </div>
 
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <button className="btn-sort-secondary" style={{ padding: "5px 10px", fontSize: "0.78rem" }} onClick={() => setIsAscending(!isAscending)}>
-                    <ArrowUpDown size={12} /> {isAscending ? "Ascending ↑" : "Descending ↓"}
+                  <button className="btn-sort-secondary" style={{ padding: "4px 8px", fontSize: "0.76rem" }} onClick={() => setIsAscending(!isAscending)}>
+                    <ArrowUpDown size={11} /> {isAscending ? "Ascending ↑" : "Descending ↓"}
                   </button>
                 </div>
               </div>
@@ -490,22 +483,21 @@ export function SortingVisualizer() {
                 <span className="control-card-title"><Palette size={15} color="#ec4899" /> Color Palette & Styling</span>
               </div>
               <div className="control-inputs-stack">
-                <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)" }}>Select Theme Preset:</label>
                 <div className="theme-pills-wrap">
                   <button className={`theme-pill-btn ${colorTheme === "oceanic" ? "active" : ""}`} onClick={() => setColorTheme("oceanic")}>
-                    <span className="theme-dot oceanic-dot"></span> Oceanic Cyan
+                    <span className="theme-dot oceanic-dot"></span> Oceanic
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "neon" ? "active" : ""}`} onClick={() => setColorTheme("neon")}>
-                    <span className="theme-dot neon-dot"></span> Cyberpunk Neon
+                    <span className="theme-dot neon-dot"></span> Cyberpunk
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "emerald" ? "active" : ""}`} onClick={() => setColorTheme("emerald")}>
-                    <span className="theme-dot emerald-dot"></span> Emerald Mint
+                    <span className="theme-dot emerald-dot"></span> Emerald
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "sunset" ? "active" : ""}`} onClick={() => setColorTheme("sunset")}>
-                    <span className="theme-dot sunset-dot"></span> Sunset Glow
+                    <span className="theme-dot sunset-dot"></span> Sunset
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "purple" ? "active" : ""}`} onClick={() => setColorTheme("purple")}>
-                    <span className="theme-dot purple-dot"></span> Royal Amethyst
+                    <span className="theme-dot purple-dot"></span> Amethyst
                   </button>
                   <button className={`theme-pill-btn ${colorTheme === "custom" ? "active" : ""}`} onClick={() => setColorTheme("custom")}>
                     🎨 Custom Pick
@@ -513,17 +505,17 @@ export function SortingVisualizer() {
                 </div>
 
                 {colorTheme === "custom" ? (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", paddingTop: "6px", borderTop: "1px solid var(--border)" }}>
-                    <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", paddingTop: "4px", borderTop: "1px solid var(--border)" }}>
+                    <label style={{ fontSize: "0.7rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
                       Default: <input type="color" value={customDefaultColor} onChange={(e) => setCustomDefaultColor(e.target.value)} />
                     </label>
-                    <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
+                    <label style={{ fontSize: "0.7rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
                       Compare: <input type="color" value={customCompareColor} onChange={(e) => setCustomCompareColor(e.target.value)} />
                     </label>
-                    <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
+                    <label style={{ fontSize: "0.7rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
                       Swap: <input type="color" value={customSwapColor} onChange={(e) => setCustomSwapColor(e.target.value)} />
                     </label>
-                    <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
+                    <label style={{ fontSize: "0.7rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
                       Sorted: <input type="color" value={customSortedColor} onChange={(e) => setCustomSortedColor(e.target.value)} />
                     </label>
                   </div>
@@ -536,7 +528,7 @@ export function SortingVisualizer() {
                   </div>
                 )}
 
-                <div className="sorting-select-group" style={{ marginTop: "4px" }}>
+                <div className="sorting-select-group">
                   <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)" }}>Bar Hatch Pattern:</label>
                   <select className="sorting-select" style={{ padding: "6px 10px", fontSize: "0.8rem" }} value={hatchPattern} onChange={(e) => setHatchPattern(e.target.value as HatchPattern)}>
                     <option value="none">Solid Colors (Clean)</option>
@@ -569,10 +561,12 @@ export function SortingVisualizer() {
                     value={speed}
                     onChange={(e) => setSpeed(Number(e.target.value))}
                   />
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.66rem", color: "var(--muted)", marginTop: "2px" }}>
-                    <span>Slow (1.8s)</span>
-                    <span>Ultra Fast (5ms)</span>
-                  </div>
+                </div>
+
+                <div className="scrollable-presets-row">
+                  <button className="preset-pill-btn" onClick={() => setSpeed(5)}>Classroom (5%)</button>
+                  <button className="preset-pill-btn" onClick={() => setSpeed(35)}>Normal (35%)</button>
+                  <button className="preset-pill-btn" onClick={() => setSpeed(90)}>Turbo (90%)</button>
                 </div>
 
                 <div className="master-playback-actions">
