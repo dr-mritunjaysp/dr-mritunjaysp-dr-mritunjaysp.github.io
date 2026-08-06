@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const UPDATE_CHECK_INTERVAL = 5_000;
+const UPDATE_CHECK_INTERVAL = 3_000;
 const CHECK_DEBOUNCE = 500;
 
 function getAssetSignature(root: ParentNode) {
@@ -19,8 +19,8 @@ function getAssetSignature(root: ParentNode) {
     .sort()
     .join("|");
 
-  const mainLength = root.querySelector("main")?.textContent?.length ?? 0;
-  return `${assets}::${mainLength}`;
+  const bodyLength = root.querySelector("body")?.textContent?.length ?? 0;
+  return `${assets}::${bodyLength}`;
 }
 
 function createFreshUrl() {
