@@ -222,10 +222,9 @@ img {
   transition: 0.2s ease;
 }
 
+/* Underscore indicator appears ONLY on mouseover (hover) */
 .nav-links > a:hover::after,
-.nav-links > a.active::after,
-.more-wrap > button:hover::after,
-.more-wrap > button.active::after {
+.more-wrap > button:hover::after {
   opacity: 1;
   transform: scaleX(1);
 }
@@ -233,6 +232,7 @@ img {
 .nav-links > a.active,
 .more-wrap > button.active {
   color: var(--accent);
+  font-weight: 750;
 }
 
 .more-wrap {
