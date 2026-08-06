@@ -60,6 +60,9 @@ async function prerender() {
     );
 
     let html = await res.text();
+    if (html.includes("</head>")) {
+      html = html.replace("</head>", `<meta name="build-id" content="${Date.now()}" /></head>`);
+    }
 
     let targetFile;
     if (route === "/") {

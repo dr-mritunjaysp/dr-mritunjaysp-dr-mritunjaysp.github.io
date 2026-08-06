@@ -2,10 +2,13 @@
 
 import { useEffect } from "react";
 
-const UPDATE_CHECK_INTERVAL = 3_000;
-const CHECK_DEBOUNCE = 500;
+const UPDATE_CHECK_INTERVAL = 10_000;
+const CHECK_DEBOUNCE = 1_000;
 
 function getAssetSignature(root: ParentNode) {
+  const buildId =
+    root.querySelector("meta[name='build-id']")?.getAttribute("content") ?? "";
+
   const assets = Array.from(
     root.querySelectorAll("script[src], link[rel='stylesheet'][href]"),
   )
@@ -14,13 +17,16 @@ function getAssetSignature(root: ParentNode) {
         element.getAttribute("src") ?? element.getAttribute("href") ?? "",
     )
     .filter(
-      (asset) => asset.includes("/assets/") || asset.includes("/_next/"),
+      (asset) =>
+        asset.includes("/assets/") ||
+        asset.includes("/_next/") ||
+        asset.includes(".js") ||
+        asset.includes(".css"),
     )
     .sort()
     .join("|");
 
-  const bodyLength = root.querySelector("body")?.textContent?.length ?? 0;
-  return `${assets}::${bodyLength}`;
+  return `${buildId}::${assets}`;
 }
 
 function createFreshUrl() {
@@ -68,6 +74,7 @@ export function LiveUpdateRefresh() {
           nextSignature &&
           currentSignature !== nextSignature
         ) {
+          console.log("New build update detected! Refreshing page...");
           window.location.reload();
         }
       } catch (error) {
@@ -83,23 +90,13 @@ export function LiveUpdateRefresh() {
       if (document.visibilityState === "visible") void checkForUpdate();
     };
 
-    const handlePageShow = (event: PageTransitionEvent) => {
-      if (event.persisted) {
-        window.location.replace(createFreshUrl().toString());
-        return;
-      }
-
-      void checkForUpdate();
-    };
-
-    const initialCheck = window.setTimeout(() => void checkForUpdate(), 1_000);
+    const initialCheck = window.setTimeout(() => void checkForUpdate(), 2_000);
     const periodicCheck = window.setInterval(
       () => void checkForUpdate(),
       UPDATE_CHECK_INTERVAL,
     );
 
     window.addEventListener("focus", checkForUpdate);
-    window.addEventListener("pageshow", handlePageShow);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
@@ -107,7 +104,6 @@ export function LiveUpdateRefresh() {
       window.clearTimeout(initialCheck);
       window.clearInterval(periodicCheck);
       window.removeEventListener("focus", checkForUpdate);
-      window.removeEventListener("pageshow", handlePageShow);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
