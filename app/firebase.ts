@@ -90,29 +90,30 @@ export interface ScholarMetrics {
 
 let latestViews = 1240;
 let latestClicks = 44;
-let lastRenderedTotal: number | null = null;
 let hasQueuedView = false;
 let flushingViews = false;
 let flushingClicks = false;
+
+const activeCounterSubscribers = new Set<(total: number) => void>();
 
 function computeTotal() {
   return latestViews + latestClicks + getPending(PENDING_VIEWS_KEY) + getPending(PENDING_CLICKS_KEY);
 }
 
+function broadcastTotal() {
+  const total = computeTotal();
+  activeCounterSubscribers.forEach((fn) => fn(total));
+}
+
 export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void {
   if (typeof window === "undefined") return () => {};
+
+  activeCounterSubscribers.add(cb.onTotal);
+  cb.onTotal(computeTotal());
 
   let unsubViews: (() => void) | undefined;
   let unsubClicks: (() => void) | undefined;
   let destroyed = false;
-
-  const render = () => {
-    const total = computeTotal();
-    if (lastRenderedTotal === null || total !== lastRenderedTotal) {
-      lastRenderedTotal = total;
-      cb.onTotal(total);
-    }
-  };
 
   const flushViews = async () => {
     if (flushingViews || !viewsRef) return;
@@ -125,9 +126,11 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
         count: parseCounterValue(cur) + delta,
         updated_at: new Date().toISOString(),
       }));
-      latestViews = parseCounterValue(result.snapshot.exists() ? result.snapshot.val() : 0);
+      if (result.snapshot.exists()) {
+        latestViews = parseCounterValue(result.snapshot.val());
+      }
       setPending(PENDING_VIEWS_KEY, Math.max(0, getPending(PENDING_VIEWS_KEY) - delta));
-      render();
+      broadcastTotal();
     } catch {
       // keep pending for next sync
     } finally {
@@ -147,9 +150,11 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
         count: parseCounterValue(cur) + delta,
         updated_at: new Date().toISOString(),
       }));
-      latestClicks = parseCounterValue(result.snapshot.exists() ? result.snapshot.val() : 0);
+      if (result.snapshot.exists()) {
+        latestClicks = parseCounterValue(result.snapshot.val());
+      }
       setPending(PENDING_CLICKS_KEY, Math.max(0, getPending(PENDING_CLICKS_KEY) - delta));
-      render();
+      broadcastTotal();
     } catch {
       // keep pending for next sync
     } finally {
@@ -162,14 +167,14 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
     if (hasQueuedView) return;
     hasQueuedView = true;
     setPending(PENDING_VIEWS_KEY, getPending(PENDING_VIEWS_KEY) + 1);
-    render();
+    broadcastTotal();
     void flushViews();
   };
 
   const queueClick = (e: MouseEvent) => {
     if (!e.isTrusted) return;
     setPending(PENDING_CLICKS_KEY, getPending(PENDING_CLICKS_KEY) + 1);
-    render();
+    broadcastTotal();
     void flushClicks();
   };
 
@@ -188,9 +193,6 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
   if (getPending(PENDING_VIEWS_KEY) > 0) void flushViews();
   if (getPending(PENDING_CLICKS_KEY) > 0) void flushClicks();
 
-  // Render initial estimate immediately (pending + any cached Firebase total)
-  render();
-
   // Start Firebase
   initFirebase().then(async () => {
     if (destroyed) return;
@@ -202,19 +204,23 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
       unsubViews = onValue(
         viewsRef,
         (snap) => {
-          latestViews = parseCounterValue(snap.exists() ? snap.val() : 0);
-          render();
+          if (snap.exists()) {
+            latestViews = parseCounterValue(snap.val());
+            broadcastTotal();
+          }
         },
-        () => { latestViews = 0; render(); }
+        () => {}
       );
 
       unsubClicks = onValue(
         clicksRef,
         (snap) => {
-          latestClicks = parseCounterValue(snap.exists() ? snap.val() : 0);
-          render();
+          if (snap.exists()) {
+            latestClicks = parseCounterValue(snap.val());
+            broadcastTotal();
+          }
         },
-        () => { latestClicks = 0; render(); }
+        () => {}
       );
 
       queueView();
@@ -229,6 +235,7 @@ export function subscribeVisitorCounter(cb: VisitorCounterCallbacks): () => void
 
   return () => {
     destroyed = true;
+    activeCounterSubscribers.delete(cb.onTotal);
     unsubViews?.();
     unsubClicks?.();
     document.removeEventListener("click", queueClick, true);
