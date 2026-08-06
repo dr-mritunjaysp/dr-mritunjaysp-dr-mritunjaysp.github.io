@@ -2,19 +2,28 @@
 
 import {
   Award,
+  BarChart3,
   BookOpen,
   BriefcaseBusiness,
+  Check,
   ChevronRight,
   Code2,
+  Copy,
   Download,
   ExternalLink,
   FileText,
+  Layers,
   Mail,
   Menu,
+  Pause,
   Play,
+  RotateCcw,
   Search,
   Sparkles,
+  StepForward,
   UsersRound,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -38,6 +47,7 @@ type SectionKey =
   | "blog"
   | "publications"
   | "projects"
+  | "sorting-visualizer"
   | "cv"
   | "teaching"
   | "people"
@@ -76,6 +86,7 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
+  { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
   { label: "Awards & FDP", href: "/award-fdp", key: "award-fdp" },
   { label: "Game", href: "/game", key: "game" },
   { label: "Daily Mantra", href: "/daily-mantra", key: "daily-mantra" },
@@ -2489,6 +2500,738 @@ function DailyMantraPage() {
   );
 }
 
+function ProjectsPage() {
+  return (
+    <section className="projects-page">
+      <PageIntro
+        eyebrow="Interactive Work & Systems"
+        title="Featured Projects"
+        description="Explorations across algorithm design, quantum computing, post-quantum cryptography, and interactive web visualizers."
+        count={4}
+      />
+
+      <div className="projects-showcase-grid">
+        <div className="project-feature-card">
+          <div>
+            <div className="project-badge-tag">
+              <Sparkles size={13} /> Interactive Workbench
+            </div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
+              Sorting Visualizer System
+            </h3>
+            <div className="subdomain-badge-banner" style={{ fontSize: "0.78rem", padding: "4px 10px", marginBottom: "12px" }}>
+              <span className="subdomain-badge-link">https://dr-mritunjaysp.com/sorting-visualizer</span>
+            </div>
+            <p style={{ color: "var(--muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "16px" }}>
+              Interactive algorithm animation suite built with step-by-step playback controls, real-time comparisons & swaps telemetry, and Web Audio API tone feedback.
+            </p>
+            <div className="pub-attributes-row" style={{ marginBottom: "20px" }}>
+              <span className="attribute-pill">Algorithms</span>
+              <span className="attribute-pill">Interactive Visualizer</span>
+              <span className="attribute-pill">React 19</span>
+              <span className="attribute-pill">Web Audio API</span>
+            </div>
+          </div>
+          <Link className="btn-sort-primary" href="/sorting-visualizer" style={{ textDecoration: "none", textAlign: "center", justifyContent: "center" }}>
+            Launch Visualizer <ChevronRight size={16} />
+          </Link>
+        </div>
+
+        <div className="project-feature-card">
+          <div>
+            <div className="project-badge-tag">
+              <Code2 size={13} /> Research System
+            </div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
+              QIoTChain: Quantum IoT Blockchain
+            </h3>
+            <p style={{ color: "var(--muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "16px" }}>
+              Quantum-resilient blockchain architecture for Industry 4.0 IoT edge devices incorporating post-quantum cryptographic primitives (QKD & QRNG).
+            </p>
+            <div className="pub-attributes-row" style={{ marginBottom: "20px" }}>
+              <span className="attribute-pill">Quantum Computing</span>
+              <span className="attribute-pill">Blockchain</span>
+              <span className="attribute-pill">Post-Quantum Crypto</span>
+            </div>
+          </div>
+          <Link className="btn-sort-secondary" href="/publications" style={{ textDecoration: "none", textAlign: "center", justifyContent: "center" }}>
+            View Publication <ExternalLink size={14} />
+          </Link>
+        </div>
+
+        <div className="project-feature-card">
+          <div>
+            <div className="project-badge-tag">
+              <BarChart3 size={13} /> Simulation Engine
+            </div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
+              Quantum Edge UAV Fleet Router
+            </h3>
+            <p style={{ color: "var(--muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "16px" }}>
+              Quantum approximate optimization algorithm (QAOA) based route planner for autonomous UAV swarms operating under dynamic network constraints.
+            </p>
+            <div className="pub-attributes-row" style={{ marginBottom: "20px" }}>
+              <span className="attribute-pill">QAOA</span>
+              <span className="attribute-pill">UAV Swarms</span>
+              <span className="attribute-pill">Optimization</span>
+            </div>
+          </div>
+          <Link className="btn-sort-secondary" href="/publications" style={{ textDecoration: "none", textAlign: "center", justifyContent: "center" }}>
+            Explore Research <ExternalLink size={14} />
+          </Link>
+        </div>
+
+        <div className="project-feature-card">
+          <div>
+            <div className="project-badge-tag">
+              <Layers size={13} /> Analytics Platform
+            </div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
+              Real-time Scholar & Visitor Hub
+            </h3>
+            <p style={{ color: "var(--muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "16px" }}>
+              Distributed real-time pub-sub sync engine powered by Firebase RTDB & REST fallbacks tracking global academic metrics and page engagement.
+            </p>
+            <div className="pub-attributes-row" style={{ marginBottom: "20px" }}>
+              <span className="attribute-pill">Firebase RTDB</span>
+              <span className="attribute-pill">Pub-Sub</span>
+              <span className="attribute-pill">REST Analytics</span>
+            </div>
+          </div>
+          <Link className="btn-sort-secondary" href="/" style={{ textDecoration: "none", textAlign: "center", justifyContent: "center" }}>
+            View Live Dashboard <ExternalLink size={14} />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+type AlgorithmType =
+  | "bubble"
+  | "selection"
+  | "insertion"
+  | "merge"
+  | "quick"
+  | "heap";
+
+interface AlgorithmInfo {
+  name: string;
+  bestTime: string;
+  avgTime: string;
+  worstTime: string;
+  space: string;
+  stable: string;
+  description: string;
+  details: string;
+}
+
+const ALGORITHMS_INFO: Record<AlgorithmType, AlgorithmInfo> = {
+  bubble: {
+    name: "Bubble Sort",
+    bestTime: "O(n)",
+    avgTime: "O(n²)",
+    worstTime: "O(n²)",
+    space: "O(1)",
+    stable: "Yes",
+    description:
+      "Repeatedly steps through the array, compares adjacent elements and swaps them if out of order.",
+    details:
+      "Simple comparison-based algorithm suitable for teaching basic sorting mechanics. Efficient primarily for small or nearly sorted datasets.",
+  },
+  selection: {
+    name: "Selection Sort",
+    bestTime: "O(n²)",
+    avgTime: "O(n²)",
+    worstTime: "O(n²)",
+    space: "O(1)",
+    stable: "No",
+    description:
+      "Divides input into sorted and unsorted regions, repeatedly selecting the minimum element from the unsorted region.",
+    details:
+      "Performs O(n²) comparisons but minimizes total memory write operations (at most n swaps), making it efficient when memory writes are expensive.",
+  },
+  insertion: {
+    name: "Insertion Sort",
+    bestTime: "O(n)",
+    avgTime: "O(n²)",
+    worstTime: "O(n²)",
+    space: "O(1)",
+    stable: "Yes",
+    description:
+      "Builds the sorted array one item at a time by inserting elements into their correct location relative to sorted items.",
+    details:
+      "Highly adaptive algorithm that excels on small datasets (n <= 15) and online streaming data arriving sequentially.",
+  },
+  merge: {
+    name: "Merge Sort",
+    bestTime: "O(n log n)",
+    avgTime: "O(n log n)",
+    worstTime: "O(n log n)",
+    space: "O(n)",
+    stable: "Yes",
+    description:
+      "Divide-and-conquer algorithm that recursively splits the array into halves, sorts them, and merges them together.",
+    details:
+      "Provides guaranteed O(n log n) performance regardless of initial array ordering, ideal for external sorting and linked lists.",
+  },
+  quick: {
+    name: "Quick Sort",
+    bestTime: "O(n log n)",
+    avgTime: "O(n log n)",
+    worstTime: "O(n²)",
+    space: "O(log n)",
+    stable: "No",
+    description:
+      "Selects a 'pivot' element and partitions the array such that elements smaller than pivot go left and larger go right.",
+    details:
+      "Widely used in production standard libraries due to superior cache locality and minimal auxiliary space consumption.",
+  },
+  heap: {
+    name: "Heap Sort",
+    bestTime: "O(n log n)",
+    avgTime: "O(n log n)",
+    worstTime: "O(n log n)",
+    space: "O(1)",
+    stable: "No",
+    description:
+      "Converts the array into a Binary Max-Heap, then repeatedly extracts the maximum element and restores heap property.",
+    details:
+      "Combines the in-place storage efficiency of selection sort with the guaranteed O(n log n) time complexity of merge sort.",
+  },
+};
+
+function playTone(val: number, maxVal: number, audioEnabled: boolean) {
+  if (!audioEnabled || typeof window === "undefined") return;
+  try {
+    const AudioContextClass =
+      window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const freq = 140 + (val / maxVal) * 550;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.03, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.07);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.07);
+  } catch {
+    // Ignore audio context autoplay restrictions
+  }
+}
+
+function SortingVisualizerPage() {
+  const [algorithm, setAlgorithm] = useState<AlgorithmType>("quick");
+  const [arraySize, setArraySize] = useState<number>(30);
+  const [speed, setSpeed] = useState<number>(40);
+  const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
+  const [copied, setCopied] = useState<boolean>(false);
+
+  const [array, setArray] = useState<number[]>([]);
+  const [comparedIndices, setComparedIndices] = useState<number[]>([]);
+  const [swappedIndices, setSwappedIndices] = useState<number[]>([]);
+  const [sortedIndices, setSortedIndices] = useState<number[]>([]);
+  const [pivotIndex, setPivotIndex] = useState<number | null>(null);
+
+  const [isSorting, setIsSorting] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  const [comparisons, setComparisons] = useState<number>(0);
+  const [swaps, setSwaps] = useState<number>(0);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+
+  const stepsRef = useRef<any[]>([]);
+  const stepIdxRef = useRef<number>(0);
+  const isSortingRef = useRef<boolean>(false);
+  const isPausedRef = useRef<boolean>(false);
+  const timerRef = useRef<any>(null);
+
+  const generateRandomArray = (size: number) => {
+    const newArr: number[] = [];
+    for (let i = 0; i < size; i++) {
+      newArr.push(Math.floor(Math.random() * 260) + 20);
+    }
+    setArray(newArr);
+    setComparedIndices([]);
+    setSwappedIndices([]);
+    setSortedIndices([]);
+    setPivotIndex(null);
+    setComparisons(0);
+    setSwaps(0);
+    setElapsedTime(0);
+    setStartTime(null);
+    setIsSorting(false);
+    setIsPaused(false);
+    isSortingRef.current = false;
+    isPausedRef.current = false;
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+
+  useEffect(() => {
+    generateRandomArray(arraySize);
+  }, [arraySize]);
+
+  const handleCopySubdomain = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText("https://dr-mritunjaysp.com/sorting-visualizer");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const generateAllSteps = (alg: AlgorithmType, initialArray: number[]) => {
+    const steps: any[] = [];
+    const a = [...initialArray];
+    const n = a.length;
+
+    if (alg === "bubble") {
+      for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+          steps.push({ type: "compare", indices: [j, j + 1] });
+          if (a[j] > a[j + 1]) {
+            [a[j], a[j + 1]] = [a[j + 1], a[j]];
+            steps.push({ type: "swap", indices: [j, j + 1], array: [...a] });
+          }
+        }
+        steps.push({ type: "sorted", index: n - 1 - i });
+      }
+      steps.push({ type: "sorted", index: 0 });
+    } else if (alg === "selection") {
+      for (let i = 0; i < n - 1; i++) {
+        let minIdx = i;
+        for (let j = i + 1; j < n; j++) {
+          steps.push({ type: "compare", indices: [minIdx, j] });
+          if (a[j] < a[minIdx]) {
+            minIdx = j;
+          }
+        }
+        if (minIdx !== i) {
+          [a[i], a[minIdx]] = [a[minIdx], a[i]];
+          steps.push({ type: "swap", indices: [i, minIdx], array: [...a] });
+        }
+        steps.push({ type: "sorted", index: i });
+      }
+      steps.push({ type: "sorted", index: n - 1 });
+    } else if (alg === "insertion") {
+      steps.push({ type: "sorted", index: 0 });
+      for (let i = 1; i < n; i++) {
+        let j = i;
+        while (j > 0) {
+          steps.push({ type: "compare", indices: [j - 1, j] });
+          if (a[j] < a[j - 1]) {
+            [a[j], a[j - 1]] = [a[j - 1], a[j]];
+            steps.push({ type: "swap", indices: [j - 1, j], array: [...a] });
+            j--;
+          } else {
+            break;
+          }
+        }
+      }
+      for (let i = 0; i < n; i++) {
+        steps.push({ type: "sorted", index: i });
+      }
+    } else if (alg === "merge") {
+      const helper = (start: number, end: number) => {
+        if (start >= end) return;
+        const mid = Math.floor((start + end) / 2);
+        helper(start, mid);
+        helper(mid + 1, end);
+
+        let left = start;
+        let right = mid + 1;
+        const temp: number[] = [];
+
+        while (left <= mid && right <= end) {
+          steps.push({ type: "compare", indices: [left, right] });
+          if (a[left] <= a[right]) {
+            temp.push(a[left++]);
+          } else {
+            temp.push(a[right++]);
+          }
+        }
+        while (left <= mid) temp.push(a[left++]);
+        while (right <= end) temp.push(a[right++]);
+
+        for (let i = 0; i < temp.length; i++) {
+          a[start + i] = temp[i];
+          steps.push({ type: "overwrite", index: start + i, value: temp[i], array: [...a] });
+        }
+      };
+      helper(0, n - 1);
+      for (let i = 0; i < n; i++) {
+        steps.push({ type: "sorted", index: i });
+      }
+    } else if (alg === "quick") {
+      const partition = (low: number, high: number): number => {
+        const pivot = a[high];
+        steps.push({ type: "pivot", index: high });
+        let i = low - 1;
+        for (let j = low; j < high; j++) {
+          steps.push({ type: "compare", indices: [j, high] });
+          if (a[j] < pivot) {
+            i++;
+            [a[i], a[j]] = [a[j], a[i]];
+            steps.push({ type: "swap", indices: [i, j], array: [...a] });
+          }
+        }
+        [a[i + 1], a[high]] = [a[high], a[i + 1]];
+        steps.push({ type: "swap", indices: [i + 1, high], array: [...a] });
+        return i + 1;
+      };
+
+      const quickSortHelper = (low: number, high: number) => {
+        if (low < high) {
+          const pi = partition(low, high);
+          steps.push({ type: "sorted", index: pi });
+          quickSortHelper(low, pi - 1);
+          quickSortHelper(pi + 1, high);
+        } else if (low === high) {
+          steps.push({ type: "sorted", index: low });
+        }
+      };
+
+      quickSortHelper(0, n - 1);
+      for (let i = 0; i < n; i++) {
+        steps.push({ type: "sorted", index: i });
+      }
+    } else if (alg === "heap") {
+      const heapify = (size: number, i: number) => {
+        let largest = i;
+        const left = 2 * i + 1;
+        const right = 2 * i + 2;
+
+        if (left < size) {
+          steps.push({ type: "compare", indices: [left, largest] });
+          if (a[left] > a[largest]) largest = left;
+        }
+        if (right < size) {
+          steps.push({ type: "compare", indices: [right, largest] });
+          if (a[right] > a[largest]) largest = right;
+        }
+
+        if (largest !== i) {
+          [a[i], a[largest]] = [a[largest], a[i]];
+          steps.push({ type: "swap", indices: [i, largest], array: [...a] });
+          heapify(size, largest);
+        }
+      };
+
+      for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        heapify(n, i);
+      }
+
+      for (let i = n - 1; i > 0; i--) {
+        [a[0], a[i]] = [a[i], a[0]];
+        steps.push({ type: "swap", indices: [0, i], array: [...a] });
+        steps.push({ type: "sorted", index: i });
+        heapify(i, 0);
+      }
+      steps.push({ type: "sorted", index: 0 });
+    }
+
+    return steps;
+  };
+
+  const runVisualization = () => {
+    if (isSortingRef.current) return;
+    const steps = generateAllSteps(algorithm, array);
+    stepsRef.current = steps;
+    stepIdxRef.current = 0;
+    setIsSorting(true);
+    setIsPaused(false);
+    isSortingRef.current = true;
+    isPausedRef.current = false;
+    const st = Date.now();
+    setStartTime(st);
+
+    let compCount = 0;
+    let swapCount = 0;
+
+    const executeNextStep = () => {
+      if (!isSortingRef.current || isPausedRef.current) return;
+
+      if (stepIdxRef.current >= stepsRef.current.length) {
+        setIsSorting(false);
+        isSortingRef.current = false;
+        setComparedIndices([]);
+        setSwappedIndices([]);
+        setPivotIndex(null);
+        setSortedIndices(Array.from({ length: arraySize }, (_, idx) => idx));
+        setElapsedTime(Date.now() - st);
+        return;
+      }
+
+      const step = stepsRef.current[stepIdxRef.current];
+      stepIdxRef.current++;
+
+      if (step.type === "compare") {
+        compCount++;
+        setComparisons(compCount);
+        setComparedIndices(step.indices);
+        setSwappedIndices([]);
+        playTone(array[step.indices[0]] || 100, 280, audioEnabled);
+      } else if (step.type === "swap") {
+        swapCount++;
+        setSwaps(swapCount);
+        setArray(step.array);
+        setSwappedIndices(step.indices);
+        setComparedIndices([]);
+        playTone(step.array[step.indices[0]] || 100, 280, audioEnabled);
+      } else if (step.type === "overwrite") {
+        swapCount++;
+        setSwaps(swapCount);
+        setArray(step.array);
+        setSwappedIndices([step.index]);
+        setComparedIndices([]);
+        playTone(step.value, 280, audioEnabled);
+      } else if (step.type === "pivot") {
+        setPivotIndex(step.index);
+      } else if (step.type === "sorted") {
+        setSortedIndices((prev) => [...prev, step.index]);
+      }
+
+      setElapsedTime(Date.now() - st);
+      const delay = Math.max(2, 200 - speed * 3.8);
+      timerRef.current = setTimeout(executeNextStep, delay);
+    };
+
+    executeNextStep();
+  };
+
+  const handlePauseResume = () => {
+    if (!isSorting) return;
+    const nextPaused = !isPaused;
+    setIsPaused(nextPaused);
+    isPausedRef.current = nextPaused;
+  };
+
+  const currentInfo = ALGORITHMS_INFO[algorithm];
+  const maxVal = Math.max(...array, 280);
+
+  return (
+    <section className="sorting-page">
+      <PageIntro
+        eyebrow="Interactive Algorithm Workbench"
+        title="Sorting Visualizer"
+        description="Step-by-step interactive sorting visualizer with real-time comparison tracking, execution telemetry, and audio feedback synthesizer."
+      />
+
+      <div className="subdomain-badge-banner">
+        <span>Sub-domain link:</span>
+        <a
+          href="https://dr-mritunjaysp.com/sorting-visualizer"
+          className="subdomain-badge-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          https://dr-mritunjaysp.com/sorting-visualizer
+        </a>
+        <button
+          className="subdomain-copy-btn"
+          onClick={handleCopySubdomain}
+          title="Copy URL"
+        >
+          {copied ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
+          <span style={{ marginLeft: "4px" }}>{copied ? "Copied!" : "Copy"}</span>
+        </button>
+      </div>
+
+      <div className="sorting-workbench">
+        <div className="sorting-control-panel">
+          <div className="sorting-controls-grid">
+            <div className="sorting-select-group">
+              <label>Select Algorithm</label>
+              <select
+                className="sorting-select"
+                value={algorithm}
+                onChange={(e) => {
+                  setAlgorithm(e.target.value as AlgorithmType);
+                  generateRandomArray(arraySize);
+                }}
+                disabled={isSorting}
+              >
+                <option value="quick">Quick Sort (Average O(n log n))</option>
+                <option value="merge">Merge Sort (Guaranteed O(n log n))</option>
+                <option value="heap">Heap Sort (In-place O(n log n))</option>
+                <option value="insertion">Insertion Sort (O(n²))</option>
+                <option value="selection">Selection Sort (O(n²))</option>
+                <option value="bubble">Bubble Sort (O(n²))</option>
+              </select>
+            </div>
+
+            <div className="sorting-slider-group">
+              <label>Array Size: {arraySize} Bars</label>
+              <input
+                type="range"
+                className="sorting-slider"
+                min={10}
+                max={70}
+                value={arraySize}
+                onChange={(e) => setArraySize(Number(e.target.value))}
+                disabled={isSorting}
+              />
+            </div>
+
+            <div className="sorting-slider-group">
+              <label>Animation Speed: {speed}%</label>
+              <input
+                type="range"
+                className="sorting-slider"
+                min={1}
+                max={50}
+                value={speed}
+                onChange={(e) => setSpeed(Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div className="sorting-actions-row">
+            <button
+              className="btn-sort-primary"
+              onClick={runVisualization}
+              disabled={isSorting && !isPaused}
+            >
+              <Play size={16} /> {isSorting ? "Sorting..." : "Start Sorting"}
+            </button>
+
+            {isSorting && (
+              <button
+                className="btn-sort-secondary"
+                onClick={handlePauseResume}
+              >
+                {isPaused ? <Play size={15} /> : <Pause size={15} />}
+                {isPaused ? "Resume" : "Pause"}
+              </button>
+            )}
+
+            <button
+              className="btn-sort-secondary"
+              onClick={() => generateRandomArray(arraySize)}
+            >
+              <RotateCcw size={15} /> Reset Array
+            </button>
+
+            <button
+              className="btn-sort-secondary"
+              onClick={() => setAudioEnabled(!audioEnabled)}
+              title="Toggle Audio Feedback"
+            >
+              {audioEnabled ? <Volume2 size={15} color="#10b981" /> : <VolumeX size={15} />}
+              {audioEnabled ? "Sound ON" : "Muted"}
+            </button>
+          </div>
+        </div>
+
+        <div className="sorting-canvas-container">
+          <div className="sorting-status-bar">
+            <div className="sorting-telemetry">
+              <span>
+                Comparisons: <strong>{comparisons}</strong>
+              </span>
+              <span>
+                Swaps / Writes: <strong>{swaps}</strong>
+              </span>
+              <span>
+                Time: <strong>{(elapsedTime / 1000).toFixed(2)}s</strong>
+              </span>
+            </div>
+            <div
+              style={{
+                fontSize: "0.82rem",
+                fontWeight: 750,
+                color: isSorting
+                  ? isPaused
+                    ? "#f59e0b"
+                    : "#3b82f6"
+                  : sortedIndices.length === arraySize
+                  ? "#10b981"
+                  : "var(--muted)",
+              }}
+            >
+              Status:{" "}
+              {isSorting
+                ? isPaused
+                  ? "Paused"
+                  : "Sorting..."
+                : sortedIndices.length === arraySize
+                ? "Sorted!"
+                : "Idle"}
+            </div>
+          </div>
+
+          <div className="sorting-bars-frame">
+            {array.map((val, idx) => {
+              const isComp = comparedIndices.includes(idx);
+              const isSwap = swappedIndices.includes(idx);
+              const isSorted = sortedIndices.includes(idx);
+              const isPivot = pivotIndex === idx;
+
+              let barClass = "default";
+              if (isSorted) barClass = "sorted";
+              else if (isSwap) barClass = "swap";
+              else if (isComp) barClass = "compare";
+              else if (isPivot) barClass = "pivot";
+
+              const heightPercent = Math.max(8, Math.round((val / maxVal) * 100));
+
+              return (
+                <div
+                  key={idx}
+                  className={`sorting-bar ${barClass}`}
+                  style={{ height: `${heightPercent}%` }}
+                >
+                  {arraySize <= 35 && val}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="algo-info-card">
+          <h3 style={{ fontSize: "1.2rem", fontWeight: 800, marginBottom: "6px" }}>
+            {currentInfo.name} Algorithm Breakdown
+          </h3>
+          <p style={{ color: "var(--muted)", fontSize: "0.92rem", lineHeight: "1.6" }}>
+            {currentInfo.description}
+          </p>
+
+          <div className="algo-info-grid">
+            <div className="algo-stat-box">
+              <div className="algo-stat-label">Best Case</div>
+              <div className="algo-stat-val">{currentInfo.bestTime}</div>
+            </div>
+            <div className="algo-stat-box">
+              <div className="algo-stat-label">Average Case</div>
+              <div className="algo-stat-val">{currentInfo.avgTime}</div>
+            </div>
+            <div className="algo-stat-box">
+              <div className="algo-stat-label">Worst Case</div>
+              <div className="algo-stat-val">{currentInfo.worstTime}</div>
+            </div>
+            <div className="algo-stat-box">
+              <div className="algo-stat-label">Space Complexity</div>
+              <div className="algo-stat-val">{currentInfo.space}</div>
+            </div>
+            <div className="algo-stat-box">
+              <div className="algo-stat-label">Stable Sort</div>
+              <div className="algo-stat-val">{currentInfo.stable}</div>
+            </div>
+          </div>
+
+          <p style={{ color: "var(--muted)", fontSize: "0.88rem", lineHeight: "1.65", margin: 0 }}>
+            {currentInfo.details}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ComingSoonPage({ kind }: { kind: string }) {
   return (
     <section className="coming-soon">
@@ -2970,7 +3713,10 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       content = <CvPage />;
       break;
     case "projects":
-      content = <ComingSoonPage kind="Projects" />;
+      content = <ProjectsPage />;
+      break;
+    case "sorting-visualizer":
+      content = <SortingVisualizerPage />;
       break;
     case "people":
       content = <ComingSoonPage kind="People" />;

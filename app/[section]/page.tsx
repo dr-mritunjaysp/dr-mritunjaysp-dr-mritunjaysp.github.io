@@ -5,6 +5,7 @@ export function generateStaticParams() {
     "blog",
     "publications",
     "projects",
+    "sorting-visualizer",
     "cv",
     "teaching",
     "people",

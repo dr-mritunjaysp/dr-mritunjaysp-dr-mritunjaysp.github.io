@@ -20,6 +20,7 @@ async function prerender() {
     "/blog",
     "/publications",
     "/projects",
+    "/sorting-visualizer",
     "/cv",
     "/teaching",
     "/people",
