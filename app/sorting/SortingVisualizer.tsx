@@ -423,8 +423,8 @@ export function SortingVisualizer() {
                       onChange={(e) => setSingleElementVal(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleAddSingleElement()}
                     />
-                    <button className="btn-add-element-emerald" onClick={handleAddSingleElement}>
-                      <Plus size={14} /> Add
+                    <button className="btn-add-element-emerald-sm" onClick={handleAddSingleElement}>
+                      <Plus size={12} /> Add
                     </button>
                   </div>
                 </div>
