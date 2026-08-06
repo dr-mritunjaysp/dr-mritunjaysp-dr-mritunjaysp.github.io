@@ -30,7 +30,7 @@ export function SortingVisualizer() {
   const [category, setCategory] = useState<AlgorithmCategory>("basic");
   const [selectedAlgoId, setSelectedAlgoId] = useState<string>("bubble");
   const [vizType, setVizType] = useState<VisualizationType>("histogram");
-  const [hatchPattern, setHatchPattern] = useState<HatchPattern>("diagonal");
+  const [hatchPattern, setHatchPattern] = useState<HatchPattern>("none");
 
   // Professional Color Customizer & Palette Presets
   const [colorTheme, setColorTheme] = useState<"oceanic" | "neon" | "emerald" | "sunset" | "purple" | "custom">("oceanic");
@@ -352,20 +352,7 @@ export function SortingVisualizer() {
               </select>
             </div>
 
-            <div className="sorting-select-group">
-              <label>4. HD Bar Pattern Fill</label>
-              <select className="sorting-select" value={hatchPattern} onChange={(e) => setHatchPattern(e.target.value as HatchPattern)}>
-                <option value="diagonal">HD Diagonal Hatch</option>
-                <option value="reverse-diagonal">HD Reverse Diagonal</option>
-                <option value="crosshatch">HD Crosshatch Mesh</option>
-                <option value="grid">HD Grid Matrix</option>
-                <option value="dots">HD Polka Dots</option>
-                <option value="waves">HD Wave Stripes</option>
-                <option value="zigzag">HD Zigzag Weave</option>
-                <option value="none">Solid (No Pattern)</option>
-              </select>
             </div>
-          </div>
 
           {/* Professional Color Palette Customizer */}
           <div style={{ marginTop: "16px", padding: "12px 14px", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px" }}>
