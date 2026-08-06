@@ -526,17 +526,6 @@ export function SortingVisualizer() {
                     <span className="swatch-item sorted-swatch">Sorted</span>
                   </div>
                 )}
-
-                <div className="sorting-select-group">
-                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)" }}>Bar Hatch Pattern:</label>
-                  <select className="sorting-select" style={{ padding: "6px 10px", fontSize: "0.8rem" }} value={hatchPattern} onChange={(e) => setHatchPattern(e.target.value as HatchPattern)}>
-                    <option value="none">Solid Colors (Clean)</option>
-                    <option value="stripes">Diagonal Stripes</option>
-                    <option value="dots">Polka Dots</option>
-                    <option value="waves">Wave Texture</option>
-                    <option value="zigzag">Zigzag Cross</option>
-                  </select>
-                </div>
               </div>
             </div>
 
