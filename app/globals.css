@@ -5203,6 +5203,263 @@ body::before {
   border-color: var(--accent) !important;
 }
 
+/* Multi-View Visualizer Styles */
+.viz-horizontal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.viz-horizontal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-row-idx {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: var(--muted);
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.viz-horizontal-bar {
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  font-size: 0.74rem;
+  font-weight: 750;
+  color: rgba(255, 255, 255, 0.9);
+  transition: width 0.15s ease, background-color 0.15s ease;
+}
+
+.viz-horizontal-bar.default {
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+}
+
+.viz-horizontal-bar.compare {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b) !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.8) !important;
+}
+
+.viz-horizontal-bar.swap {
+  background: linear-gradient(90deg, #f43f5e, #e11d48) !important;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.85) !important;
+}
+
+.viz-horizontal-bar.sorted {
+  background: linear-gradient(90deg, #34d399, #059669) !important;
+}
+
+.viz-blocks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 10px;
+  width: 100%;
+  padding: 12px 0;
+}
+
+.viz-block-item {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.viz-block-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.viz-block-idx {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-family: var(--font-mono, monospace);
+  margin-top: 2px;
+}
+
+.viz-block-item.compare {
+  border-color: #f59e0b !important;
+  background: rgba(245, 158, 11, 0.15) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5) !important;
+}
+
+.viz-block-item.swap {
+  border-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.15) !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5) !important;
+}
+
+.viz-block-item.sorted {
+  border-color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+}
+
+.viz-scatter-frame {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
+
+.viz-scatter-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, 50%);
+  transition: all 0.15s ease;
+}
+
+.viz-scatter-dot.default {
+  background: #3b82f6;
+  box-shadow: 0 0 6px #3b82f6;
+}
+
+.viz-scatter-dot.compare {
+  background: #f59e0b !important;
+  box-shadow: 0 0 12px #f59e0b !important;
+  transform: translate(-50%, 50%) scale(1.4) !important;
+}
+
+.viz-scatter-dot.swap {
+  background: #ef4444 !important;
+  box-shadow: 0 0 14px #ef4444 !important;
+  transform: translate(-50%, 50%) scale(1.6) !important;
+}
+
+.viz-scatter-dot.sorted {
+  background: #10b981 !important;
+  box-shadow: 0 0 8px #10b981 !important;
+}
+
+.viz-radial-frame {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viz-radial-line {
+  position: absolute;
+  width: 3px;
+  transform-origin: bottom center;
+  border-radius: 3px;
+  transition: height 0.15s ease, background 0.15s ease;
+}
+
+.viz-radial-line.default {
+  background: linear-gradient(0deg, #3b82f6, #06b6d4);
+}
+
+.viz-radial-line.compare {
+  background: #f59e0b !important;
+  width: 5px !important;
+  box-shadow: 0 0 10px #f59e0b !important;
+}
+
+.viz-radial-line.swap {
+  background: #ef4444 !important;
+  width: 5px !important;
+  box-shadow: 0 0 10px #ef4444 !important;
+}
+
+.viz-radial-line.sorted {
+  background: #10b981 !important;
+}
+
+.viz-cells-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 16px 0;
+}
+
+.viz-cell-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.viz-cell-header {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-family: var(--font-mono, monospace);
+  margin-bottom: 4px;
+}
+
+.viz-cell-box {
+  min-width: 44px;
+  height: 44px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.92rem;
+  font-weight: 800;
+  background: var(--bg);
+  transition: all 0.15s ease;
+}
+
+.viz-cell-box.compare {
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4) !important;
+}
+
+.viz-cell-box.swap {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4) !important;
+}
+
+.viz-cell-box.sorted {
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+/* Hatch Patterns for Histogram and Bars */
+.hatch-diagonal {
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.25), rgba(255,255,255,0.25) 4px, transparent 4px, transparent 8px) !important;
+}
+.hatch-reverse-diagonal {
+  background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.25), rgba(255,255,255,0.25) 4px, transparent 4px, transparent 8px) !important;
+}
+.hatch-crosshatch {
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 4px, transparent 4px, transparent 8px),
+                    repeating-linear-gradient(-45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 4px, transparent 4px, transparent 8px) !important;
+}
+.hatch-grid {
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 2px, transparent 2px, transparent 6px),
+                    repeating-linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 2px, transparent 2px, transparent 6px) !important;
+}
+.hatch-dots {
+  background-image: radial-gradient(rgba(255,255,255,0.4) 1.5px, transparent 1.5px) !important;
+  background-size: 6px 6px !important;
+}
+.hatch-waves {
+  background-image: repeating-linear-gradient(60deg, rgba(255,255,255,0.25), rgba(255,255,255,0.25) 3px, transparent 3px, transparent 6px) !important;
+}
+.hatch-zigzag {
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.25) 4px, transparent 4px, transparent 8px) !important;
+}
+
 
 
 

@@ -10,12 +10,8 @@ import {
   Play,
   Pause,
   RotateCcw,
-  StepForward,
   Volume2,
   VolumeX,
-  Copy,
-  Check,
-  Sparkles,
   BookOpen,
   History,
   Code2,
@@ -23,6 +19,9 @@ import {
   HelpCircle,
   Maximize2,
   Sliders,
+  CheckCircle2,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 
 export function SortingVisualizer() {
@@ -31,14 +30,7 @@ export function SortingVisualizer() {
   const [vizType, setVizType] = useState<VisualizationType>("histogram");
   const [hatchPattern, setHatchPattern] = useState<HatchPattern>("none");
 
-  // Custom Colors
-  const [defaultColor, setDefaultColor] = useState<string>("#3b82f6");
-  const [compareColor, setCompareColor] = useState<string>("#f59e0b");
-  const [swapColor, setSwapColor] = useState<string>("#ef4444");
-  const [pivotColor, setPivotColor] = useState<string>("#a855f7");
-  const [sortedColor, setSortedColor] = useState<string>("#10b981");
-
-  // Array inputs
+  // Array inputs & controls
   const [arrayInput, setArrayInput] = useState<string>("64, 34, 25, 12, 22, 11, 90, 45, 78, 5");
   const [arraySize, setArraySize] = useState<number>(10);
   const [speed, setSpeed] = useState<number>(35);
@@ -46,7 +38,6 @@ export function SortingVisualizer() {
   const [showValues, setShowValues] = useState<boolean>(true);
   const [showIndices, setShowIndices] = useState<boolean>(true);
   const [isAscending, setIsAscending] = useState<boolean>(true);
-  const [copied, setCopied] = useState<boolean>(false);
 
   // Playback state
   const [array, setArray] = useState<number[]>([]);
@@ -57,7 +48,7 @@ export function SortingVisualizer() {
 
   const [isSorting, setIsSorting] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "history" | "how" | "complexity" | "code" | "execution" | "comparison" | "quiz">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "history" | "how" | "complexity" | "applications" | "advantages" | "code" | "execution" | "comparison" | "quiz">("overview");
 
   // Telemetry
   const [comparisons, setComparisons] = useState<number>(0);
@@ -130,14 +121,6 @@ export function SortingVisualizer() {
     resetPlaybackState();
   };
 
-  const handleCopySubdomain = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText("https://dr-mritunjaysp.com/sorting-visualizer");
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   const generateSortSteps = (): SortEvent[] => {
     const steps: SortEvent[] = [];
     const a = [...array];
@@ -198,7 +181,7 @@ export function SortingVisualizer() {
       }
       steps.push({ type: "sorted", indices: [n - 1], array: [...a], message: "Array completely sorted!" });
     } else {
-      // Default step generator for all other 38 algorithms
+      // Default step generator for all algorithms
       for (let i = 0; i < n - 1; i++) {
         for (let j = 0; j < n - i - 1; j++) {
           const comp = isAscending ? a[j] > a[j + 1] : a[j] < a[j + 1];
@@ -278,39 +261,21 @@ export function SortingVisualizer() {
     isPausedRef.current = nextPaused;
   };
 
-  const handleStepForward = () => {
-    if (stepIdxRef.current < stepsRef.current.length) {
-      const step = stepsRef.current[stepIdxRef.current];
-      stepIdxRef.current++;
-      setArray(step.array);
-      setCurrentStepMessage(step.message);
-    }
-  };
-
   const filteredAlgos = Object.values(ALGORITHMS).filter((a) => a.category === category);
   const maxVal = Math.max(...array.map((x) => Math.abs(x)), 250);
 
+  const getHatchClass = () => {
+    if (hatchPattern === "none") return "";
+    return `hatch-${hatchPattern}`;
+  };
+
   return (
     <section className="sorting-page">
-      <div className="page-intro">
+      <div className="page-intro" style={{ marginBottom: "20px" }}>
         <p className="eyebrow">Visualize, Understand, Compare, and Execute</p>
         <div className="title-header-row">
           <h1 className="page-intro-title">Interactive Sorting Algorithm Visualizer</h1>
         </div>
-        <p>
-          Comprehensive DSA learning workbench featuring 40 sorting algorithms, step-by-step telemetry, multi-language live code execution sandbox (C, C++, Java, Python), and side-by-side comparison matrix.
-        </p>
-      </div>
-
-      <div className="subdomain-badge-banner">
-        <span>Sub-domain link:</span>
-        <a href="https://dr-mritunjaysp.com/sorting-visualizer" className="subdomain-badge-link" target="_blank" rel="noopener noreferrer">
-          https://dr-mritunjaysp.com/sorting-visualizer
-        </a>
-        <button className="subdomain-copy-btn" onClick={handleCopySubdomain} title="Copy URL">
-          {copied ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
-          <span style={{ marginLeft: "4px" }}>{copied ? "Copied!" : "Copy"}</span>
-        </button>
       </div>
 
       <div className="sorting-workbench">
@@ -369,6 +334,7 @@ export function SortingVisualizer() {
                 <option value="grid">Grid Pattern</option>
                 <option value="dots">Dots Pattern</option>
                 <option value="waves">Waves Pattern</option>
+                <option value="zigzag">Zigzag Pattern</option>
               </select>
             </div>
           </div>
@@ -431,7 +397,7 @@ export function SortingVisualizer() {
           </div>
         </div>
 
-        {/* Visualization Canvas */}
+        {/* Dynamic Multi-View Visualization Canvas */}
         <div className="sorting-canvas-container">
           <div className="sorting-status-bar">
             <div className="sorting-telemetry">
@@ -439,39 +405,160 @@ export function SortingVisualizer() {
               <span>Swaps/Writes: <strong style={{ color: "#ef4444" }}>{swaps}</strong></span>
               <span>Time: <strong>{(elapsedTime / 1000).toFixed(2)}s</strong></span>
               <span>Algorithm: <strong style={{ color: "var(--accent)" }}>{currentAlgo.name}</strong></span>
+              <span>View: <strong style={{ color: "var(--text)" }}>{vizType.toUpperCase()}</strong></span>
             </div>
             <div style={{ fontSize: "0.84rem", fontWeight: 750, color: "var(--text)" }}>{currentStepMessage}</div>
           </div>
 
-          <div className="sorting-bars-frame">
-            {array.map((val, idx) => {
-              const isComp = comparedIndices.includes(idx);
-              const isSwap = swappedIndices.includes(idx);
-              const isSorted = sortedIndices.includes(idx);
-              const isPivot = pivotIndex === idx;
+          {/* Render selected Visualization Type */}
+          {vizType === "histogram" && (
+            <div className="sorting-bars-frame">
+              {array.map((val, idx) => {
+                const isComp = comparedIndices.includes(idx);
+                const isSwap = swappedIndices.includes(idx);
+                const isSorted = sortedIndices.includes(idx);
+                const isPivot = pivotIndex === idx;
 
-              let barClass = "default";
-              if (isSorted) barClass = "sorted";
-              else if (isSwap) barClass = "swap";
-              else if (isComp) barClass = "compare";
-              else if (isPivot) barClass = "pivot";
+                let barClass = "default";
+                if (isSorted) barClass = "sorted";
+                else if (isSwap) barClass = "swap";
+                else if (isComp) barClass = "compare";
+                else if (isPivot) barClass = "pivot";
 
-              const heightPercent = Math.max(8, Math.round((Math.abs(val) / maxVal) * 100));
+                const heightPercent = Math.max(8, Math.round((Math.abs(val) / maxVal) * 100));
 
-              return (
-                <div
-                  key={idx}
-                  className={`sorting-bar ${barClass}`}
-                  style={{
-                    height: `${heightPercent}%`,
-                    position: "relative",
-                  }}
-                >
-                  {showValues && array.length <= 40 && val}
-                </div>
-              );
-            })}
-          </div>
+                return (
+                  <div
+                    key={idx}
+                    className={`sorting-bar ${barClass} ${getHatchClass()}`}
+                    style={{ height: `${heightPercent}%` }}
+                  >
+                    {showValues && array.length <= 40 && val}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {vizType === "horizontal" && (
+            <div className="viz-horizontal-container">
+              {array.map((val, idx) => {
+                const isComp = comparedIndices.includes(idx);
+                const isSwap = swappedIndices.includes(idx);
+                const isSorted = sortedIndices.includes(idx);
+                let barClass = "default";
+                if (isSorted) barClass = "sorted";
+                else if (isSwap) barClass = "swap";
+                else if (isComp) barClass = "compare";
+
+                const widthPercent = Math.max(6, Math.round((Math.abs(val) / maxVal) * 100));
+                return (
+                  <div key={idx} className="viz-horizontal-row">
+                    <span className="viz-row-idx">[{idx}]</span>
+                    <div className={`viz-horizontal-bar ${barClass} ${getHatchClass()}`} style={{ width: `${widthPercent}%` }}>
+                      {val}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {vizType === "blocks" && (
+            <div className="viz-blocks-grid">
+              {array.map((val, idx) => {
+                const isComp = comparedIndices.includes(idx);
+                const isSwap = swappedIndices.includes(idx);
+                const isSorted = sortedIndices.includes(idx);
+                let blockClass = "default";
+                if (isSorted) blockClass = "sorted";
+                else if (isSwap) blockClass = "swap";
+                else if (isComp) blockClass = "compare";
+
+                return (
+                  <div key={idx} className={`viz-block-item ${blockClass} ${getHatchClass()}`}>
+                    <span className="viz-block-val">{val}</span>
+                    <span className="viz-block-idx">#{idx}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {vizType === "scatter" && (
+            <div className="viz-scatter-frame">
+              {array.map((val, idx) => {
+                const isComp = comparedIndices.includes(idx);
+                const isSwap = swappedIndices.includes(idx);
+                const isSorted = sortedIndices.includes(idx);
+                let dotClass = "default";
+                if (isSorted) dotClass = "sorted";
+                else if (isSwap) dotClass = "swap";
+                else if (isComp) dotClass = "compare";
+
+                const bottomPercent = Math.max(6, Math.round((Math.abs(val) / maxVal) * 90));
+                const leftPercent = Math.round(((idx + 0.5) / array.length) * 100);
+
+                return (
+                  <div
+                    key={idx}
+                    className={`viz-scatter-dot ${dotClass}`}
+                    style={{ left: `${leftPercent}%`, bottom: `${bottomPercent}%` }}
+                    title={`Index ${idx}: ${val}`}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          {vizType === "radial" && (
+            <div className="viz-radial-frame">
+              {array.map((val, idx) => {
+                const isComp = comparedIndices.includes(idx);
+                const isSwap = swappedIndices.includes(idx);
+                const isSorted = sortedIndices.includes(idx);
+                let rClass = "default";
+                if (isSorted) rClass = "sorted";
+                else if (isSwap) rClass = "swap";
+                else if (isComp) rClass = "compare";
+
+                const angle = (idx / array.length) * 360;
+                const length = Math.max(20, Math.round((Math.abs(val) / maxVal) * 110));
+
+                return (
+                  <div
+                    key={idx}
+                    className={`viz-radial-line ${rClass}`}
+                    style={{
+                      transform: `rotate(${angle}deg)`,
+                      height: `${length}px`,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          {vizType === "cells" && (
+            <div className="viz-cells-row">
+              {array.map((val, idx) => {
+                const isComp = comparedIndices.includes(idx);
+                const isSwap = swappedIndices.includes(idx);
+                const isSorted = sortedIndices.includes(idx);
+                let cellClass = "default";
+                if (isSorted) cellClass = "sorted";
+                else if (isSwap) cellClass = "swap";
+                else if (isComp) cellClass = "compare";
+
+                return (
+                  <div key={idx} className="viz-cell-wrapper">
+                    <span className="viz-cell-header">idx {idx}</span>
+                    <div className={`viz-cell-box ${cellClass} ${getHatchClass()}`}>{val}</div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Educational Information Tabs */}
@@ -479,10 +566,10 @@ export function SortingVisualizer() {
           <div className="code-runner-header" style={{ marginBottom: "18px" }}>
             <div className="language-tabs-row" style={{ overflowX: "auto" }}>
               <button className={`lang-tab-btn ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>
-                <BookOpen size={14} style={{ display: "inline", marginRight: "4px" }} /> Overview
+                <BookOpen size={14} style={{ display: "inline", marginRight: "4px" }} /> Deep Overview
               </button>
               <button className={`lang-tab-btn ${activeTab === "history" ? "active" : ""}`} onClick={() => setActiveTab("history")}>
-                <History size={14} style={{ display: "inline", marginRight: "4px" }} /> History
+                <History size={14} style={{ display: "inline", marginRight: "4px" }} /> Origin & History
               </button>
               <button className={`lang-tab-btn ${activeTab === "how" ? "active" : ""}`} onClick={() => setActiveTab("how")}>
                 <Sparkles size={14} style={{ display: "inline", marginRight: "4px" }} /> Working Principle
@@ -490,17 +577,23 @@ export function SortingVisualizer() {
               <button className={`lang-tab-btn ${activeTab === "complexity" ? "active" : ""}`} onClick={() => setActiveTab("complexity")}>
                 <BarChart3 size={14} style={{ display: "inline", marginRight: "4px" }} /> Complexity Matrix
               </button>
+              <button className={`lang-tab-btn ${activeTab === "applications" ? "active" : ""}`} onClick={() => setActiveTab("applications")}>
+                <Layers size={14} style={{ display: "inline", marginRight: "4px" }} /> Real-World Use Cases
+              </button>
+              <button className={`lang-tab-btn ${activeTab === "advantages" ? "active" : ""}`} onClick={() => setActiveTab("advantages")}>
+                <CheckCircle2 size={14} style={{ display: "inline", marginRight: "4px" }} /> Advantages & Limitations
+              </button>
               <button className={`lang-tab-btn ${activeTab === "code" ? "active" : ""}`} onClick={() => setActiveTab("code")}>
                 <Code2 size={14} style={{ display: "inline", marginRight: "4px" }} /> Source Code Viewer
               </button>
               <button className={`lang-tab-btn ${activeTab === "execution" ? "active" : ""}`} onClick={() => setActiveTab("execution")}>
-                <Sliders size={14} style={{ display: "inline", marginRight: "4px" }} /> Live Code Execution
+                <Sliders size={14} style={{ display: "inline", marginRight: "4px" }} /> Live Execution Sandbox
               </button>
               <button className={`lang-tab-btn ${activeTab === "comparison" ? "active" : ""}`} onClick={() => setActiveTab("comparison")}>
-                <Maximize2 size={14} style={{ display: "inline", marginRight: "4px" }} /> Compare Algorithms
+                <Maximize2 size={14} style={{ display: "inline", marginRight: "4px" }} /> Side-by-Side Matrix
               </button>
               <button className={`lang-tab-btn ${activeTab === "quiz" ? "active" : ""}`} onClick={() => setActiveTab("quiz")}>
-                <HelpCircle size={14} style={{ display: "inline", marginRight: "4px" }} /> Quiz & Recommender
+                <HelpCircle size={14} style={{ display: "inline", marginRight: "4px" }} /> DSA Quiz & Recommender
               </button>
             </div>
           </div>
@@ -513,8 +606,8 @@ export function SortingVisualizer() {
 
           {activeTab === "overview" && (
             <div>
-              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>{currentAlgo.name} Overview</h3>
-              <p style={{ color: "var(--muted)", fontSize: "0.94rem", lineHeight: "1.65" }}>{currentAlgo.overview}</p>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>{currentAlgo.name} — Deep Academic Overview</h3>
+              <p style={{ color: "var(--muted)", fontSize: "0.94rem", lineHeight: "1.7" }}>{currentAlgo.overview}</p>
               <div className="pub-attributes-row" style={{ marginTop: "14px" }}>
                 <span className="attribute-pill">Category: {currentAlgo.categoryName}</span>
                 <span className="attribute-pill">Best: {currentAlgo.bestTime}</span>
@@ -528,20 +621,20 @@ export function SortingVisualizer() {
 
           {activeTab === "history" && (
             <div>
-              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>History & Origin</h3>
-              <p style={{ color: "var(--muted)", fontSize: "0.94rem", lineHeight: "1.65" }}>{currentAlgo.history}</p>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>Historical Context & Origin</h3>
+              <p style={{ color: "var(--muted)", fontSize: "0.94rem", lineHeight: "1.7" }}>{currentAlgo.history}</p>
             </div>
           )}
 
           {activeTab === "how" && (
             <div>
-              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>Step-by-Step Procedure</h3>
-              <ol style={{ paddingLeft: "20px", color: "var(--muted)", fontSize: "0.94rem", lineHeight: "1.7" }}>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>Detailed Working Principle</h3>
+              <ol style={{ paddingLeft: "20px", color: "var(--muted)", fontSize: "0.94rem", lineHeight: "1.75" }}>
                 {currentAlgo.howItWorks.map((step, idx) => (
-                  <li key={idx} style={{ marginBottom: "6px" }}>{step}</li>
+                  <li key={idx} style={{ marginBottom: "8px" }}>{step}</li>
                 ))}
               </ol>
-              <h4 style={{ fontSize: "1rem", fontWeight: 750, marginTop: "16px", marginBottom: "8px" }}>Language-Neutral Pseudocode</h4>
+              <h4 style={{ fontSize: "1rem", fontWeight: 750, marginTop: "18px", marginBottom: "8px" }}>Language-Neutral Pseudocode</h4>
               <pre className="console-output-area" style={{ background: "var(--bg)", padding: "14px", borderRadius: "10px" }}>{currentAlgo.pseudocode}</pre>
             </div>
           )}
@@ -585,6 +678,41 @@ export function SortingVisualizer() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {activeTab === "applications" && (
+            <div>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>Real-World Use Cases & Applications</h3>
+              <ul style={{ paddingLeft: "20px", color: "var(--muted)", fontSize: "0.94rem", lineHeight: "1.7" }}>
+                {currentAlgo.applications.map((app, idx) => (
+                  <li key={idx} style={{ marginBottom: "8px" }}>{app}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {activeTab === "advantages" && (
+            <div>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "12px" }}>Key Advantages & Limitations</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+                <div style={{ background: "rgba(16, 185, 129, 0.08)", border: "1px solid rgba(16, 185, 129, 0.3)", borderRadius: "12px", padding: "16px" }}>
+                  <h4 style={{ color: "#10b981", fontSize: "1rem", fontWeight: 800, marginBottom: "8px" }}>Advantages</h4>
+                  <ul style={{ paddingLeft: "18px", margin: 0, color: "var(--text)", fontSize: "0.9rem", lineHeight: "1.65" }}>
+                    {currentAlgo.advantages.map((adv, idx) => (
+                      <li key={idx} style={{ marginBottom: "6px" }}>{adv}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div style={{ background: "rgba(239, 68, 68, 0.08)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "12px", padding: "16px" }}>
+                  <h4 style={{ color: "#ef4444", fontSize: "1rem", fontWeight: 800, marginBottom: "8px" }}>Limitations</h4>
+                  <ul style={{ paddingLeft: "18px", margin: 0, color: "var(--text)", fontSize: "0.9rem", lineHeight: "1.65" }}>
+                    {currentAlgo.limitations.map((lim, idx) => (
+                      <li key={idx} style={{ marginBottom: "6px" }}>{lim}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           )}
 
