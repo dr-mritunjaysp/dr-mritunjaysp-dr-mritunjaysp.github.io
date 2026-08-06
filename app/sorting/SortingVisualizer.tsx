@@ -329,10 +329,10 @@ export function SortingVisualizer() {
 
   return (
     <section className="sorting-page">
-      <div className="page-intro" style={{ marginBottom: "16px" }}>
-        <p className="eyebrow">Visualize, Understand, Compare, and Execute</p>
+      <div className="page-intro" style={{ marginBottom: "12px" }}>
+        <p className="eyebrow" style={{ fontSize: "0.72rem" }}>Visualize, Understand, Compare, and Execute</p>
         <div className="title-header-row">
-          <h1 className="page-intro-title">Interactive Sorting Algorithm Visualizer</h1>
+          <h1 className="page-intro-title" style={{ fontSize: "1.35rem" }}>Interactive Sorting Algorithm Visualizer</h1>
         </div>
       </div>
 

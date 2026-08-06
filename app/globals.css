@@ -5572,7 +5572,8 @@ body::before {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 12px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -5593,7 +5594,6 @@ body::before {
   justify-content: space-between;
   gap: 8px;
   flex-wrap: nowrap !important;
-  margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
   overflow: hidden;
@@ -5800,9 +5800,10 @@ body::before {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-height: 90px;
-  overflow-y: auto;
-  padding: 8px;
+  min-height: 42px;
+  max-height: none;
+  overflow: visible;
+  padding: 8px 10px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -5842,6 +5843,19 @@ body::before {
   background: #ef4444;
   color: #ffffff;
 }
+
+.sorting-page .page-intro-title {
+  font-size: 1.35rem !important;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+@media (max-width: 768px) {
+  .sorting-page .page-intro-title {
+    font-size: 1.15rem !important;
+  }
+}
+
 
 
 
