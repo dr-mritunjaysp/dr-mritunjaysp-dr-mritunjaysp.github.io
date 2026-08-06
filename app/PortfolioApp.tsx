@@ -41,6 +41,7 @@ import { LottieIcon } from "./LottieIcon";
 import { ScrollJumpButton } from "./ScrollJumpButton";
 import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationCitations } from "./firebase";
 import type { ScholarMetrics } from "./firebase";
+import { SortingVisualizer } from "./sorting/SortingVisualizer";
 
 type SectionKey =
   | "home"
@@ -3716,7 +3717,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       content = <ProjectsPage />;
       break;
     case "sorting-visualizer":
-      content = <SortingVisualizerPage />;
+      content = <SortingVisualizer />;
       break;
     case "people":
       content = <ComingSoonPage kind="People" />;
