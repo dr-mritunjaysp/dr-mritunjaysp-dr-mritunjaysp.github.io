@@ -94,7 +94,7 @@ const moreNav = [
 const publications: Publication[] = [
   {
     title: "Quantum computing applications for Internet of Things",
-    authors: "Mritunjay Shall Peelam and Anjaney Asreet Rout",
+    authors: "Mritunjay Shall Peelam, Anjaney Asreet Rout, and Vinay Chamola",
     venue: "IET Quantum Communication",
     year: 2024,
     citations: 79,
@@ -107,7 +107,7 @@ const publications: Publication[] = [
     title:
       "QIoTChain: Quantum IoT-blockchain fusion for advanced data protection in Industry 4.0",
     authors:
-      "Aditya Kumar Sharma, Mritunjay Shall Peelam, and Brijesh Kumar Chaurasia",
+      "Aditya Kumar Sharma, Mritunjay Shall Peelam, Brijesh Kumar Chaurasia, and Vinay Chamola",
     venue: "IET Blockchain",
     year: 2024,
     citations: 63,
@@ -120,7 +120,7 @@ const publications: Publication[] = [
     title:
       "A review on emergency vehicle management for intelligent transportation systems",
     authors:
-      "Mritunjay Shall Peelam, Mehul Gera, and Sherali Zeadally",
+      "Mritunjay Shall Peelam, Mehul Gera, Vinay Chamola, and Sherali Zeadally",
     venue: "IEEE Transactions on Intelligent Transportation Systems",
     year: 2024,
     citations: 54,
@@ -132,7 +132,7 @@ const publications: Publication[] = [
     title:
       "Metaverse for education: Developments, challenges, and future direction",
     authors:
-      "Mritunjay Shall Peelam, Uday Mittal, and collaborators",
+      "Vinay Chamola, Mritunjay Shall Peelam, Uday Mittal, and collaborators",
     venue: "Computer Applications in Engineering Education",
     year: 2025,
     citations: 62,
@@ -144,7 +144,7 @@ const publications: Publication[] = [
     title:
       "Unlocking the potential of interconnected blockchains: A comprehensive study of Cosmos blockchain interoperability",
     authors:
-      "Mritunjay Shall Peelam, Brijesh Kumar Chaurasia, Aditya Kumar Sharma, and Biplab Sikdar",
+      "Mritunjay Shall Peelam, Brijesh Kumar Chaurasia, Aditya Kumar Sharma, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Access",
     year: 2024,
     citations: 50,
@@ -155,7 +155,7 @@ const publications: Publication[] = [
   {
     title:
       "Explorative implementation of quantum key distribution algorithms for secure consumer electronics networks",
-    authors: "Mritunjay Shall Peelam and Siva Sai",
+    authors: "Mritunjay Shall Peelam, Siva Sai, and Vinay Chamola",
     venue: "IEEE Transactions on Consumer Electronics",
     year: 2024,
     citations: 38,
@@ -167,7 +167,7 @@ const publications: Publication[] = [
     title:
       "Future of connectivity: A comprehensive review of innovations and challenges in 7G smart networks",
     authors:
-      "Mritunjay Shall Peelam, Mohsen Guizani, and Dusit Niyato",
+      "Vinay Chamola, Mritunjay Shall Peelam, Mohsen Guizani, and Dusit Niyato",
     venue: "IEEE Open Journal of the Communications Society",
     year: 2025,
     citations: 45,
@@ -178,7 +178,7 @@ const publications: Publication[] = [
   {
     title:
       "Enhancing security using quantum blockchain in consumer IoT networks",
-    authors: "Mritunjay Shall Peelam and Biplab Sikdar",
+    authors: "Mritunjay Shall Peelam, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Transactions on Consumer Electronics",
     year: 2024,
     citations: 36,
@@ -190,7 +190,7 @@ const publications: Publication[] = [
     title:
       "DemocracyGuard: Blockchain-based secure voting framework for digital democracy",
     authors:
-      "Mritunjay Shall Peelam, Gaurav Kumar, and Kunjan Shah",
+      "Mritunjay Shall Peelam, Gaurav Kumar, Kunjan Shah, and Vinay Chamola",
     venue: "Expert Systems",
     year: 2025,
     citations: 36,
@@ -212,7 +212,7 @@ const publications: Publication[] = [
   {
     title:
       "V-Track: Blockchain-enabled IoT system for reliable vehicle location verification",
-    authors: "Mritunjay Shall Peelam and Kunjan Shah",
+    authors: "Mritunjay Shall Peelam, Kunjan Shah, and Vinay Chamola",
     venue: "Digital Communications and Networks",
     year: 2024,
     citations: 20,
@@ -224,7 +224,7 @@ const publications: Publication[] = [
     title:
       "Blockchain-enabled vehicle lifecycle management with predictive maintenance using federated learning",
     authors:
-      "Mritunjay Shall Peelam, Kunjan Shah, and Biplab Sikdar",
+      "Mritunjay Shall Peelam, Kunjan Shah, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Transactions on Consumer Electronics",
     year: 2024,
     citations: 17,
@@ -247,7 +247,7 @@ const publications: Publication[] = [
     title:
       "Blockchain-Based Game Theoretical Framework for V2V and V2G Energy Trading in Carbon-Intelligent Internet of Vehicles",
     authors:
-      "Mritunjay Shall Peelam, Siva Sai, and Pranay Jalan",
+      "Mritunjay Shall Peelam, Vinay Chamola, Siva Sai, and Pranay Jalan",
     venue: "IEEE Internet of Things Journal",
     year: 2025,
     citations: 10,
@@ -259,7 +259,7 @@ const publications: Publication[] = [
     title:
       "Blockchain-enabled intrusion detection systems for real-time vehicle monitoring",
     authors:
-      "Mritunjay Shall Peelam and Brijesh Kumar Chaurasia",
+      "Mritunjay Shall Peelam, Vinay Chamola, and Brijesh Kumar Chaurasia",
     venue: "Vehicular Communications",
     year: 2025,
     citations: 12,
@@ -271,7 +271,7 @@ const publications: Publication[] = [
     title:
       "Decentralized trust: NFT and blockchain-enabled evidence system using fog computing",
     authors:
-      "Mritunjay Shall Peelam, Aditya Kumar Sharma, and Brijesh Kumar Chaurasia",
+      "Mritunjay Shall Peelam, Vinay Chamola, Aditya Kumar Sharma, and Brijesh Kumar Chaurasia",
     venue: "Blockchain: Research and Applications",
     year: 2025,
     citations: 15,
@@ -283,7 +283,7 @@ const publications: Publication[] = [
     title:
       "Machine Learning Techniques for Wi-Fi CSI-based Recognition and Sensing: A Comprehensive Review",
     authors:
-      "Siva Sai, Devansh Sharma, Mritunjay Shall Peelam, Mohsen Guizani, and Dusit Niyato",
+      "Siva Sai, Devansh Sharma, Mritunjay Shall Peelam, Vinay Chamola, Mohsen Guizani, and Dusit Niyato",
     venue: "IEEE Internet of Things Journal",
     year: 2026,
     citations: 8,
@@ -294,7 +294,7 @@ const publications: Publication[] = [
   {
     title:
       "Blockchain-Enabled Secure V2V and V2G Energy Trading for Carbon-Aware Internet of Energy Networks",
-    authors: "Mritunjay Shall Peelam",
+    authors: "Mritunjay Shall Peelam and Vinay Chamola",
     venue: "IEEE Network",
     year: 2026,
     citations: 2,
@@ -306,7 +306,7 @@ const publications: Publication[] = [
     title:
       "Enhancing Quantum-Resistant Data Privacy in Vehicular Cloud Networks Using NIST-Qualified FALCON Algorithm",
     authors:
-      "Shall Mritunjay Peelam, Brijesh Kumar Chaurasia, and Man Mohan Shukla",
+      "Shall Mritunjay Peelam, Brijesh Kumar Chaurasia, Man Mohan Shukla, and Vinay Chamola",
     venue: "Vehicular Communications",
     year: 2025,
     citations: 1,
@@ -317,7 +317,7 @@ const publications: Publication[] = [
   {
     title:
       "Blockchain-based framework for global IMEI blacklist management and mobile device theft prevention",
-    authors: "Mritunjay Shall Peelam",
+    authors: "Mritunjay Shall Peelam and Vinay Chamola",
     venue: "Blockchain: Research and Applications",
     year: 2025,
     citations: 1,
@@ -329,7 +329,7 @@ const publications: Publication[] = [
     title:
       "Enhancing Vehicle Lifecycle Management Through Blockchain-Driven Predictive Maintenance and Federated Learning",
     authors:
-      "Mritunjay Shall Peelam, Kunjan Shah, and Biplab Sikdar",
+      "Mritunjay Shall Peelam, Kunjan Shah, Vinay Chamola, and Biplab Sikdar",
     venue: "2024 IEEE GLOBECOM Workshops",
     year: 2024,
     citations: 1,
