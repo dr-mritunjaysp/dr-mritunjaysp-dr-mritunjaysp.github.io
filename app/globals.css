@@ -4253,11 +4253,12 @@ body::before {
     pointer-events: auto;
     text-align: center;
     justify-content: center;
-    max-width: 48vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    align-items: center;
+    max-width: 58vw;
     white-space: nowrap;
-    font-size: clamp(0.76rem, 3.1vw, 0.92rem);
+    font-size: clamp(0.92rem, 3.8vw, 1.12rem);
+    font-weight: 750;
+    letter-spacing: -0.01em;
   }
 
   .nav-pill {
