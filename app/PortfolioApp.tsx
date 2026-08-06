@@ -449,7 +449,7 @@ const cvSections = {
       title: "Ph.D. in Electrical and Electronics Engineering",
       place: "Birla Institute of Technology and Science, Pilani",
       detail:
-        "Design and Development of Blockchain-based Schemes for Enabling Intelligent Transportation Systems. Supervised by Prof. Vinay Chamola.",
+        "Design and Development of Blockchain-based Schemes for Enabling Intelligent Transportation Systems.",
     },
     {
       period: "2019 — 2021",
@@ -1190,8 +1190,7 @@ function HomePage() {
         </p>
         <p>
           I completed my Ph.D. from{" "}
-          <a href="https://www.bits-pilani.ac.in/">BITS Pilani</a> under the
-          supervision of Prof. Vinay Chamola. My research focuses on
+          <a href="https://www.bits-pilani.ac.in/">BITS Pilani</a>. My research focuses on
           blockchain-based solutions for intelligent transportation systems,
           integrating Blockchain, Internet of Things (IoT), Edge AI, Federated
           Learning, and Multimodal Machine Learning.
@@ -1835,10 +1834,6 @@ function CvPage() {
         <SectionTitle eyebrow="Academic referees">References</SectionTitle>
         <div className="detail-grid reference-grid">
           {[
-            [
-              "Prof. Vinay Chamola",
-              "BITS Pilani · vinay.chamola@pilani.bits-pilani.ac.in",
-            ],
             [
               "Prof. Biplab Sikdar",
               "National University of Singapore · bsikdar@nus.edu.sg",
