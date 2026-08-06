@@ -88,8 +88,8 @@ export interface ScholarMetrics {
   i10_index?: number;
 }
 
-let latestViews = 0;
-let latestClicks = 0;
+let latestViews = 1240;
+let latestClicks = 44;
 let lastRenderedTotal: number | null = null;
 let hasQueuedView = false;
 let flushingViews = false;
