@@ -395,10 +395,10 @@ export function SortingVisualizer() {
 
             {/* Section 2: Dataset & Manual Data Manager (Emerald-Teal Border) */}
             <div className="control-card-section gradient-border-emerald">
-              <div className="control-card-header" style={{ justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div className="control-card-header">
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
                   <span className="control-card-badge emerald-badge">Step 2</span>
-                  <span className="control-card-title"><FileSpreadsheet size={15} color="#10b981" /> Manual Data Manager</span>
+                  <span className="control-card-title"><FileSpreadsheet size={15} color="#10b981" /> Manual Data</span>
                 </div>
                 <button className="subdomain-copy-btn" style={{ color: "#ef4444" }} onClick={handleClearAllElements} title="Clear All">
                   <Trash2 size={12} /> Clear
@@ -421,8 +421,8 @@ export function SortingVisualizer() {
                       onChange={(e) => setSingleElementVal(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleAddSingleElement()}
                     />
-                    <button className="btn-sort-primary" style={{ padding: "8px 14px", fontSize: "0.84rem" }} onClick={handleAddSingleElement}>
-                      <Plus size={14} /> Add
+                    <button className="btn-add-element-emerald" onClick={handleAddSingleElement}>
+                      <Plus size={15} /> Add Element
                     </button>
                   </div>
                 </div>

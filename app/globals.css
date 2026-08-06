@@ -5590,10 +5590,13 @@ body::before {
 .control-card-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
+  flex-wrap: nowrap !important;
   margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
 }
 
 .control-card-badge {
@@ -5601,19 +5604,51 @@ body::before {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 9999px;
   background: rgba(0, 0, 0, 0.06);
   color: var(--muted);
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .control-card-title {
   font-size: 0.88rem;
   font-weight: 800;
   color: var(--text);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-add-element-emerald {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.84rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  transition: all 0.15s ease;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+}
+
+.btn-add-element-emerald:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
 }
 
 .control-inputs-stack {
