@@ -554,6 +554,11 @@ function Header({
 
   return (
     <header className="site-header">
+      <div
+        className={`mobile-nav-backdrop ${mobileOpen ? "is-open" : ""}`}
+        onClick={() => setMobileOpen(false)}
+        aria-hidden="true"
+      />
       <nav className="nav-pill" aria-label="Main navigation">
         {section !== "home" && (
           <Link className="desktop-page-brand" href="/" aria-label="Dr. Mritunjay Shall Peelam Home">
