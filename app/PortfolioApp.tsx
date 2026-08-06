@@ -1388,7 +1388,7 @@ function PublicationsPage() {
             </select>
           </div>
         }
-        description="Peer-reviewed work spanning blockchain, IoT, intelligent transportation, quantum security, Edge AI, and next-generation networks."
+        description={`Complete peer-reviewed research record comprising ${publications.length} high-impact journal papers and conference proceedings.`}
       />
       <div className="publication-toolbar">
         <label className="filter-input">
@@ -1425,7 +1425,9 @@ function PublicationsPage() {
           <option value="impact-desc">Sort: Impact Factor</option>
           <option value="citations-desc">Sort: Citations</option>
         </select>
-        <span className="result-count">{filteredAndSorted.length} publications</span>
+        <span className="result-count">
+          Showing <strong>{filteredAndSorted.length}</strong> of <strong>{publications.length}</strong> Total Publications
+        </span>
       </div>
       <div className="publication-list">
         {filteredAndSorted.map((publication) => {
