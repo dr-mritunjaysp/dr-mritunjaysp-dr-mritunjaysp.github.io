@@ -10,8 +10,6 @@ import {
   Play,
   Pause,
   RotateCcw,
-  Volume2,
-  VolumeX,
   BookOpen,
   History,
   Code2,
@@ -24,6 +22,8 @@ import {
   Sparkles,
   Palette,
   Gauge,
+  ArrowUpDown,
+  FileSpreadsheet,
 } from "lucide-react";
 
 export function SortingVisualizer() {
@@ -43,9 +43,7 @@ export function SortingVisualizer() {
   const [arrayInput, setArrayInput] = useState<string>("64, 34, 25, 12, 22, 11, 90, 45, 78, 5");
   const [arraySize, setArraySize] = useState<number>(10);
   const [speed, setSpeed] = useState<number>(20); // 1 = Very Slow (1800ms), 100 = High Speed (5ms)
-  const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
   const [showValues, setShowValues] = useState<boolean>(true);
-  const [showIndices, setShowIndices] = useState<boolean>(true);
   const [isAscending, setIsAscending] = useState<boolean>(true);
 
   // Playback state
@@ -76,9 +74,9 @@ export function SortingVisualizer() {
 
   // Calculate step delay (Speed 1 = 1800ms slow, Speed 100 = 5ms ultra fast)
   const getDelayFromSpeed = (spd: number) => {
-    if (spd <= 10) return Math.round(1800 - spd * 120); // 1800ms down to 600ms
-    if (spd <= 50) return Math.round(600 - (spd - 10) * 12.5); // 600ms down to 100ms
-    return Math.max(5, Math.round(100 - (spd - 50) * 1.9)); // 100ms down to 5ms
+    if (spd <= 10) return Math.round(1800 - spd * 120);
+    if (spd <= 50) return Math.round(600 - (spd - 10) * 12.5);
+    return Math.max(5, Math.round(100 - (spd - 50) * 1.9));
   };
 
   const parseArrayInput = (str: string) => {
@@ -178,7 +176,7 @@ export function SortingVisualizer() {
             type: "compare",
             indices: [targetIdx, j],
             array: [...a],
-            message: `Scanning unsorted range [${i}..${n - 1}]: comparing element at index [${j}] (${a[j]}) with current minimum candidate at index [${targetIdx}] (${a[targetIdx]})`,
+            message: `Scanning unsorted range [${i}..${n - 1}]: comparing element at index [${j}] (${a[j]}) with current candidate at index [${targetIdx}] (${a[targetIdx]})`,
           });
           if (isAscending ? a[j] < a[targetIdx] : a[j] > a[targetIdx]) {
             targetIdx = j;
@@ -299,7 +297,7 @@ export function SortingVisualizer() {
 
   return (
     <section className="sorting-page">
-      <div className="page-intro" style={{ marginBottom: "20px" }}>
+      <div className="page-intro" style={{ marginBottom: "16px" }}>
         <p className="eyebrow">Visualize, Understand, Compare, and Execute</p>
         <div className="title-header-row">
           <h1 className="page-intro-title">Interactive Sorting Algorithm Visualizer</h1>
@@ -307,172 +305,204 @@ export function SortingVisualizer() {
       </div>
 
       <div className="sorting-workbench">
+        {/* Intuitive 4-Section Control Dashboard for Mobile & Desktop */}
         <div className="sorting-control-panel">
-          <div className="sorting-controls-grid">
-            <div className="sorting-select-group">
-              <label>1. Select Category</label>
-              <select
-                className="sorting-select"
-                value={category}
-                onChange={(e) => {
-                  const cat = e.target.value as AlgorithmCategory;
-                  setCategory(cat);
-                  const firstInCat = Object.values(ALGORITHMS).find((a) => a.category === cat);
-                  if (firstInCat) setSelectedAlgoId(firstInCat.id);
-                }}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="control-dashboard-grid">
 
-            <div className="sorting-select-group">
-              <label>2. Select Algorithm ({filteredAlgos.length})</label>
-              <select className="sorting-select" value={selectedAlgoId} onChange={(e) => setSelectedAlgoId(e.target.value)}>
-                {filteredAlgos.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name} ({a.avgTime})
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Section 1: Algorithm & Category */}
+            <div className="control-card-section">
+              <div className="control-card-header">
+                <span className="control-card-badge">Step 1</span>
+                <span className="control-card-title"><BookOpen size={15} color="var(--accent)" /> Algorithm & View</span>
+              </div>
+              <div className="control-inputs-stack">
+                <div className="sorting-select-group">
+                  <label>Category</label>
+                  <select
+                    className="sorting-select"
+                    value={category}
+                    onChange={(e) => {
+                      const cat = e.target.value as AlgorithmCategory;
+                      setCategory(cat);
+                      const firstInCat = Object.values(ALGORITHMS).find((a) => a.category === cat);
+                      if (firstInCat) setSelectedAlgoId(firstInCat.id);
+                    }}
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            <div className="sorting-select-group">
-              <label>3. Visualization View</label>
-              <select className="sorting-select" value={vizType} onChange={(e) => setVizType(e.target.value as VisualizationType)}>
-                <option value="histogram">HD Vertical Histogram</option>
-                <option value="horizontal">Horizontal Bars</option>
-                <option value="blocks">Number Blocks</option>
-                <option value="scatter">Scatter Dots</option>
-                <option value="radial">Circular Radial</option>
-                <option value="cells">Array Cells</option>
-              </select>
-            </div>
+                <div className="sorting-select-group">
+                  <label>Algorithm ({filteredAlgos.length})</label>
+                  <select className="sorting-select" value={selectedAlgoId} onChange={(e) => setSelectedAlgoId(e.target.value)}>
+                    {filteredAlgos.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.name} ({a.avgTime})
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            </div>
-
-          {/* Professional Color Palette Customizer */}
-          <div style={{ marginTop: "16px", padding: "12px 14px", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", marginBottom: "8px" }}>
-              <span style={{ fontSize: "0.78rem", fontWeight: 750, color: "var(--muted)", display: "flex", alignItems: "center", gap: "6px" }}>
-                <Palette size={14} color="var(--accent)" /> Color Palette Theme:
-              </span>
-              <div className="language-tabs-row" style={{ margin: 0 }}>
-                <button className={`lang-tab-btn ${colorTheme === "oceanic" ? "active" : ""}`} onClick={() => setColorTheme("oceanic")}>
-                  Oceanic Cyan
-                </button>
-                <button className={`lang-tab-btn ${colorTheme === "neon" ? "active" : ""}`} onClick={() => setColorTheme("neon")}>
-                  Cyberpunk Neon
-                </button>
-                <button className={`lang-tab-btn ${colorTheme === "emerald" ? "active" : ""}`} onClick={() => setColorTheme("emerald")}>
-                  Emerald Mint
-                </button>
-                <button className={`lang-tab-btn ${colorTheme === "sunset" ? "active" : ""}`} onClick={() => setColorTheme("sunset")}>
-                  Sunset Glow
-                </button>
-                <button className={`lang-tab-btn ${colorTheme === "purple" ? "active" : ""}`} onClick={() => setColorTheme("purple")}>
-                  Royal Amethyst
-                </button>
-                <button className={`lang-tab-btn ${colorTheme === "custom" ? "active" : ""}`} onClick={() => setColorTheme("custom")}>
-                  Custom Pick
-                </button>
+                <div className="sorting-select-group">
+                  <label>Visualization Mode</label>
+                  <select className="sorting-select" value={vizType} onChange={(e) => setVizType(e.target.value as VisualizationType)}>
+                    <option value="histogram">HD Vertical Histogram</option>
+                    <option value="horizontal">Horizontal Bars</option>
+                    <option value="blocks">Number Blocks</option>
+                    <option value="scatter">Scatter Dots</option>
+                    <option value="radial">Circular Radial</option>
+                    <option value="cells">Array Cells</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            {colorTheme === "custom" && (
-              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", paddingTop: "8px", borderTop: "1px solid var(--border)" }}>
-                <label style={{ fontSize: "0.75rem", fontWeight: 650 }}>
-                  Default: <input type="color" value={customDefaultColor} onChange={(e) => setCustomDefaultColor(e.target.value)} />
-                </label>
-                <label style={{ fontSize: "0.75rem", fontWeight: 650 }}>
-                  Compare: <input type="color" value={customCompareColor} onChange={(e) => setCustomCompareColor(e.target.value)} />
-                </label>
-                <label style={{ fontSize: "0.75rem", fontWeight: 650 }}>
-                  Swap: <input type="color" value={customSwapColor} onChange={(e) => setCustomSwapColor(e.target.value)} />
-                </label>
-                <label style={{ fontSize: "0.75rem", fontWeight: 650 }}>
-                  Sorted: <input type="color" value={customSortedColor} onChange={(e) => setCustomSortedColor(e.target.value)} />
-                </label>
+            {/* Section 2: Dataset & Input Array */}
+            <div className="control-card-section">
+              <div className="control-card-header">
+                <span className="control-card-badge">Step 2</span>
+                <span className="control-card-title"><FileSpreadsheet size={15} color="#3b82f6" /> Dataset Array</span>
               </div>
-            )}
-          </div>
+              <div className="control-inputs-stack">
+                <div>
+                  <label style={{ fontSize: "0.75rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "4px" }}>
+                    Custom Elements Input:
+                  </label>
+                  <div style={{ display: "flex", gap: "6px" }}>
+                    <input
+                      type="text"
+                      className="sorting-select"
+                      style={{ flex: 1, padding: "8px 10px", fontSize: "0.86rem" }}
+                      value={arrayInput}
+                      onChange={(e) => {
+                        setArrayInput(e.target.value);
+                        parseArrayInput(e.target.value);
+                      }}
+                    />
+                    <button className="btn-sort-secondary" style={{ padding: "8px 12px" }} onClick={() => parseArrayInput(arrayInput)}>
+                      Apply
+                    </button>
+                  </div>
+                </div>
 
-          <div style={{ marginTop: "16px" }}>
-            <label style={{ fontSize: "0.78rem", fontWeight: 750, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)", display: "block", marginBottom: "6px" }}>
-              Array Dataset Input (Comma/Space Separated):
-            </label>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              <input
-                type="text"
-                className="sorting-select"
-                style={{ flex: 1, minWidth: "240px" }}
-                value={arrayInput}
-                onChange={(e) => {
-                  setArrayInput(e.target.value);
-                  parseArrayInput(e.target.value);
-                }}
-              />
-              <button className="btn-sort-secondary" onClick={() => parseArrayInput(arrayInput)}>
-                Apply Array
-              </button>
-            </div>
-          </div>
+                <div>
+                  <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)", display: "block", marginBottom: "6px" }}>
+                    Quick Presets:
+                  </label>
+                  <div className="scrollable-presets-row">
+                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("default")}>Default (10)</button>
+                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("nearly")}>Nearly Sorted</button>
+                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("reverse")}>Reverse</button>
+                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("duplicates")}>Duplicates</button>
+                    <button className="preset-pill-btn" onClick={() => handlePresetSelect("negative")}>Negatives</button>
+                    <button className="preset-pill-btn" onClick={() => handleRandomize(20)}>Random 20</button>
+                    <button className="preset-pill-btn" onClick={() => handleRandomize(40)}>Random 40</button>
+                  </div>
+                </div>
 
-          <div className="sorting-actions-row" style={{ marginTop: "12px" }}>
-            <span style={{ fontSize: "0.76rem", fontWeight: 750, color: "var(--muted)" }}>Preset Datasets:</span>
-            <button className="subdomain-copy-btn" onClick={() => handlePresetSelect("default")}>Default (10)</button>
-            <button className="subdomain-copy-btn" onClick={() => handlePresetSelect("nearly")}>Nearly Sorted</button>
-            <button className="subdomain-copy-btn" onClick={() => handlePresetSelect("reverse")}>Reverse Sorted</button>
-            <button className="subdomain-copy-btn" onClick={() => handlePresetSelect("duplicates")}>Duplicates</button>
-            <button className="subdomain-copy-btn" onClick={() => handlePresetSelect("negative")}>Negatives</button>
-            <button className="subdomain-copy-btn" onClick={() => handleRandomize(20)}>Random 20</button>
-            <button className="subdomain-copy-btn" onClick={() => handleRandomize(40)}>Random 40</button>
-          </div>
-
-          {/* Speed Control Slider spanning Slow (1800ms) to Ultra High Speed (5ms) */}
-          <div className="sorting-controls-grid" style={{ marginTop: "16px" }}>
-            <div className="sorting-slider-group">
-              <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span><Gauge size={14} style={{ display: "inline", marginRight: "4px" }} /> Animation Speed: {speed}%</span>
-                <span style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
-                  {speed <= 10 ? `Slow (${getDelayFromSpeed(speed)}ms)` : speed >= 80 ? `Ultra Fast (${getDelayFromSpeed(speed)}ms)` : `Normal (${getDelayFromSpeed(speed)}ms)`}
-                </span>
-              </label>
-              <input
-                type="range"
-                className="sorting-slider"
-                min={1}
-                max={100}
-                value={speed}
-                onChange={(e) => setSpeed(Number(e.target.value))}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", color: "var(--muted)" }}>
-                <span>1 (Step-by-Step 1.8s)</span>
-                <span>50 (100ms)</span>
-                <span>100 (Ultra Fast 5ms)</span>
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <button className="btn-sort-secondary" style={{ padding: "6px 12px", fontSize: "0.8rem" }} onClick={() => setIsAscending(!isAscending)}>
+                    <ArrowUpDown size={13} /> {isAscending ? "Sort: Ascending ↑" : "Sort: Descending ↓"}
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="sorting-actions-row" style={{ margin: 0 }}>
-              <button className="btn-sort-primary" onClick={startVisualization} disabled={isSorting && !isPaused}>
-                <Play size={16} /> {isSorting ? "Sorting..." : "Start Animation"}
-              </button>
-              {isSorting && (
-                <button className="btn-sort-secondary" onClick={handlePauseResume}>
-                  {isPaused ? <Play size={15} /> : <Pause size={15} />}
-                  {isPaused ? "Resume" : "Pause"}
-                </button>
-              )}
-              <button className="btn-sort-secondary" onClick={() => resetPlaybackState()}>
-                <RotateCcw size={15} /> Reset
-              </button>
-              <button className="btn-sort-secondary" onClick={() => setIsAscending(!isAscending)}>
-                {isAscending ? "Ascending ↑" : "Descending ↓"}
-              </button>
+            {/* Section 3: Color Palette Customizer */}
+            <div className="control-card-section">
+              <div className="control-card-header">
+                <span className="control-card-badge">Step 3</span>
+                <span className="control-card-title"><Palette size={15} color="#ec4899" /> Color Palette</span>
+              </div>
+              <div className="control-inputs-stack">
+                <label style={{ fontSize: "0.74rem", fontWeight: 750, color: "var(--muted)" }}>Select Theme Preset:</label>
+                <div className="scrollable-presets-row">
+                  <button className={`theme-pill-btn ${colorTheme === "oceanic" ? "active" : ""}`} onClick={() => setColorTheme("oceanic")}>
+                    Oceanic Cyan
+                  </button>
+                  <button className={`theme-pill-btn ${colorTheme === "neon" ? "active" : ""}`} onClick={() => setColorTheme("neon")}>
+                    Cyberpunk Neon
+                  </button>
+                  <button className={`theme-pill-btn ${colorTheme === "emerald" ? "active" : ""}`} onClick={() => setColorTheme("emerald")}>
+                    Emerald Mint
+                  </button>
+                  <button className={`theme-pill-btn ${colorTheme === "sunset" ? "active" : ""}`} onClick={() => setColorTheme("sunset")}>
+                    Sunset Glow
+                  </button>
+                  <button className={`theme-pill-btn ${colorTheme === "purple" ? "active" : ""}`} onClick={() => setColorTheme("purple")}>
+                    Royal Amethyst
+                  </button>
+                  <button className={`theme-pill-btn ${colorTheme === "custom" ? "active" : ""}`} onClick={() => setColorTheme("custom")}>
+                    Custom Pick
+                  </button>
+                </div>
+
+                {colorTheme === "custom" && (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", paddingTop: "6px", borderTop: "1px solid var(--border)" }}>
+                    <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
+                      Default: <input type="color" value={customDefaultColor} onChange={(e) => setCustomDefaultColor(e.target.value)} />
+                    </label>
+                    <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
+                      Compare: <input type="color" value={customCompareColor} onChange={(e) => setCustomCompareColor(e.target.value)} />
+                    </label>
+                    <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
+                      Swap: <input type="color" value={customSwapColor} onChange={(e) => setCustomSwapColor(e.target.value)} />
+                    </label>
+                    <label style={{ fontSize: "0.72rem", fontWeight: 650, display: "flex", alignItems: "center", justifySpace: "space-between" }}>
+                      Sorted: <input type="color" value={customSortedColor} onChange={(e) => setCustomSortedColor(e.target.value)} />
+                    </label>
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Section 4: Master Execution & Speed */}
+            <div className="control-card-section highlight-card">
+              <div className="control-card-header">
+                <span className="control-card-badge" style={{ background: "var(--accent)", color: "#fff" }}>Step 4</span>
+                <span className="control-card-title"><Gauge size={15} color="var(--accent)" /> Execution & Speed</span>
+              </div>
+              <div className="control-inputs-stack">
+                <div className="sorting-slider-group">
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", fontWeight: 750, marginBottom: "4px" }}>
+                    <span>Speed: {speed}%</span>
+                    <span style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}>{getDelayFromSpeed(speed)}ms/step</span>
+                  </div>
+                  <input
+                    type="range"
+                    className="sorting-slider"
+                    min={1}
+                    max={100}
+                    value={speed}
+                    onChange={(e) => setSpeed(Number(e.target.value))}
+                  />
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.66rem", color: "var(--muted)", marginTop: "2px" }}>
+                    <span>Slow (1.8s)</span>
+                    <span>Ultra Fast (5ms)</span>
+                  </div>
+                </div>
+
+                <div className="master-playback-actions">
+                  <button className="btn-sort-primary-lg" onClick={startVisualization} disabled={isSorting && !isPaused}>
+                    <Play size={18} /> {isSorting ? "Sorting..." : "Start Animation"}
+                  </button>
+                  {isSorting && (
+                    <button className="btn-sort-secondary-lg" onClick={handlePauseResume}>
+                      {isPaused ? <Play size={16} /> : <Pause size={16} />}
+                      {isPaused ? "Resume" : "Pause"}
+                    </button>
+                  )}
+                  <button className="btn-sort-secondary-lg" onClick={() => resetPlaybackState()}>
+                    <RotateCcw size={16} /> Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
