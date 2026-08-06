@@ -835,17 +835,17 @@ img {
 /* ── Option 1: Glassmorphic Cards with Left Gradient Accent ── */
 .publication-list {
   display: grid;
-  gap: 12px;
+  gap: 6px;
 }
 
 .publication-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   overflow: hidden;
-  padding: 10px 14px 10px 16px;
-  border-radius: 12px;
+  padding: 6px 12px 6px 14px;
+  border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
   background: color-mix(in srgb, var(--surface-strong) 94%, transparent);
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
@@ -873,7 +873,7 @@ img {
 }
 
 .publication-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--accent) 40%, transparent);
   box-shadow:
     0 12px 30px color-mix(in srgb, var(--accent) 14%, transparent),
@@ -893,7 +893,7 @@ img {
 }
 
 .publication-card.compact {
-  padding: 8px 14px 8px 16px;
+  padding: 5px 12px 5px 14px;
 }
 
 /* Attribute & Action Pills matching Dr website and Google Scholar reference */
@@ -902,12 +902,12 @@ img {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px;
-  margin-top: 5px;
+  gap: 4px;
+  margin-top: 3px;
 }
 
 .pub-actions-row {
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .attribute-pill {
@@ -3248,9 +3248,14 @@ img {
     grid-template-columns: 1fr;
   }
 
+  .publication-list {
+    gap: 5px !important;
+  }
+
   .publication-card {
     grid-template-columns: 1fr;
-    padding: 17px;
+    padding: 7px 10px 7px 12px !important;
+    gap: 4px !important;
   }
 
   .publication-number {
