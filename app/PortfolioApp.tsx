@@ -42,6 +42,7 @@ import { ScrollJumpButton } from "./ScrollJumpButton";
 import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationCitations } from "./firebase";
 import type { ScholarMetrics } from "./firebase";
 import { SortingVisualizer } from "./sorting/SortingVisualizer";
+import { InkoraApp } from "./inkora/InkoraApp";
 
 type SectionKey =
   | "home"
@@ -49,6 +50,9 @@ type SectionKey =
   | "publications"
   | "projects"
   | "sorting-visualizer"
+  | "inkora"
+  | "pen-app"
+  | "penapp"
   | "cv"
   | "teaching"
   | "people"
@@ -88,6 +92,7 @@ const primaryNav = [
 
 const moreNav = [
   { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
+  { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
   { label: "Awards & FDP", href: "/award-fdp", key: "award-fdp" },
   { label: "Game", href: "/game", key: "game" },
   { label: "Daily Mantra", href: "/daily-mantra", key: "daily-mantra" },
@@ -2541,6 +2546,32 @@ function ProjectsPage() {
         <div className="project-feature-card">
           <div>
             <div className="project-badge-tag">
+              <Sparkles size={13} strokeWidth={2.5} color="#10b981" /> Multi-Monitor Pen System
+            </div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
+              Inkora PenApp Ink Studio
+            </h3>
+            <div className="subdomain-badge-banner" style={{ fontSize: "0.78rem", padding: "4px 10px", marginBottom: "12px" }}>
+              <span className="subdomain-badge-link">https://dr-mritunjaysp.com/inkora</span>
+            </div>
+            <p style={{ color: "var(--muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "16px" }}>
+              Windows 10/11 multi-monitor transparent glass overlay annotation app featuring Catmull-Rom smooth splines, laser pointers, shape tools, highlighters, and offline installer.
+            </p>
+            <div className="pub-attributes-row" style={{ marginBottom: "20px" }}>
+              <span className="attribute-pill">C# WPF & Web Canvas</span>
+              <span className="attribute-pill">Multi-Monitor Glass Overlay</span>
+              <span className="attribute-pill">Catmull-Rom Spline</span>
+              <span className="attribute-pill">Subdomain App</span>
+            </div>
+          </div>
+          <Link className="btn-sort-primary" href="/inkora" style={{ textDecoration: "none", textAlign: "center", justifyContent: "center", background: "linear-gradient(135deg, #10b981, #059669)" }}>
+            Open Inkora PenApp <ChevronRight size={16} />
+          </Link>
+        </div>
+
+        <div className="project-feature-card">
+          <div>
+            <div className="project-badge-tag">
               <Code2 size={13} /> Research System
             </div>
             <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
@@ -3718,6 +3749,11 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "sorting-visualizer":
       content = <SortingVisualizer />;
+      break;
+    case "inkora":
+    case "pen-app":
+    case "penapp":
+      content = <InkoraApp />;
       break;
     case "people":
       content = <ComingSoonPage kind="People" />;
