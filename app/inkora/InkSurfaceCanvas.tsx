@@ -170,68 +170,57 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // Render Laser Pointer & Continuous Fading Beam Trail
+    // Render Laser Pointer & Fading Tail using selected active color
     const now = Date.now();
-    const laserDuration = 800;
+    const laserDuration = 800; // Trail fades over 800ms
 
     laserPointsRef.current = laserPointsRef.current.filter(
       (pt) => now - pt.time < laserDuration
     );
 
     const laserPts = laserPointsRef.current;
+    const laserColor = color; // Follows currently selected active color!
+
     if (laserPts.length > 1) {
       ctx.save();
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
-      ctx.shadowColor = "#ef4444";
-      ctx.shadowBlur = 16;
-      ctx.strokeStyle = "#ef4444";
-      ctx.lineWidth = Math.max(3, size * 2);
-      ctx.globalAlpha = 0.9;
+      ctx.shadowColor = laserColor;
+      ctx.shadowBlur = 14;
 
-      ctx.beginPath();
-      ctx.moveTo(laserPts[0].x, laserPts[0].y);
+      for (let i = 1; i < laserPts.length; i++) {
+        const p1 = laserPts[i - 1];
+        const p2 = laserPts[i];
+        const age = now - p2.time;
+        const alpha = Math.max(0, 1 - age / laserDuration);
 
-      if (laserPts.length < 3) {
-        for (let i = 1; i < laserPts.length; i++) {
-          ctx.lineTo(laserPts[i].x, laserPts[i].y);
-        }
-      } else {
-        for (let i = 1; i < laserPts.length - 1; i++) {
-          const xc = (laserPts[i].x + laserPts[i + 1].x) / 2;
-          const yc = (laserPts[i].y + laserPts[i + 1].y) / 2;
-          ctx.quadraticCurveTo(laserPts[i].x, laserPts[i].y, xc, yc);
-        }
-        const last = laserPts[laserPts.length - 1];
-        ctx.lineTo(last.x, last.y);
+        ctx.beginPath();
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.strokeStyle = laserColor;
+        ctx.lineWidth = Math.max(2, size * 2) * alpha;
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
       }
-      ctx.stroke();
       ctx.restore();
     }
 
-    // Render glowing red Laser Dot
+    // Render glowing Laser Pointer Head Dot in selected color
     if (tool === "laser" && laserDotRef.current) {
       const { x, y } = laserDotRef.current;
       ctx.save();
-      const grad = ctx.createRadialGradient(x, y, 2, x, y, 16);
-      grad.addColorStop(0, "rgba(239, 68, 68, 0.9)");
-      grad.addColorStop(0.5, "rgba(239, 68, 68, 0.4)");
-      grad.addColorStop(1, "rgba(239, 68, 68, 0)");
-      
-      ctx.fillStyle = grad;
+      ctx.shadowColor = laserColor;
+      ctx.shadowBlur = 14;
+      ctx.fillStyle = laserColor;
+      ctx.globalAlpha = 0.9;
       ctx.beginPath();
-      ctx.arc(x, y, 16, 0, Math.PI * 2);
+      ctx.arc(x, y, Math.max(5, size * 1.3), 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = "#ef4444";
-      ctx.shadowColor = "#ef4444";
-      ctx.shadowBlur = 12;
-      ctx.beginPath();
-      ctx.arc(x, y, 6, 0, Math.PI * 2);
-      ctx.fill();
-
+      // Bright white center core
       ctx.fillStyle = "#ffffff";
       ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1.0;
       ctx.beginPath();
       ctx.arc(x, y, 2.5, 0, Math.PI * 2);
       ctx.fill();
