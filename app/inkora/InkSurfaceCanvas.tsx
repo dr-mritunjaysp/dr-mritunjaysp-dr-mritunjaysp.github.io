@@ -170,95 +170,93 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // Render Laser Pointer & Soft Neon Laser Beam (Matching reference image)
+    // SilentTiger/laser-pen Rendering Engine
     const now = Date.now();
-    const laserDuration = 900; // 900ms smooth fading tail
+    const delay = 450; // SilentTiger trail delay
+    const maxWidth = Math.max(8, size * 2.5);
+    const minWidth = 1;
 
     laserPointsRef.current = laserPointsRef.current.filter(
-      (pt) => now - pt.time < laserDuration
+      (pt) => now - pt.time < delay
     );
 
     const laserPts = laserPointsRef.current;
-    const laserColor = color; // Follows active selected color!
 
-    if (laserPts.length > 1) {
+    // Convert hex string to RGB for SilentTiger rgba fading
+    const hexToRgb = (hexStr: string) => {
+      const hex = hexStr.replace("#", "");
+      if (hex.length === 3) {
+        return {
+          r: parseInt(hex[0] + hex[0], 16) || 239,
+          g: parseInt(hex[1] + hex[1], 16) || 68,
+          b: parseInt(hex[2] + hex[2], 16) || 68,
+        };
+      }
+      return {
+        r: parseInt(hex.substring(0, 2), 16) || 239,
+        g: parseInt(hex.substring(2, 4), 16) || 68,
+        b: parseInt(hex.substring(4, 6), 16) || 68,
+      };
+    };
+
+    const { r, g, b } = hexToRgb(color);
+
+    if (laserPts.length >= 2) {
       ctx.save();
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
-      // Pass 1: Outer Soft Neon Glow Aura
+      // Draw SilentTiger tapering Bezier laser segments
       for (let i = 1; i < laserPts.length; i++) {
         const p1 = laserPts[i - 1];
         const p2 = laserPts[i];
+
+        const progress = i / (laserPts.length - 1);
         const age = now - p2.time;
-        const alpha = Math.max(0, 1 - age / laserDuration);
-        if (alpha <= 0) continue;
+        const alpha = Math.max(0, (1 - age / delay) * (0.15 + 0.85 * progress));
+        const segWidth = minWidth + (maxWidth - minWidth) * progress;
 
         ctx.beginPath();
-        ctx.globalAlpha = alpha * 0.45;
-        ctx.strokeStyle = laserColor;
-        ctx.lineWidth = Math.max(6, size * 3.5) * (0.3 + 0.7 * alpha);
-        ctx.shadowColor = laserColor;
-        ctx.shadowBlur = 18 * alpha;
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        ctx.lineWidth = segWidth;
+        ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+        ctx.shadowBlur = 12 * progress;
+
+        if (i === 1) {
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+        } else {
+          const prevMidX = (laserPts[i - 2].x + p1.x) / 2;
+          const prevMidY = (laserPts[i - 2].y + p1.y) / 2;
+          const currMidX = (p1.x + p2.x) / 2;
+          const currMidY = (p1.y + p2.y) / 2;
+          ctx.moveTo(prevMidX, prevMidY);
+          ctx.quadraticCurveTo(p1.x, p1.y, currMidX, currMidY);
+        }
         ctx.stroke();
       }
-
-      // Pass 2: Inner Smooth Core Beam
-      ctx.beginPath();
-      ctx.moveTo(laserPts[0].x, laserPts[0].y);
-      if (laserPts.length < 3) {
-        for (let i = 1; i < laserPts.length; i++) {
-          ctx.lineTo(laserPts[i].x, laserPts[i].y);
-        }
-      } else {
-        for (let i = 1; i < laserPts.length - 1; i++) {
-          const xc = (laserPts[i].x + laserPts[i + 1].x) / 2;
-          const yc = (laserPts[i].y + laserPts[i + 1].y) / 2;
-          ctx.quadraticCurveTo(laserPts[i].x, laserPts[i].y, xc, yc);
-        }
-        const last = laserPts[laserPts.length - 1];
-        ctx.lineTo(last.x, last.y);
-      }
-
-      ctx.globalAlpha = 0.85;
-      ctx.strokeStyle = laserColor;
-      ctx.lineWidth = Math.max(3, size * 1.8);
-      ctx.shadowColor = laserColor;
-      ctx.shadowBlur = 8;
-      ctx.stroke();
 
       ctx.restore();
     }
 
-    // Render Soft Glowing Laser Pointer Head Dot
+    // SilentTiger Laser Pointer Cursor Head
     if (tool === "laser" && laserDotRef.current) {
       const { x, y } = laserDotRef.current;
       ctx.save();
 
-      // Outer Wide Glow Aura
-      ctx.shadowColor = laserColor;
-      ctx.shadowBlur = 20;
-      ctx.fillStyle = laserColor;
-      ctx.globalAlpha = 0.5;
+      // SilentTiger cursor dot & glow
+      ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+      ctx.shadowBlur = 16;
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
       ctx.beginPath();
-      ctx.arc(x, y, Math.max(10, size * 2.2), 0, Math.PI * 2);
+      ctx.arc(x, y, maxWidth / 2, 0, Math.PI * 2);
       ctx.fill();
 
-      // Inner Core Dot
-      ctx.globalAlpha = 0.95;
-      ctx.fillStyle = laserColor;
-      ctx.beginPath();
-      ctx.arc(x, y, Math.max(4, size * 1.1), 0, Math.PI * 2);
-      ctx.fill();
-
-      // Center White Core Spot
+      // White center core spot
       ctx.fillStyle = "#ffffff";
       ctx.shadowBlur = 0;
-      ctx.globalAlpha = 1.0;
       ctx.beginPath();
-      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+      ctx.arc(x, y, Math.max(2, maxWidth / 5), 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
