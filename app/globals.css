@@ -6123,16 +6123,22 @@ body::before {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 12px;
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 16px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1.5px solid rgba(16, 185, 129, 0.35);
+  border-top-left-radius: 13px;
+  border-top-right-radius: 13px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   z-index: 10;
 }
 
 :root[data-theme="light"] .inkora-toolbar-glass {
-  background: rgba(255, 255, 255, 0.92);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border);
+  border-bottom: 1.5px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .toolbar-section {
