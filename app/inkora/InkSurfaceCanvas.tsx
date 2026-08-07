@@ -251,14 +251,13 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // SilentTiger/laser-pen Rendering Engine (Follows stroke size slider & slow 1400ms decay)
+    // Official Pen App Laser Engine (Ported from D:\Pen App\src\Inkora\Controls\InkSurface.cs)
     const now = Date.now();
-    const delay = 1400; // Slow, smooth laser disappearance (1400ms)
-    const maxWidth = Math.max(2, size * 2.5);
-    const minWidth = Math.max(0.5, size * 0.4);
+    const LaserLifetimeMs = 2400; // Pen App 2.4s lifetime
+    const LaserHoldMs = 320; // Pen App 320ms hold duration
 
     laserPointsRef.current = laserPointsRef.current.filter(
-      (pt) => now - pt.time < delay
+      (pt) => now - pt.time < LaserLifetimeMs
     );
 
     const laserPts = laserPointsRef.current;
@@ -280,60 +279,106 @@ export function InkSurfaceCanvas() {
     };
 
     const { r, g, b } = hexToRgb(color);
+    const baseWidth = Math.max(2.5, size * 1.8);
 
     if (laserPts.length >= 2) {
-      ctx.save();
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-
-      for (let i = 1; i < laserPts.length; i++) {
-        const p1 = laserPts[i - 1];
-        const p2 = laserPts[i];
-
-        const progress = i / (laserPts.length - 1);
-        const age = now - p2.time;
-        const alpha = Math.max(0, (1 - age / delay) * (0.15 + 0.85 * progress));
-        const segWidth = minWidth + (maxWidth - minWidth) * progress;
-
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        ctx.lineWidth = segWidth;
-        ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
-        ctx.shadowBlur = 12 * progress;
-
-        if (i === 1) {
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-        } else {
-          const prevMidX = (laserPts[i - 2].x + p1.x) / 2;
-          const prevMidY = (laserPts[i - 2].y + p1.y) / 2;
-          const currMidX = (p1.x + p2.x) / 2;
-          const currMidY = (p1.y + p2.y) / 2;
-          ctx.moveTo(prevMidX, prevMidY);
-          ctx.quadraticCurveTo(p1.x, p1.y, currMidX, currMidY);
-        }
-        ctx.stroke();
+      // Calculate cubic back-trim progress (Pen App TrimLaserStrokeFromBack)
+      const newestPt = laserPts[laserPts.length - 1];
+      const ageMs = Math.max(0, now - newestPt.time);
+      let trimProgress = 0;
+      if (ageMs > LaserHoldMs) {
+        const normAge = Math.min(1, (ageMs - LaserHoldMs) / (LaserLifetimeMs - LaserHoldMs));
+        trimProgress = normAge * normAge * (3.0 - 2.0 * normAge); // Pen App cubic ease
       }
 
-      ctx.restore();
+      // Smoothly wipe tail from back
+      const startIndex = Math.floor((laserPts.length - 1) * trimProgress);
+      const visiblePts = laserPts.slice(startIndex);
+
+      if (visiblePts.length >= 2) {
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        // Pen App 5-Layer Multi-Pass Geometry Glow (InkSurface.cs DrawLaserStroke)
+        const layers = [
+          { mult: 5.0, alpha: 0.10, blur: 18 },
+          { mult: 3.2, alpha: 0.32, blur: 12 },
+          { mult: 1.8, alpha: 0.70, blur: 6 },
+          { mult: 1.1, alpha: 0.98, blur: 2, strokeColor: `rgba(${r}, ${g}, ${b}, 0.98)` },
+          { mult: 0.35, alpha: 0.98, blur: 0, strokeColor: `rgba(255, 255, 255, 0.98)` },
+        ];
+
+        layers.forEach((layer) => {
+          ctx.beginPath();
+          ctx.lineWidth = baseWidth * layer.mult;
+          ctx.strokeStyle = layer.strokeColor || `rgba(${r}, ${g}, ${b}, ${layer.alpha})`;
+          ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+          ctx.shadowBlur = layer.blur;
+
+          ctx.moveTo(visiblePts[0].x, visiblePts[0].y);
+          if (visiblePts.length < 3) {
+            for (let i = 1; i < visiblePts.length; i++) {
+              ctx.lineTo(visiblePts[i].x, visiblePts[i].y);
+            }
+          } else {
+            for (let i = 1; i < visiblePts.length - 1; i++) {
+              const xc = (visiblePts[i].x + visiblePts[i + 1].x) / 2;
+              const yc = (visiblePts[i].y + visiblePts[i + 1].y) / 2;
+              ctx.quadraticCurveTo(visiblePts[i].x, visiblePts[i].y, xc, yc);
+            }
+            const last = visiblePts[visiblePts.length - 1];
+            ctx.lineTo(last.x, last.y);
+          }
+          ctx.stroke();
+        });
+
+        ctx.restore();
+      }
     }
 
-    // SilentTiger Laser Pointer Cursor Head
+    // Official Pen App Laser Pointer Cursor Head (InkSurface.cs DrawLaserClickDot)
     if (tool === "laser" && laserDotRef.current) {
       const { x, y } = laserDotRef.current;
+      const radius = Math.max(2.5, baseWidth * 0.55);
       ctx.save();
 
+      // Pen App 5-Layer Dot Geometry Glow
       ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
-      ctx.shadowBlur = 16;
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+
+      // Pass 1: Outer Aura
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.10)`;
       ctx.beginPath();
-      ctx.arc(x, y, maxWidth / 2, 0, Math.PI * 2);
+      ctx.arc(x, y, radius * 5.0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = "#ffffff";
-      ctx.shadowBlur = 0;
+      // Pass 2: Outer Halo
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.32)`;
       ctx.beginPath();
-      ctx.arc(x, y, Math.max(2, maxWidth / 5), 0, Math.PI * 2);
+      ctx.arc(x, y, radius * 3.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pass 3: Mid Glow
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.70)`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pass 4: Body
+      ctx.shadowBlur = 2;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.98)`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius * 1.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pass 5: Hot White Core
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(1.0, radius * 0.35), 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
