@@ -995,9 +995,10 @@ export function InkSurfaceCanvas() {
             className="mode-pill-btn"
             onClick={() => fileInputRef.current?.click()}
             title="Attach PDF or Document to Annotate (.pdf, .doc, .docx, .txt, image)"
+            style={{ display: "inline-flex", alignItems: "center", gap: "4px", whiteSpace: "nowrap" }}
           >
-            <Paperclip size={13} style={{ marginRight: "3px" }} />
-            {attachedDoc ? "Change Doc" : "Attach PDF / Doc"}
+            <Paperclip size={13} />
+            <span>{attachedDoc ? "Change Doc" : "Attach PDF / Doc"}</span>
           </button>
           <input
             type="file"

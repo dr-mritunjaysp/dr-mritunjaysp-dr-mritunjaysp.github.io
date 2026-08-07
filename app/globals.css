@@ -6229,6 +6229,10 @@ body::before {
 }
 
 .mode-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
   padding: 4px 8px;
   border-radius: 6px;
   border: 1px solid var(--border);
