@@ -702,35 +702,28 @@ export function InkSurfaceCanvas() {
     const pt = getCanvasCoords(e);
     penDotRef.current = pt;
 
-    // Require primary mouse button down (e.buttons === 1) for active drawing
-    const isMouseDown = e.buttons === 1 && isDrawing;
-
     if (tool === "laser") {
       laserDotRef.current = pt;
+      const now = Date.now();
+      const lastPt = laserPointsRef.current[laserPointsRef.current.length - 1];
 
-      // Only emit laser trail stream when mouse button is held down!
-      if (isMouseDown) {
-        const now = Date.now();
-        const lastPt = laserPointsRef.current[laserPointsRef.current.length - 1];
-
-        if (lastPt) {
-          const dist = Math.hypot(pt.x - lastPt.x, pt.y - lastPt.y);
-          const steps = Math.min(30, Math.floor(dist / 1.8));
-          if (steps > 1) {
-            for (let i = 1; i <= steps; i++) {
-              const t = i / steps;
-              laserPointsRef.current.push({
-                x: lastPt.x + (pt.x - lastPt.x) * t,
-                y: lastPt.y + (pt.y - lastPt.y) * t,
-                time: now,
-              });
-            }
-          } else {
-            laserPointsRef.current.push({ x: pt.x, y: pt.y, time: now });
+      if (lastPt) {
+        const dist = Math.hypot(pt.x - lastPt.x, pt.y - lastPt.y);
+        const steps = Math.min(30, Math.floor(dist / 1.8));
+        if (steps > 1) {
+          for (let i = 1; i <= steps; i++) {
+            const t = i / steps;
+            laserPointsRef.current.push({
+              x: lastPt.x + (pt.x - lastPt.x) * t,
+              y: lastPt.y + (pt.y - lastPt.y) * t,
+              time: now,
+            });
           }
         } else {
           laserPointsRef.current.push({ x: pt.x, y: pt.y, time: now });
         }
+      } else {
+        laserPointsRef.current.push({ x: pt.x, y: pt.y, time: now });
       }
 
       renderCanvas();
@@ -739,7 +732,7 @@ export function InkSurfaceCanvas() {
 
     if (tool === "eraser") {
       eraserDotRef.current = pt;
-      if (isMouseDown) {
+      if (isDrawing || e.buttons === 1) {
         eraseStrokesAt(pt);
       }
       renderCanvas();
@@ -747,19 +740,18 @@ export function InkSurfaceCanvas() {
     }
 
     // Auto scroll container down smoothly as user draws near the bottom threshold
-    if (containerRef.current) {
+    if (containerRef.current && isDrawing) {
       const container = containerRef.current;
       const rect = container.getBoundingClientRect();
       const relativeY = e.clientY - rect.top;
       const bottomThreshold = rect.height - 70;
 
-      if (relativeY > bottomThreshold && isMouseDown) {
+      if (relativeY > bottomThreshold) {
         container.scrollTop += 14;
       }
     }
 
-    // Only add ink stroke points when mouse button is pressed down!
-    if (!isMouseDown) return;
+    if (!isDrawing) return;
     setCurrentStroke((prev) => [...prev, pt]);
 
     // Auto expand canvas height if writing near bottom edge
