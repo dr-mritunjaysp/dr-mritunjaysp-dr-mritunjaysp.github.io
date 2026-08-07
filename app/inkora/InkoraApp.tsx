@@ -136,19 +136,6 @@ export function InkoraApp() {
         </div>
       </div>
 
-      {/* Subdomain Badge Banner */}
-      <div className="subdomain-badge-banner">
-        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--muted)" }}>
-          Subdomain deployment:
-        </span>
-        <a href={subdomainUrl} target="_blank" rel="noreferrer" className="subdomain-badge-link">
-          {subdomainUrl}
-        </a>
-        <button className="subdomain-copy-btn" onClick={handleCopySubdomain}>
-          {copied ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
-          <span style={{ marginLeft: "4px" }}>{copied ? "Copied!" : "Copy URL"}</span>
-        </button>
-      </div>
 
       {/* Main Interactive Web Canvas & Ink Studio Workbench */}
       <div className="sorting-workbench" style={{ marginTop: "14px" }}>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import {
   Pen,
   Eraser,
@@ -15,13 +15,10 @@ import {
   RotateCw,
   Trash2,
   Download,
-  FileSpreadsheet,
   Maximize2,
   Minimize2,
   Sparkles,
   HelpCircle,
-  Layers,
-  Palette,
   Check,
   X,
 } from "lucide-react";
@@ -43,6 +40,12 @@ interface Point {
   x: number;
   y: number;
   pressure?: number;
+}
+
+interface LaserPoint {
+  x: number;
+  y: number;
+  time: number;
 }
 
 interface Stroke {
@@ -69,26 +72,34 @@ export function InkSurfaceCanvas() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // Dynamic laser pointer trail & dot refs (fades out automatically)
+  const laserPointsRef = useRef<LaserPoint[]>([]);
+  const laserDotRef = useRef<Point | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+
   // Canvas background colors
-  const getBgColor = () => {
+  const getBgColor = useCallback(() => {
     if (canvasMode === "whiteboard") return "#ffffff";
     if (canvasMode === "blackboard") return "#0f172a";
     return "rgba(15, 23, 42, 0.85)"; // Glass Overlay Mode
-  };
+  }, [canvasMode]);
 
-  // Redraw canvas content
-  useEffect(() => {
+  // Main canvas render function
+  const renderCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Handle high-DPI displays
     const rect = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
 
+    if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+    }
+
+    ctx.save();
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, rect.width, rect.height);
 
@@ -118,11 +129,11 @@ export function InkSurfaceCanvas() {
       }
     }
 
-    // Render all saved strokes
+    // Render saved strokes
     strokes.forEach((s) => renderStroke(ctx, s));
 
-    // Render current active stroke in progress
-    if (isDrawing && currentStroke.length > 0) {
+    // Render current active stroke in progress (non-laser)
+    if (isDrawing && currentStroke.length > 0 && tool !== "laser") {
       renderStroke(ctx, {
         id: "temp",
         tool,
@@ -131,9 +142,99 @@ export function InkSurfaceCanvas() {
         points: currentStroke,
       });
     }
-  }, [strokes, currentStroke, isDrawing, tool, color, size, canvasMode]);
 
-  // Catmull-Rom & Smooth Stroke Rendering
+    // Render smooth presentation Laser Pointer & Fading Trail
+    const now = Date.now();
+    const laserDuration = 800; // Trail fades over 800ms
+
+    // Filter out expired laser points
+    laserPointsRef.current = laserPointsRef.current.filter(
+      (pt) => now - pt.time < laserDuration
+    );
+
+    const laserPts = laserPointsRef.current;
+    if (laserPts.length > 1) {
+      ctx.save();
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.shadowColor = "#ef4444";
+      ctx.shadowBlur = 14;
+
+      for (let i = 1; i < laserPts.length; i++) {
+        const p1 = laserPts[i - 1];
+        const p2 = laserPts[i];
+        const age = now - p2.time;
+        const alpha = Math.max(0, 1 - age / laserDuration);
+
+        ctx.beginPath();
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.strokeStyle = "#ff3333";
+        ctx.lineWidth = Math.max(2, size * 2) * alpha;
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // Render glowing red Laser Pointer Dot at current pointer position
+    if (tool === "laser" && laserDotRef.current) {
+      const { x, y } = laserDotRef.current;
+      ctx.save();
+      
+      // Outer glowing halo
+      const grad = ctx.createRadialGradient(x, y, 2, x, y, 16);
+      grad.addColorStop(0, "rgba(239, 68, 68, 0.9)");
+      grad.addColorStop(0.5, "rgba(239, 68, 68, 0.4)");
+      grad.addColorStop(1, "rgba(239, 68, 68, 0)");
+      
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(x, y, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Middle bright red dot
+      ctx.fillStyle = "#ef4444";
+      ctx.shadowColor = "#ef4444";
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core white spot
+      ctx.fillStyle = "#ffffff";
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    ctx.restore();
+  }, [getBgColor, strokes, isDrawing, currentStroke, tool, color, size, canvasMode]);
+
+  // Animation Loop for Laser Pointer smooth fade
+  useEffect(() => {
+    let animId: number;
+
+    const loop = () => {
+      renderCanvas();
+      // If laser tool active or trail fading, keep looping
+      if (tool === "laser" || laserPointsRef.current.length > 0) {
+        animId = requestAnimationFrame(loop);
+      }
+    };
+
+    animId = requestAnimationFrame(loop);
+    animFrameRef.current = animId;
+
+    return () => {
+      if (animId) cancelAnimationFrame(animId);
+    };
+  }, [renderCanvas, tool]);
+
+  // Stroke Rendering
   const renderStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
     if (stroke.points.length === 0) return;
 
@@ -145,12 +246,6 @@ export function InkSurfaceCanvas() {
       ctx.globalAlpha = 0.45;
       ctx.strokeStyle = stroke.color;
       ctx.lineWidth = stroke.size * 3;
-    } else if (stroke.tool === "laser") {
-      ctx.globalAlpha = 0.9;
-      ctx.strokeStyle = "#ef4444";
-      ctx.shadowColor = "#ef4444";
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = stroke.size * 1.5;
     } else if (stroke.tool === "eraser") {
       ctx.globalCompositeOperation = "destination-out";
       ctx.lineWidth = stroke.size * 4;
@@ -177,7 +272,6 @@ export function InkSurfaceCanvas() {
       ctx.lineTo(p2.x, p2.y);
       ctx.stroke();
 
-      // Arrow head
       const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
       const headLen = stroke.size * 3;
       ctx.beginPath();
@@ -208,7 +302,6 @@ export function InkSurfaceCanvas() {
       ctx.fillStyle = stroke.color;
       ctx.fillText(stroke.text, pts[0].x, pts[0].y);
     } else {
-      // Smooth Catmull-Rom / Bezier stroke
       ctx.beginPath();
       ctx.moveTo(pts[0].x, pts[0].y);
 
@@ -246,16 +339,36 @@ export function InkSurfaceCanvas() {
       return;
     }
     setIsDrawing(true);
-    setCurrentStroke([pt]);
+
+    if (tool === "laser") {
+      laserDotRef.current = pt;
+      laserPointsRef.current.push({ x: pt.x, y: pt.y, time: Date.now() });
+    } else {
+      setCurrentStroke([pt]);
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
     const pt = getCanvasCoords(e);
+
+    if (tool === "laser") {
+      laserDotRef.current = pt;
+      // Laser leaves a trailing laser line while mouse moves or holds down
+      laserPointsRef.current.push({ x: pt.x, y: pt.y, time: Date.now() });
+      renderCanvas();
+      return;
+    }
+
+    if (!isDrawing) return;
     setCurrentStroke((prev) => [...prev, pt]);
   };
 
   const handleMouseUp = () => {
+    if (tool === "laser") {
+      setIsDrawing(false);
+      return;
+    }
+
     if (!isDrawing) return;
     setIsDrawing(false);
 
@@ -271,6 +384,13 @@ export function InkSurfaceCanvas() {
       setRedoStack([]);
     }
     setCurrentStroke([]);
+  };
+
+  const handleMouseLeave = () => {
+    laserDotRef.current = null;
+    if (isDrawing && tool !== "laser") {
+      handleMouseUp();
+    }
   };
 
   const handleAddText = () => {
@@ -307,9 +427,9 @@ export function InkSurfaceCanvas() {
   };
 
   const handleClear = () => {
-    if (strokes.length === 0) return;
     setStrokes([]);
     setRedoStack([]);
+    laserPointsRef.current = [];
   };
 
   const exportAsImage = () => {
@@ -338,7 +458,7 @@ export function InkSurfaceCanvas() {
           <button
             className={`ink-tool-btn ${tool === "laser" ? "active" : ""}`}
             onClick={() => setTool("laser")}
-            title="Laser Pointer (Ctrl+Alt+K)"
+            title="Presentation Laser Pointer (Fading Trail)"
           >
             <Zap size={16} color="#ef4444" />
             <span>Laser</span>
@@ -528,7 +648,7 @@ export function InkSurfaceCanvas() {
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
           className={`inkora-canvas-surface ${tool}`}
         />
 
