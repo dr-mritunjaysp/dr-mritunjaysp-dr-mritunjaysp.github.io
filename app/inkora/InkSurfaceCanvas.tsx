@@ -170,11 +170,11 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // SilentTiger/laser-pen Rendering Engine
+    // SilentTiger/laser-pen Rendering Engine (Follows stroke size slider)
     const now = Date.now();
     const delay = 450; // SilentTiger trail delay
-    const maxWidth = Math.max(8, size * 2.5);
-    const minWidth = 1;
+    const maxWidth = Math.max(2, size * 2.5);
+    const minWidth = Math.max(0.5, size * 0.4);
 
     laserPointsRef.current = laserPointsRef.current.filter(
       (pt) => now - pt.time < delay
