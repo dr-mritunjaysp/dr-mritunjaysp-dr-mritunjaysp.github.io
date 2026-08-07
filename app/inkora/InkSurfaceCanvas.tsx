@@ -696,8 +696,9 @@ export function InkSurfaceCanvas() {
 
       if (lastPt) {
         const dist = Math.hypot(pt.x - lastPt.x, pt.y - lastPt.y);
-        const steps = Math.min(30, Math.floor(dist / 1.8));
-        if (steps > 1) {
+        // Only sample if moved at least 3px, capping interpolation to at most 5 points per event
+        if (dist >= 3) {
+          const steps = Math.min(5, Math.ceil(dist / 12));
           for (let i = 1; i <= steps; i++) {
             const t = i / steps;
             laserPointsRef.current.push({
@@ -706,11 +707,14 @@ export function InkSurfaceCanvas() {
               time: now,
             });
           }
-        } else {
-          laserPointsRef.current.push({ x: pt.x, y: pt.y, time: now });
         }
       } else {
         laserPointsRef.current.push({ x: pt.x, y: pt.y, time: now });
+      }
+
+      // Cap total laser points to max 35 points to prevent queue explosion on fast moves (Laser Only)
+      if (laserPointsRef.current.length > 35) {
+        laserPointsRef.current = laserPointsRef.current.slice(-35);
       }
 
       renderCanvas();
