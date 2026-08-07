@@ -303,6 +303,28 @@ export function InkSurfaceCanvas() {
     };
   }, [renderCanvas, tool]);
 
+  // DrawPen Keyboard Hotkeys (L/5: Laser, P/1: Pen, H/4: Highlighter, E/6: Eraser)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
+
+      const key = e.key.toLowerCase();
+      if (key === "l" || key === "5") {
+        setTool("laser");
+      } else if (key === "p" || key === "1") {
+        setTool("pen");
+      } else if (key === "h" || key === "4") {
+        setTool("highlighter");
+      } else if (key === "e" || key === "6") {
+        setTool("eraser");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   // Vector stroke rendering
   const renderStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
     if (stroke.points.length === 0) return;
