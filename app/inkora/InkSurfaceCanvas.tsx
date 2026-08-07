@@ -170,45 +170,40 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // Render Laser Pointer & Continuous Fading Beam Trail using selected active color
+    // Render Laser Pointer & Smooth Tapering Fading Beam Trail in active color
     const now = Date.now();
-    const laserDuration = 800; // Trail fades over 800ms
+    const laserDuration = 750; // Trail fades smoothly over 750ms
 
     laserPointsRef.current = laserPointsRef.current.filter(
       (pt) => now - pt.time < laserDuration
     );
 
     const laserPts = laserPointsRef.current;
-    const laserColor = color; // Follows currently selected active color!
+    const laserColor = color; // Uses currently selected color!
 
     if (laserPts.length > 1) {
       ctx.save();
-      ctx.lineCap = "round";
+      ctx.lineCap = "butt";
       ctx.lineJoin = "round";
-      ctx.shadowColor = laserColor;
-      ctx.shadowBlur = 14;
 
-      ctx.beginPath();
-      ctx.moveTo(laserPts[0].x, laserPts[0].y);
+      for (let i = 1; i < laserPts.length; i++) {
+        const p1 = laserPts[i - 1];
+        const p2 = laserPts[i];
+        const age = now - p2.time;
+        const alpha = Math.max(0, 1 - age / laserDuration);
 
-      if (laserPts.length < 3) {
-        for (let i = 1; i < laserPts.length; i++) {
-          ctx.lineTo(laserPts[i].x, laserPts[i].y);
-        }
-      } else {
-        for (let i = 1; i < laserPts.length - 1; i++) {
-          const xc = (laserPts[i].x + laserPts[i + 1].x) / 2;
-          const yc = (laserPts[i].y + laserPts[i + 1].y) / 2;
-          ctx.quadraticCurveTo(laserPts[i].x, laserPts[i].y, xc, yc);
-        }
-        const last = laserPts[laserPts.length - 1];
-        ctx.lineTo(last.x, last.y);
+        if (alpha <= 0) continue;
+
+        ctx.beginPath();
+        ctx.globalAlpha = alpha * 0.9;
+        ctx.strokeStyle = laserColor;
+        ctx.lineWidth = Math.max(2.5, size * 2.2) * (0.2 + 0.8 * alpha);
+        ctx.shadowColor = laserColor;
+        ctx.shadowBlur = 12 * alpha;
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
       }
-
-      ctx.strokeStyle = laserColor;
-      ctx.lineWidth = Math.max(3, size * 2);
-      ctx.globalAlpha = 0.85;
-      ctx.stroke();
       ctx.restore();
     }
 
