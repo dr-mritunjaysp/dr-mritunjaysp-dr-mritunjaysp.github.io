@@ -138,7 +138,7 @@ export function InkoraApp() {
 
 
       {/* Main Interactive Web Canvas & Ink Studio Workbench */}
-      <div className="sorting-workbench" style={{ marginTop: "14px" }}>
+      <div className="sorting-workbench" style={{ marginTop: "8px", gap: "8px" }}>
         <div className="sorting-control-panel" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "10px" }}>
             <div>
@@ -177,7 +177,7 @@ export function InkoraApp() {
         </div>
 
         {/* Product Highlights Trust Strip */}
-        <div className="trust-strip-box">
+        <div className="trust-strip-box" style={{ marginTop: "8px" }}>
           <div className="trust-item">
             <Check size={15} color="#10b981" /> <span>Transparent Multi-Monitor Overlay</span>
           </div>
@@ -187,13 +187,10 @@ export function InkoraApp() {
           <div className="trust-item">
             <Check size={15} color="#10b981" /> <span>16+ Global System Hotkeys</span>
           </div>
-          <div className="trust-item">
-            <Check size={15} color="#10b981" /> <span>{downloadCount.toLocaleString()} Verified Downloads</span>
-          </div>
         </div>
 
         {/* Inkora Feature Cards Showcase */}
-        <div className="projects-showcase-grid" style={{ marginTop: "14px", gap: "12px" }}>
+        <div className="projects-showcase-grid" style={{ marginTop: "8px", gap: "8px" }}>
           {featureCards.map((feat) => {
             const Icon = feat.icon;
             return (
@@ -212,7 +209,7 @@ export function InkoraApp() {
         </div>
 
         {/* Workflow & Desktop App Showcase Section */}
-        <div className="algo-info-card" style={{ marginTop: "14px", padding: "16px" }}>
+        <div className="algo-info-card" style={{ marginTop: "8px", padding: "14px" }}>
           <div style={{ marginBottom: "16px" }}>
             <span className="section-kicker" style={{ color: "#10b981", fontSize: "0.74rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               Native Windows 10/11 Architecture
@@ -245,7 +242,7 @@ export function InkoraApp() {
         </div>
 
         {/* Windows Setup Download Banner Card */}
-        <div className="control-card-section highlight-card" style={{ padding: "20px", marginTop: "14px" }}>
+        <div className="control-card-section highlight-card" style={{ padding: "16px", marginTop: "8px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
             <div>
               <span className="control-card-badge emerald-badge">Windows 10/11 Installer</span>
@@ -267,7 +264,7 @@ export function InkoraApp() {
                 {downloadState === "working" ? "Preparing Setup..." : "Download Inkora Setup (73 MB)"}
               </button>
               <span style={{ fontSize: "0.74rem", color: "var(--muted)", textAlign: "center" }}>
-                <Check size={12} color="#10b981" /> Free 1.0 Beta • 100% Offline & Private
+                Free 1.0 Beta • 100% Offline & Private
               </span>
             </div>
           </div>
