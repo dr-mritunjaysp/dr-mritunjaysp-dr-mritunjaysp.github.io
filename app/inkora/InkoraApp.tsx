@@ -242,7 +242,7 @@ export function InkoraApp() {
         </div>
 
         {/* Windows Setup Download Banner Card */}
-        <div className="control-card-section highlight-card" style={{ padding: "16px", marginTop: "8px" }}>
+        <div className="control-card-section highlight-card" style={{ padding: "16px", marginTop: "8px", minHeight: "auto" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
             <div>
               <span className="control-card-badge emerald-badge">Windows 10/11 Installer</span>
