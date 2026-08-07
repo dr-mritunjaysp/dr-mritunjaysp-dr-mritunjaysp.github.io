@@ -119,10 +119,11 @@ export function InkSurfaceCanvas() {
     setCanvasHeight(requiredHeight);
   }, [strokes, attachedDoc]);
 
-  // Dynamic presentation laser & eraser cursor refs
+  // Dynamic presentation laser, eraser & glowing pen color dot cursor refs
   const laserPointsRef = useRef<LaserPoint[]>([]);
   const laserDotRef = useRef<Point | null>(null);
   const eraserDotRef = useRef<Point | null>(null);
+  const penDotRef = useRef<Point | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
   // Canvas background colors
@@ -338,6 +339,37 @@ export function InkSurfaceCanvas() {
       ctx.restore();
     }
 
+    // Dynamic Glowing Color Dot Cursor (Follows selected color & stroke size!)
+    if ((tool === "pen" || tool === "highlighter") && penDotRef.current) {
+      const { x, y } = penDotRef.current;
+      const dotRadius = Math.max(3, size / 1.8);
+      ctx.save();
+
+      // Translucent Outer Glow Aura in active selected color
+      ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+      ctx.shadowBlur = 14;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.35)`;
+      ctx.beginPath();
+      ctx.arc(x, y, dotRadius + 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Sharp Core Color Dot
+      ctx.fillStyle = color;
+      ctx.shadowBlur = 4;
+      ctx.beginPath();
+      ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // White Center Spot
+      ctx.fillStyle = "#ffffff";
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(1.2, dotRadius / 3.2), 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
     // Render active Eraser Ring Indicator
     if (tool === "eraser" && eraserDotRef.current) {
       const { x, y } = eraserDotRef.current;
@@ -358,13 +390,13 @@ export function InkSurfaceCanvas() {
     ctx.restore();
   }, [getBgColor, strokes, isDrawing, currentStroke, tool, color, size, canvasMode, attachedDoc]);
 
-  // Animation Loop for Laser & Eraser updates
+  // Animation Loop for Laser, Eraser & Glowing Color Pen updates
   useEffect(() => {
     let animId: number;
 
     const loop = () => {
       renderCanvas();
-      if (tool === "laser" || tool === "eraser" || laserPointsRef.current.length > 0) {
+      if (tool === "laser" || tool === "eraser" || tool === "pen" || tool === "highlighter" || laserPointsRef.current.length > 0) {
         animId = requestAnimationFrame(loop);
       }
     };
@@ -616,6 +648,7 @@ export function InkSurfaceCanvas() {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const pt = getCanvasCoords(e);
+    penDotRef.current = pt;
 
     if (tool === "laser") {
       laserDotRef.current = pt;
@@ -701,6 +734,7 @@ export function InkSurfaceCanvas() {
   const handleMouseLeave = () => {
     laserDotRef.current = null;
     eraserDotRef.current = null;
+    penDotRef.current = null;
     if (isDrawing && tool !== "laser" && tool !== "eraser") {
       handleMouseUp();
     }
