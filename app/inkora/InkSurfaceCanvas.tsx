@@ -843,219 +843,216 @@ export function InkSurfaceCanvas() {
 
       {/* Floating Glass Control Toolbar */}
       <div className="inkora-toolbar-glass">
-        {/* Upper Deck: Tools, Shapes, Palette & Stroke Size */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", gap: "12px", flexWrap: "wrap" }}>
-          <div className="toolbar-section">
-            <button
-              className={`ink-tool-btn ${tool === "pen" ? "active" : ""}`}
-              onClick={() => setTool("pen")}
-              title="Pen (Ctrl+Alt+P or P)"
-            >
-              <Pen size={15} />
-              <span>Pen</span>
-            </button>
+        <div className="toolbar-section">
+          <button
+            className={`ink-tool-btn ${tool === "pen" ? "active" : ""}`}
+            onClick={() => setTool("pen")}
+            title="Pen (Ctrl+Alt+P or P)"
+          >
+            <Pen size={16} />
+            <span>Pen</span>
+          </button>
 
-            <button
-              className={`ink-tool-btn ${tool === "laser" ? "active" : ""}`}
-              onClick={() => setTool("laser")}
-              title="Presentation Laser Pointer (Ctrl+Alt+K or L/5)"
-            >
-              <Zap size={15} color="#ef4444" />
-              <span>Laser</span>
-            </button>
+          <button
+            className={`ink-tool-btn ${tool === "laser" ? "active" : ""}`}
+            onClick={() => setTool("laser")}
+            title="Presentation Laser Pointer (Ctrl+Alt+K or L/5)"
+          >
+            <Zap size={16} color="#ef4444" />
+            <span>Laser</span>
+          </button>
 
-            <button
-              className={`ink-tool-btn ${tool === "highlighter" ? "active" : ""}`}
-              onClick={() => setTool("highlighter")}
-              title="Highlighter (Ctrl+Alt+H or H)"
-            >
-              <Highlighter size={15} color="#f59e0b" />
-              <span>Highlight</span>
-            </button>
+          <button
+            className={`ink-tool-btn ${tool === "highlighter" ? "active" : ""}`}
+            onClick={() => setTool("highlighter")}
+            title="Highlighter (Ctrl+Alt+H or H)"
+          >
+            <Highlighter size={16} color="#f59e0b" />
+            <span>Highlight</span>
+          </button>
 
-            <button
-              className={`ink-tool-btn ${tool === "eraser" ? "active" : ""}`}
-              onClick={() => setTool("eraser")}
-              title="Eraser (Ctrl+Alt+E or E)"
-            >
-              <Eraser size={15} />
-              <span>Eraser</span>
-            </button>
+          <button
+            className={`ink-tool-btn ${tool === "eraser" ? "active" : ""}`}
+            onClick={() => setTool("eraser")}
+            title="Eraser (Ctrl+Alt+E or E)"
+          >
+            <Eraser size={16} />
+            <span>Eraser</span>
+          </button>
+        </div>
+
+        <div className="toolbar-divider" />
+
+        {/* Shapes & Text */}
+        <div className="toolbar-section">
+          <button
+            className={`ink-tool-btn ${tool === "line" ? "active" : ""}`}
+            onClick={() => setTool("line")}
+            title="Line (Ctrl+Alt+L)"
+          >
+            <Minus size={16} />
+          </button>
+          <button
+            className={`ink-tool-btn ${tool === "arrow" ? "active" : ""}`}
+            onClick={() => setTool("arrow")}
+            title="Arrow (Ctrl+Alt+A)"
+          >
+            <ArrowUpRight size={16} />
+          </button>
+          <button
+            className={`ink-tool-btn ${tool === "rectangle" ? "active" : ""}`}
+            onClick={() => setTool("rectangle")}
+            title="Rectangle (Ctrl+Alt+R)"
+          >
+            <Square size={16} />
+          </button>
+          <button
+            className={`ink-tool-btn ${tool === "circle" ? "active" : ""}`}
+            onClick={() => setTool("circle")}
+            title="Circle (Ctrl+Alt+C)"
+          >
+            <Circle size={16} />
+          </button>
+          <button
+            className={`ink-tool-btn ${tool === "text" ? "active" : ""}`}
+            onClick={() => setTool("text")}
+            title="Text Note (Ctrl+Alt+T)"
+          >
+            <Type size={16} />
+          </button>
+        </div>
+
+        <div className="toolbar-divider" />
+
+        {/* Color Palette & Stroke Width */}
+        <div className="toolbar-section">
+          <div className="color-swatches-wrap">
+            {["#10b981", "#3b82f6", "#ef4444", "#f59e0b", "#a855f7", "#ec4899", "#ffffff", "#000000"].map(
+              (c) => (
+                <button
+                  key={c}
+                  className={`color-swatch-dot ${color === c ? "selected" : ""}`}
+                  style={{ background: c }}
+                  onClick={() => setColor(c)}
+                />
+              )
+            )}
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="color-custom-picker"
+              title="Custom stroke color"
+            />
           </div>
 
-          <div className="toolbar-divider" />
-
-          {/* Vector Shapes */}
-          <div className="toolbar-section">
-            <button
-              className={`ink-tool-btn ${tool === "line" ? "active" : ""}`}
-              onClick={() => setTool("line")}
-              title="Line (Ctrl+Alt+L)"
-            >
-              <Minus size={15} />
-            </button>
-            <button
-              className={`ink-tool-btn ${tool === "arrow" ? "active" : ""}`}
-              onClick={() => setTool("arrow")}
-              title="Arrow (Ctrl+Alt+A)"
-            >
-              <ArrowUpRight size={15} />
-            </button>
-            <button
-              className={`ink-tool-btn ${tool === "rectangle" ? "active" : ""}`}
-              onClick={() => setTool("rectangle")}
-              title="Rectangle (Ctrl+Alt+R)"
-            >
-              <Square size={15} />
-            </button>
-            <button
-              className={`ink-tool-btn ${tool === "circle" ? "active" : ""}`}
-              onClick={() => setTool("circle")}
-              title="Circle (Ctrl+Alt+C)"
-            >
-              <Circle size={15} />
-            </button>
-            <button
-              className={`ink-tool-btn ${tool === "text" ? "active" : ""}`}
-              onClick={() => setTool("text")}
-              title="Text Note (Ctrl+Alt+T)"
-            >
-              <Type size={15} />
-            </button>
-          </div>
-
-          <div className="toolbar-divider" />
-
-          {/* Color Palette & Stroke Size */}
-          <div className="toolbar-section" style={{ gap: "8px" }}>
-            <div className="color-swatches-wrap" style={{ gap: "6px" }}>
-              {["#10b981", "#3b82f6", "#ef4444", "#f59e0b", "#a855f7", "#ec4899", "#ffffff", "#000000"].map(
-                (c) => (
-                  <button
-                    key={c}
-                    className={`color-swatch-dot ${color === c ? "selected" : ""}`}
-                    style={{ background: c, width: "19px", height: "19px" }}
-                    onClick={() => setColor(c)}
-                  />
-                )
-              )}
-              <input
-                type="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="color-custom-picker"
-                title="Custom stroke color"
-                style={{ width: "20px", height: "20px", borderRadius: "4px" }}
-              />
-            </div>
-
-            <div className="size-slider-wrap" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ fontSize: "0.72rem", color: "var(--muted)", fontWeight: 700, minWidth: "26px" }}>{size}px</span>
-              <input
-                type="range"
-                min={1}
-                max={28}
-                value={size}
-                onChange={(e) => setSize(Number(e.target.value))}
-                className="ink-slider"
-                style={{ width: "80px" }}
-                title={`Stroke Size: ${size}px`}
-              />
-            </div>
+          <div className="size-slider-wrap">
+            <span className="size-preview-dot" style={{ width: Math.max(4, size), height: Math.max(4, size), background: color }} />
+            <input
+              type="range"
+              min={1}
+              max={28}
+              value={size}
+              onChange={(e) => setSize(Number(e.target.value))}
+              className="ink-slider"
+              title={`Stroke Size: ${size}px`}
+            />
           </div>
         </div>
 
-        {/* Lower Deck: Modes, Document Attachments & Actions */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", gap: "10px", flexWrap: "wrap", paddingTop: "4px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
-          <div className="toolbar-section">
-            <button
-              className={`mode-pill-btn ${canvasMode === "whiteboard" ? "active" : ""}`}
-              onClick={() => setCanvasMode("whiteboard")}
-              title="Whiteboard Canvas (Ctrl+Alt+W)"
-            >
-              Whiteboard
-            </button>
-            <button
-              className={`mode-pill-btn ${canvasMode === "blackboard" ? "active" : ""}`}
-              onClick={() => setCanvasMode("blackboard")}
-              title="Blackboard Canvas (Ctrl+Alt+B)"
-            >
-              Blackboard
-            </button>
-            <button
-              className={`mode-pill-btn ${canvasMode === "overlay" ? "active" : ""}`}
-              onClick={() => setCanvasMode("overlay")}
-              title="Transparent Multi-Monitor Glass Overlay (Ctrl+Alt+O)"
-            >
-              Glass Overlay
-            </button>
-          </div>
+        <div className="toolbar-divider" />
 
-          <div className="toolbar-section">
-            <button
-              className="mode-pill-btn"
-              onClick={() => fileInputRef.current?.click()}
-              title="Attach PDF or Document to Annotate (.pdf, .doc, .docx, .txt, image)"
-              style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "rgba(16, 185, 129, 0.12)", color: "#10b981", borderColor: "rgba(16, 185, 129, 0.3)" }}
-            >
-              <Paperclip size={13} />
-              {attachedDoc ? "Change Doc" : "Attach PDF / Doc"}
-            </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              accept=".pdf,.doc,.docx,.txt,image/*"
-              onChange={handleAttachDocument}
-            />
+        {/* Background Mode Swapper */}
+        <div className="toolbar-section">
+          <button
+            className={`mode-pill-btn ${canvasMode === "whiteboard" ? "active" : ""}`}
+            onClick={() => setCanvasMode("whiteboard")}
+            title="Whiteboard Canvas (Ctrl+Alt+W)"
+          >
+            Whiteboard
+          </button>
+          <button
+            className={`mode-pill-btn ${canvasMode === "blackboard" ? "active" : ""}`}
+            onClick={() => setCanvasMode("blackboard")}
+            title="Blackboard Canvas (Ctrl+Alt+B)"
+          >
+            Blackboard
+          </button>
+          <button
+            className={`mode-pill-btn ${canvasMode === "overlay" ? "active" : ""}`}
+            onClick={() => setCanvasMode("overlay")}
+            title="Transparent Multi-Monitor Glass Overlay (Ctrl+Alt+O)"
+          >
+            Glass Overlay
+          </button>
+        </div>
 
-            <button
-              className="action-icon-btn"
-              onClick={handleUndo}
-              disabled={strokes.length === 0}
-              title="Undo (Ctrl+Alt+Z)"
-            >
-              <RotateCcw size={15} />
-            </button>
-            <button
-              className="action-icon-btn"
-              onClick={handleRedo}
-              disabled={redoStack.length === 0}
-              title="Redo (Ctrl+Alt+Y)"
-            >
-              <RotateCw size={15} />
-            </button>
-            <button
-              className="action-icon-btn danger"
-              onClick={handleClear}
-              disabled={strokes.length === 0}
-              title="Clear Canvas (Ctrl+Alt+X)"
-            >
-              <Trash2 size={15} />
-            </button>
-            <button
-              className="action-icon-btn primary"
-              onClick={exportAsPDF}
-              title="Export Canvas Document as PDF (Ctrl+Alt+S)"
-              style={{ width: "auto", padding: "0 10px", gap: "5px", fontSize: "0.76rem", fontWeight: 750 }}
-            >
-              <Download size={14} /> PDF
-            </button>
-            <button
-              className="action-icon-btn"
-              onClick={() => setShowShortcuts(!showShortcuts)}
-              title="Desktop Shortcut Keys"
-            >
-              <HelpCircle size={15} />
-            </button>
-            <button
-              className="action-icon-btn"
-              onClick={() => setIsFullscreen(!isFullscreen)}
-              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Canvas Mode"}
-            >
-              {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
-            </button>
-          </div>
+        <div className="toolbar-divider" />
+
+        {/* Document Attachment & History Actions */}
+        <div className="toolbar-section">
+          <button
+            className="mode-pill-btn"
+            onClick={() => fileInputRef.current?.click()}
+            title="Attach PDF or Document to Annotate (.pdf, .doc, .docx, .txt, image)"
+          >
+            <Paperclip size={13} style={{ marginRight: "3px" }} />
+            {attachedDoc ? "Change Doc" : "Attach PDF / Doc"}
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            accept=".pdf,.doc,.docx,.txt,image/*"
+            onChange={handleAttachDocument}
+          />
+
+          <button
+            className="action-icon-btn"
+            onClick={handleUndo}
+            disabled={strokes.length === 0}
+            title="Undo (Ctrl+Alt+Z)"
+          >
+            <RotateCcw size={15} />
+          </button>
+          <button
+            className="action-icon-btn"
+            onClick={handleRedo}
+            disabled={redoStack.length === 0}
+            title="Redo (Ctrl+Alt+Y)"
+          >
+            <RotateCw size={15} />
+          </button>
+          <button
+            className="action-icon-btn danger"
+            onClick={handleClear}
+            disabled={strokes.length === 0}
+            title="Clear Canvas (Ctrl+Alt+X)"
+          >
+            <Trash2 size={15} />
+          </button>
+          <button
+            className="action-icon-btn primary"
+            onClick={exportAsPDF}
+            title="Export Canvas Document as PDF (Ctrl+Alt+S)"
+            style={{ width: "auto", padding: "0 10px", gap: "5px", fontSize: "0.76rem", fontWeight: 750 }}
+          >
+            <Download size={14} /> PDF
+          </button>
+          <button
+            className="action-icon-btn"
+            onClick={() => setShowShortcuts(!showShortcuts)}
+            title="Desktop Shortcut Keys"
+          >
+            <HelpCircle size={15} />
+          </button>
+          <button
+            className="action-icon-btn"
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Canvas Mode"}
+          >
+            {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+          </button>
         </div>
       </div>
 
