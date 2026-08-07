@@ -251,10 +251,10 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // Exact SilentTiger/laser-pen Engine (Synced with selected color & size)
+    // SilentTiger/laser-pen Engine with Slow 1250ms Decay & Inner Hot White Beam Effect
     const now = Date.now();
-    const delay = 400; // SilentTiger laser-pen delay (400ms)
-    const maxWidth = Math.max(4, size * 2.2);
+    const delay = 1250; // Slow, graceful disappearance speed (1250ms)
+    const maxWidth = Math.max(5, size * 2.4);
     const minWidth = Math.max(0.5, size * 0.3);
 
     laserPointsRef.current = laserPointsRef.current.filter(
@@ -286,7 +286,7 @@ export function InkSurfaceCanvas() {
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
-      // Draw SilentTiger tapering Bezier laser segments
+      // Pass 1: Outer Glowing Colored Aura (Selected Color)
       for (let i = 1; i < laserPts.length; i++) {
         const p1 = laserPts[i - 1];
         const p2 = laserPts[i];
@@ -300,7 +300,37 @@ export function InkSurfaceCanvas() {
         ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
         ctx.lineWidth = segWidth;
         ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
-        ctx.shadowBlur = 14 * progress;
+        ctx.shadowBlur = 16 * progress;
+
+        if (i === 1) {
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+        } else {
+          const prevMidX = (laserPts[i - 2].x + p1.x) / 2;
+          const prevMidY = (laserPts[i - 2].y + p1.y) / 2;
+          const currMidX = (p1.x + p2.x) / 2;
+          const currMidY = (p1.y + p2.y) / 2;
+          ctx.moveTo(prevMidX, prevMidY);
+          ctx.quadraticCurveTo(p1.x, p1.y, currMidX, currMidY);
+        }
+        ctx.stroke();
+      }
+
+      // Pass 2: Inner Hot White Beam Core Effect
+      for (let i = 1; i < laserPts.length; i++) {
+        const p1 = laserPts[i - 1];
+        const p2 = laserPts[i];
+
+        const progress = i / (laserPts.length - 1);
+        const age = now - p2.time;
+        const alpha = Math.max(0, (1 - age / delay) * (0.2 + 0.8 * progress));
+        const segWidth = minWidth + (maxWidth - minWidth) * progress;
+
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
+        ctx.lineWidth = Math.max(1, segWidth * 0.38);
+        ctx.shadowColor = "#ffffff";
+        ctx.shadowBlur = 4 * progress;
 
         if (i === 1) {
           ctx.moveTo(p1.x, p1.y);
