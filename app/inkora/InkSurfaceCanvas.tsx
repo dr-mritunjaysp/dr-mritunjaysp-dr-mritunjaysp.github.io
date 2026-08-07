@@ -21,6 +21,7 @@ import {
   HelpCircle,
   Check,
   X,
+  Plus,
 } from "lucide-react";
 
 export type InkTool =
@@ -59,6 +60,7 @@ interface Stroke {
 
 export function InkSurfaceCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [tool, setTool] = useState<InkTool>("pen");
   const [color, setColor] = useState("#10b981");
   const [size, setSize] = useState(4);
@@ -72,9 +74,13 @@ export function InkSurfaceCanvas() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Dynamic laser pointer trail & dot refs (fades out automatically)
+  // Dynamic board expansion height
+  const [canvasHeight, setCanvasHeight] = useState(1200);
+
+  // Dynamic presentation laser & eraser cursor refs
   const laserPointsRef = useRef<LaserPoint[]>([]);
   const laserDotRef = useRef<Point | null>(null);
+  const eraserDotRef = useRef<Point | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
   // Canvas background colors
@@ -129,11 +135,11 @@ export function InkSurfaceCanvas() {
       }
     }
 
-    // Render saved strokes
+    // Render all saved ink strokes
     strokes.forEach((s) => renderStroke(ctx, s));
 
-    // Render current active stroke in progress (non-laser)
-    if (isDrawing && currentStroke.length > 0 && tool !== "laser") {
+    // Render active stroke in progress
+    if (isDrawing && currentStroke.length > 0 && tool !== "laser" && tool !== "eraser") {
       renderStroke(ctx, {
         id: "temp",
         tool,
@@ -143,11 +149,10 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // Render smooth presentation Laser Pointer & Fading Trail
+    // Render Laser Pointer & Fading Trail
     const now = Date.now();
-    const laserDuration = 800; // Trail fades over 800ms
+    const laserDuration = 800;
 
-    // Filter out expired laser points
     laserPointsRef.current = laserPointsRef.current.filter(
       (pt) => now - pt.time < laserDuration
     );
@@ -177,12 +182,10 @@ export function InkSurfaceCanvas() {
       ctx.restore();
     }
 
-    // Render glowing red Laser Pointer Dot at current pointer position
+    // Render glowing red Laser Dot
     if (tool === "laser" && laserDotRef.current) {
       const { x, y } = laserDotRef.current;
       ctx.save();
-      
-      // Outer glowing halo
       const grad = ctx.createRadialGradient(x, y, 2, x, y, 16);
       grad.addColorStop(0, "rgba(239, 68, 68, 0.9)");
       grad.addColorStop(0.5, "rgba(239, 68, 68, 0.4)");
@@ -193,7 +196,6 @@ export function InkSurfaceCanvas() {
       ctx.arc(x, y, 16, 0, Math.PI * 2);
       ctx.fill();
 
-      // Middle bright red dot
       ctx.fillStyle = "#ef4444";
       ctx.shadowColor = "#ef4444";
       ctx.shadowBlur = 12;
@@ -201,27 +203,41 @@ export function InkSurfaceCanvas() {
       ctx.arc(x, y, 6, 0, Math.PI * 2);
       ctx.fill();
 
-      // Core white spot
       ctx.fillStyle = "#ffffff";
       ctx.shadowBlur = 0;
       ctx.beginPath();
       ctx.arc(x, y, 2.5, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
+    }
 
+    // Render active Eraser Ring Indicator
+    if (tool === "eraser" && eraserDotRef.current) {
+      const { x, y } = eraserDotRef.current;
+      const eraserRadius = Math.max(16, size * 4);
+      ctx.save();
+      ctx.strokeStyle = canvasMode === "blackboard" ? "#38bdf8" : "#0284c7";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.arc(x, y, eraserRadius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = canvasMode === "blackboard" ? "rgba(56, 189, 248, 0.15)" : "rgba(2, 132, 199, 0.12)";
+      ctx.fill();
       ctx.restore();
     }
 
     ctx.restore();
   }, [getBgColor, strokes, isDrawing, currentStroke, tool, color, size, canvasMode]);
 
-  // Animation Loop for Laser Pointer smooth fade
+  // Animation Loop for Laser & Eraser updates
   useEffect(() => {
     let animId: number;
 
     const loop = () => {
       renderCanvas();
-      // If laser tool active or trail fading, keep looping
-      if (tool === "laser" || laserPointsRef.current.length > 0) {
+      if (tool === "laser" || tool === "eraser" || laserPointsRef.current.length > 0) {
         animId = requestAnimationFrame(loop);
       }
     };
@@ -234,7 +250,7 @@ export function InkSurfaceCanvas() {
     };
   }, [renderCanvas, tool]);
 
-  // Stroke Rendering
+  // Vector stroke rendering
   const renderStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
     if (stroke.points.length === 0) return;
 
@@ -246,9 +262,6 @@ export function InkSurfaceCanvas() {
       ctx.globalAlpha = 0.45;
       ctx.strokeStyle = stroke.color;
       ctx.lineWidth = stroke.size * 3;
-    } else if (stroke.tool === "eraser") {
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.lineWidth = stroke.size * 4;
     } else {
       ctx.globalAlpha = 1.0;
       ctx.strokeStyle = stroke.color;
@@ -322,6 +335,28 @@ export function InkSurfaceCanvas() {
     ctx.restore();
   };
 
+  // Erase strokes touched by eraser cursor
+  const eraseStrokesAt = useCallback(
+    (pt: Point) => {
+      const eraserRadius = Math.max(16, size * 4);
+      setStrokes((prevStrokes) => {
+        const remaining = prevStrokes.filter((stroke) => {
+          const isTouched = stroke.points.some((p) => {
+            const dx = p.x - pt.x;
+            const dy = p.y - pt.y;
+            return dx * dx + dy * dy <= eraserRadius * eraserRadius;
+          });
+          return !isTouched;
+        });
+        if (remaining.length !== prevStrokes.length) {
+          setRedoStack([]);
+        }
+        return remaining;
+      });
+    },
+    [size]
+  );
+
   const getCanvasCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -343,6 +378,9 @@ export function InkSurfaceCanvas() {
     if (tool === "laser") {
       laserDotRef.current = pt;
       laserPointsRef.current.push({ x: pt.x, y: pt.y, time: Date.now() });
+    } else if (tool === "eraser") {
+      eraserDotRef.current = pt;
+      eraseStrokesAt(pt);
     } else {
       setCurrentStroke([pt]);
     }
@@ -353,18 +391,31 @@ export function InkSurfaceCanvas() {
 
     if (tool === "laser") {
       laserDotRef.current = pt;
-      // Laser leaves a trailing laser line while mouse moves or holds down
       laserPointsRef.current.push({ x: pt.x, y: pt.y, time: Date.now() });
+      renderCanvas();
+      return;
+    }
+
+    if (tool === "eraser") {
+      eraserDotRef.current = pt;
+      if (isDrawing || e.buttons === 1) {
+        eraseStrokesAt(pt);
+      }
       renderCanvas();
       return;
     }
 
     if (!isDrawing) return;
     setCurrentStroke((prev) => [...prev, pt]);
+
+    // Auto expand canvas height if writing near bottom edge
+    if (pt.y > canvasHeight - 150) {
+      setCanvasHeight((h) => h + 400);
+    }
   };
 
   const handleMouseUp = () => {
-    if (tool === "laser") {
+    if (tool === "laser" || tool === "eraser") {
       setIsDrawing(false);
       return;
     }
@@ -388,7 +439,8 @@ export function InkSurfaceCanvas() {
 
   const handleMouseLeave = () => {
     laserDotRef.current = null;
-    if (isDrawing && tool !== "laser") {
+    eraserDotRef.current = null;
+    if (isDrawing && tool !== "laser" && tool !== "eraser") {
       handleMouseUp();
     }
   };
@@ -446,13 +498,11 @@ export function InkSurfaceCanvas() {
     if (!canvas) return;
 
     try {
-      // Render high-quality canvas frame
       const imgDataUrl = canvas.toDataURL("image/jpeg", 0.95);
       const base64Str = imgDataUrl.split(",")[1];
       const binaryStr = atob(base64Str);
       const imgLen = binaryStr.length;
 
-      // PDF 72dpi page scale
       const pdfWidth = Math.round(canvas.width * 0.75);
       const pdfHeight = Math.round(canvas.height * 0.75);
 
@@ -460,19 +510,15 @@ export function InkSurfaceCanvas() {
       let body = "";
       const offsets: number[] = [];
 
-      // Obj 1: Catalog
       offsets.push(header.length + body.length);
       body += "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
 
-      // Obj 2: Pages tree
       offsets.push(header.length + body.length);
       body += "2 0 obj\n<< /Type /Pages /Count 1 /Kids [ 3 0 R ] >>\nendobj\n";
 
-      // Obj 3: Page definition
       offsets.push(header.length + body.length);
       body += `3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [ 0 0 ${pdfWidth} ${pdfHeight} ] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>\nendobj\n`;
 
-      // Obj 4: Image XObject header
       offsets.push(header.length + body.length);
       const imgObjHeader = `4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLen} >>\nstream\n`;
 
@@ -666,8 +712,16 @@ export function InkSurfaceCanvas() {
 
         <div className="toolbar-divider" />
 
-        {/* Canvas History & Actions */}
+        {/* Board Canvas Height Extension & History Actions */}
         <div className="toolbar-section">
+          <button
+            className="mode-pill-btn"
+            onClick={() => setCanvasHeight((h) => h + 600)}
+            title="Add Space / Expand Board Height"
+          >
+            <Plus size={13} style={{ marginRight: "3px" }} /> Extend Canvas
+          </button>
+
           <button
             className="action-icon-btn"
             onClick={handleUndo}
@@ -717,10 +771,11 @@ export function InkSurfaceCanvas() {
         </div>
       </div>
 
-      {/* Main Canvas Drawing Surface */}
-      <div className="canvas-wrapper-box">
+      {/* Main Canvas Drawing Surface with Native Scroll Container */}
+      <div className="canvas-wrapper-box" ref={containerRef}>
         <canvas
           ref={canvasRef}
+          style={{ height: `${canvasHeight}px` }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
