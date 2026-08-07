@@ -170,7 +170,7 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // Render Laser Pointer & Fading Tail using selected active color
+    // Render Laser Pointer & Continuous Fading Beam Trail using selected active color
     const now = Date.now();
     const laserDuration = 800; // Trail fades over 800ms
 
@@ -188,20 +188,27 @@ export function InkSurfaceCanvas() {
       ctx.shadowColor = laserColor;
       ctx.shadowBlur = 14;
 
-      for (let i = 1; i < laserPts.length; i++) {
-        const p1 = laserPts[i - 1];
-        const p2 = laserPts[i];
-        const age = now - p2.time;
-        const alpha = Math.max(0, 1 - age / laserDuration);
+      ctx.beginPath();
+      ctx.moveTo(laserPts[0].x, laserPts[0].y);
 
-        ctx.beginPath();
-        ctx.globalAlpha = alpha * 0.85;
-        ctx.strokeStyle = laserColor;
-        ctx.lineWidth = Math.max(2, size * 2) * alpha;
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+      if (laserPts.length < 3) {
+        for (let i = 1; i < laserPts.length; i++) {
+          ctx.lineTo(laserPts[i].x, laserPts[i].y);
+        }
+      } else {
+        for (let i = 1; i < laserPts.length - 1; i++) {
+          const xc = (laserPts[i].x + laserPts[i + 1].x) / 2;
+          const yc = (laserPts[i].y + laserPts[i + 1].y) / 2;
+          ctx.quadraticCurveTo(laserPts[i].x, laserPts[i].y, xc, yc);
+        }
+        const last = laserPts[laserPts.length - 1];
+        ctx.lineTo(last.x, last.y);
       }
+
+      ctx.strokeStyle = laserColor;
+      ctx.lineWidth = Math.max(3, size * 2);
+      ctx.globalAlpha = 0.85;
+      ctx.stroke();
       ctx.restore();
     }
 
@@ -407,7 +414,28 @@ export function InkSurfaceCanvas() {
 
     if (tool === "laser") {
       laserDotRef.current = pt;
-      laserPointsRef.current.push({ x: pt.x, y: pt.y, time: Date.now() });
+      const now = Date.now();
+      const lastPt = laserPointsRef.current[laserPointsRef.current.length - 1];
+
+      if (lastPt) {
+        const dist = Math.hypot(pt.x - lastPt.x, pt.y - lastPt.y);
+        const steps = Math.min(25, Math.floor(dist / 3));
+        if (steps > 1) {
+          for (let i = 1; i <= steps; i++) {
+            const t = i / steps;
+            laserPointsRef.current.push({
+              x: lastPt.x + (pt.x - lastPt.x) * t,
+              y: lastPt.y + (pt.y - lastPt.y) * t,
+              time: now,
+            });
+          }
+        } else {
+          laserPointsRef.current.push({ x: pt.x, y: pt.y, time: now });
+        }
+      } else {
+        laserPointsRef.current.push({ x: pt.x, y: pt.y, time: now });
+      }
+
       renderCanvas();
       return;
     }
