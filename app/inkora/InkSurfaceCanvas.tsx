@@ -149,7 +149,7 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // Render Laser Pointer & Fading Trail
+    // Render Laser Pointer & Continuous Fading Beam Trail
     const now = Date.now();
     const laserDuration = 800;
 
@@ -163,22 +163,28 @@ export function InkSurfaceCanvas() {
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.shadowColor = "#ef4444";
-      ctx.shadowBlur = 14;
+      ctx.shadowBlur = 16;
+      ctx.strokeStyle = "#ef4444";
+      ctx.lineWidth = Math.max(3, size * 2);
+      ctx.globalAlpha = 0.9;
 
-      for (let i = 1; i < laserPts.length; i++) {
-        const p1 = laserPts[i - 1];
-        const p2 = laserPts[i];
-        const age = now - p2.time;
-        const alpha = Math.max(0, 1 - age / laserDuration);
+      ctx.beginPath();
+      ctx.moveTo(laserPts[0].x, laserPts[0].y);
 
-        ctx.beginPath();
-        ctx.globalAlpha = alpha * 0.85;
-        ctx.strokeStyle = "#ff3333";
-        ctx.lineWidth = Math.max(2, size * 2) * alpha;
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+      if (laserPts.length < 3) {
+        for (let i = 1; i < laserPts.length; i++) {
+          ctx.lineTo(laserPts[i].x, laserPts[i].y);
+        }
+      } else {
+        for (let i = 1; i < laserPts.length - 1; i++) {
+          const xc = (laserPts[i].x + laserPts[i + 1].x) / 2;
+          const yc = (laserPts[i].y + laserPts[i + 1].y) / 2;
+          ctx.quadraticCurveTo(laserPts[i].x, laserPts[i].y, xc, yc);
+        }
+        const last = laserPts[laserPts.length - 1];
+        ctx.lineTo(last.x, last.y);
       }
+      ctx.stroke();
       ctx.restore();
     }
 
@@ -405,7 +411,19 @@ export function InkSurfaceCanvas() {
       return;
     }
 
-    if (!isDrawing) return;
+    // Auto scroll container down smoothly as user draws near the bottom threshold
+    if (containerRef.current) {
+      const container = containerRef.current;
+      const rect = container.getBoundingClientRect();
+      const relativeY = e.clientY - rect.top;
+      const bottomThreshold = rect.height - 70;
+
+      if (relativeY > bottomThreshold && (isDrawing || tool === "laser" || tool === "pen" || tool === "eraser")) {
+        container.scrollTop += 14;
+      }
+    }
+
+    if (!isDrawing && tool !== "laser" && tool !== "eraser") return;
     setCurrentStroke((prev) => [...prev, pt]);
 
     // Auto expand canvas height if writing near bottom edge
@@ -712,15 +730,8 @@ export function InkSurfaceCanvas() {
 
         <div className="toolbar-divider" />
 
-        {/* Board Canvas Height Extension & History Actions */}
+        {/* Board History & Export Actions */}
         <div className="toolbar-section">
-          <button
-            className="mode-pill-btn"
-            onClick={() => setCanvasHeight((h) => h + 600)}
-            title="Add Space / Expand Board Height"
-          >
-            <Plus size={13} style={{ marginRight: "3px" }} /> Extend Canvas
-          </button>
 
           <button
             className="action-icon-btn"
