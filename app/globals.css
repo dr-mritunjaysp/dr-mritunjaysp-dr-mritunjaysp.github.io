@@ -6297,7 +6297,7 @@ body::before {
 
 .inkora-canvas-surface {
   width: 100%;
-  min-height: 1200px;
+  min-height: 520px;
   display: block;
   touch-action: none;
 }

@@ -74,8 +74,29 @@ export function InkSurfaceCanvas() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Dynamic board expansion height
-  const [canvasHeight, setCanvasHeight] = useState(1200);
+  // Dynamic board expansion height (starts at compact 520px)
+  const [canvasHeight, setCanvasHeight] = useState(520);
+
+  // Auto-contract canvas height & remove scrollbars when text/strokes are deleted or erased
+  useEffect(() => {
+    if (strokes.length === 0) {
+      setCanvasHeight(520);
+      if (containerRef.current) {
+        containerRef.current.scrollTop = 0;
+      }
+      return;
+    }
+
+    let maxY = 0;
+    strokes.forEach((s) => {
+      s.points.forEach((p) => {
+        if (p.y > maxY) maxY = p.y;
+      });
+    });
+
+    const requiredHeight = Math.max(520, Math.ceil(maxY + 180));
+    setCanvasHeight(requiredHeight);
+  }, [strokes]);
 
   // Dynamic presentation laser & eraser cursor refs
   const laserPointsRef = useRef<LaserPoint[]>([]);
