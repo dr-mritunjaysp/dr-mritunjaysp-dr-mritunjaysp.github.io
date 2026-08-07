@@ -170,62 +170,97 @@ export function InkSurfaceCanvas() {
       });
     }
 
-    // Render Laser Pointer & Smooth Tapering Fading Beam Trail in active color
+    // Render Laser Pointer & Soft Neon Laser Beam (Matching reference image)
     const now = Date.now();
-    const laserDuration = 750; // Trail fades smoothly over 750ms
+    const laserDuration = 900; // 900ms smooth fading tail
 
     laserPointsRef.current = laserPointsRef.current.filter(
       (pt) => now - pt.time < laserDuration
     );
 
     const laserPts = laserPointsRef.current;
-    const laserColor = color; // Uses currently selected color!
+    const laserColor = color; // Follows active selected color!
 
     if (laserPts.length > 1) {
       ctx.save();
-      ctx.lineCap = "butt";
+      ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
+      // Pass 1: Outer Soft Neon Glow Aura
       for (let i = 1; i < laserPts.length; i++) {
         const p1 = laserPts[i - 1];
         const p2 = laserPts[i];
         const age = now - p2.time;
         const alpha = Math.max(0, 1 - age / laserDuration);
-
         if (alpha <= 0) continue;
 
         ctx.beginPath();
-        ctx.globalAlpha = alpha * 0.9;
+        ctx.globalAlpha = alpha * 0.45;
         ctx.strokeStyle = laserColor;
-        ctx.lineWidth = Math.max(2.5, size * 2.2) * (0.2 + 0.8 * alpha);
+        ctx.lineWidth = Math.max(6, size * 3.5) * (0.3 + 0.7 * alpha);
         ctx.shadowColor = laserColor;
-        ctx.shadowBlur = 12 * alpha;
+        ctx.shadowBlur = 18 * alpha;
         ctx.moveTo(p1.x, p1.y);
         ctx.lineTo(p2.x, p2.y);
         ctx.stroke();
       }
+
+      // Pass 2: Inner Smooth Core Beam
+      ctx.beginPath();
+      ctx.moveTo(laserPts[0].x, laserPts[0].y);
+      if (laserPts.length < 3) {
+        for (let i = 1; i < laserPts.length; i++) {
+          ctx.lineTo(laserPts[i].x, laserPts[i].y);
+        }
+      } else {
+        for (let i = 1; i < laserPts.length - 1; i++) {
+          const xc = (laserPts[i].x + laserPts[i + 1].x) / 2;
+          const yc = (laserPts[i].y + laserPts[i + 1].y) / 2;
+          ctx.quadraticCurveTo(laserPts[i].x, laserPts[i].y, xc, yc);
+        }
+        const last = laserPts[laserPts.length - 1];
+        ctx.lineTo(last.x, last.y);
+      }
+
+      ctx.globalAlpha = 0.85;
+      ctx.strokeStyle = laserColor;
+      ctx.lineWidth = Math.max(3, size * 1.8);
+      ctx.shadowColor = laserColor;
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+
       ctx.restore();
     }
 
-    // Render glowing Laser Pointer Head Dot in selected color
+    // Render Soft Glowing Laser Pointer Head Dot
     if (tool === "laser" && laserDotRef.current) {
       const { x, y } = laserDotRef.current;
       ctx.save();
+
+      // Outer Wide Glow Aura
       ctx.shadowColor = laserColor;
-      ctx.shadowBlur = 14;
+      ctx.shadowBlur = 20;
       ctx.fillStyle = laserColor;
-      ctx.globalAlpha = 0.9;
+      ctx.globalAlpha = 0.5;
       ctx.beginPath();
-      ctx.arc(x, y, Math.max(5, size * 1.3), 0, Math.PI * 2);
+      ctx.arc(x, y, Math.max(10, size * 2.2), 0, Math.PI * 2);
       ctx.fill();
 
-      // Bright white center core
+      // Inner Core Dot
+      ctx.globalAlpha = 0.95;
+      ctx.fillStyle = laserColor;
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(4, size * 1.1), 0, Math.PI * 2);
+      ctx.fill();
+
+      // Center White Core Spot
       ctx.fillStyle = "#ffffff";
       ctx.shadowBlur = 0;
       ctx.globalAlpha = 1.0;
       ctx.beginPath();
       ctx.arc(x, y, 2.5, 0, Math.PI * 2);
       ctx.fill();
+
       ctx.restore();
     }
 
