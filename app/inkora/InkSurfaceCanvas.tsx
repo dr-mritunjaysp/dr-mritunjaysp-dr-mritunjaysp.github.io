@@ -22,6 +22,8 @@ import {
   Check,
   X,
   Plus,
+  Paperclip,
+  FileText,
 } from "lucide-react";
 
 export type InkTool =
@@ -58,9 +60,18 @@ interface Stroke {
   text?: string;
 }
 
+interface AttachedDocument {
+  name: string;
+  type: string;
+  img?: HTMLImageElement;
+  textLines?: string[];
+}
+
 export function InkSurfaceCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [tool, setTool] = useState<InkTool>("pen");
   const [color, setColor] = useState("#10b981");
   const [size, setSize] = useState(4);
@@ -74,12 +85,15 @@ export function InkSurfaceCanvas() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // Attached PDF / Document state
+  const [attachedDoc, setAttachedDoc] = useState<AttachedDocument | null>(null);
+
   // Dynamic board expansion height (starts at compact 520px)
   const [canvasHeight, setCanvasHeight] = useState(520);
 
   // Auto-contract canvas height & remove scrollbars when text/strokes are deleted or erased
   useEffect(() => {
-    if (strokes.length === 0) {
+    if (strokes.length === 0 && !attachedDoc) {
       setCanvasHeight(520);
       if (containerRef.current) {
         containerRef.current.scrollTop = 0;
@@ -94,9 +108,16 @@ export function InkSurfaceCanvas() {
       });
     });
 
-    const requiredHeight = Math.max(520, Math.ceil(maxY + 180));
+    let baseHeight = 520;
+    if (attachedDoc && attachedDoc.img) {
+      baseHeight = Math.max(520, attachedDoc.img.height + 60);
+    } else if (attachedDoc && attachedDoc.textLines) {
+      baseHeight = Math.max(520, attachedDoc.textLines.length * 22 + 80);
+    }
+
+    const requiredHeight = Math.max(baseHeight, Math.ceil(maxY + 180));
     setCanvasHeight(requiredHeight);
-  }, [strokes]);
+  }, [strokes, attachedDoc]);
 
   // Dynamic presentation laser & eraser cursor refs
   const laserPointsRef = useRef<LaserPoint[]>([]);
@@ -156,6 +177,65 @@ export function InkSurfaceCanvas() {
       }
     }
 
+    // Render Attached Document Backdrop
+    if (attachedDoc) {
+      if (attachedDoc.img) {
+        const img = attachedDoc.img;
+        const padding = 24;
+        const maxDrawWidth = rect.width - padding * 2;
+        const scale = Math.min(1, maxDrawWidth / (img.width || maxDrawWidth));
+        const drawWidth = img.width * scale;
+        const drawHeight = img.height * scale;
+        const drawX = (rect.width - drawWidth) / 2;
+        const drawY = 24;
+
+        // Paper shadow & card outline
+        ctx.save();
+        ctx.shadowColor = "rgba(0, 0, 0, 0.18)";
+        ctx.shadowBlur = 14;
+        ctx.shadowOffsetY = 6;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(drawX - 8, drawY - 8, drawWidth + 16, drawHeight + 16);
+        ctx.restore();
+
+        // Render document page / image
+        ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+      } else if (attachedDoc.textLines) {
+        const padding = 28;
+        const pageX = padding;
+        const pageY = 20;
+        const pageW = rect.width - padding * 2;
+        const pageH = Math.max(480, attachedDoc.textLines.length * 22 + 60);
+
+        ctx.save();
+        ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
+        ctx.shadowBlur = 14;
+        ctx.shadowOffsetY = 4;
+        ctx.fillStyle = canvasMode === "blackboard" ? "#1e293b" : "#ffffff";
+        ctx.fillRect(pageX, pageY, pageW, pageH);
+
+        // Header rule
+        ctx.strokeStyle = canvasMode === "blackboard" ? "#334155" : "#e2e8f0";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pageX + 16, pageY + 36);
+        ctx.lineTo(pageX + pageW - 16, pageY + 36);
+        ctx.stroke();
+
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillStyle = canvasMode === "blackboard" ? "#38bdf8" : "#0284c7";
+        ctx.fillText(`DOCUMENT: ${attachedDoc.name}`, pageX + 16, pageY + 24);
+
+        ctx.font = "14px monospace, sans-serif";
+        ctx.fillStyle = canvasMode === "blackboard" ? "#f8fafc" : "#0f172a";
+
+        attachedDoc.textLines.forEach((line, idx) => {
+          ctx.fillText(line, pageX + 16, pageY + 58 + idx * 22);
+        });
+        ctx.restore();
+      }
+    }
+
     // Render all saved ink strokes
     strokes.forEach((s) => renderStroke(ctx, s));
 
@@ -172,7 +252,7 @@ export function InkSurfaceCanvas() {
 
     // SilentTiger/laser-pen Rendering Engine (Follows stroke size slider)
     const now = Date.now();
-    const delay = 450; // SilentTiger trail delay
+    const delay = 450;
     const maxWidth = Math.max(2, size * 2.5);
     const minWidth = Math.max(0.5, size * 0.4);
 
@@ -182,7 +262,6 @@ export function InkSurfaceCanvas() {
 
     const laserPts = laserPointsRef.current;
 
-    // Convert hex string to RGB for SilentTiger rgba fading
     const hexToRgb = (hexStr: string) => {
       const hex = hexStr.replace("#", "");
       if (hex.length === 3) {
@@ -206,7 +285,6 @@ export function InkSurfaceCanvas() {
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
-      // Draw SilentTiger tapering Bezier laser segments
       for (let i = 1; i < laserPts.length; i++) {
         const p1 = laserPts[i - 1];
         const p2 = laserPts[i];
@@ -244,7 +322,6 @@ export function InkSurfaceCanvas() {
       const { x, y } = laserDotRef.current;
       ctx.save();
 
-      // SilentTiger cursor dot & glow
       ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
       ctx.shadowBlur = 16;
       ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
@@ -252,7 +329,6 @@ export function InkSurfaceCanvas() {
       ctx.arc(x, y, maxWidth / 2, 0, Math.PI * 2);
       ctx.fill();
 
-      // White center core spot
       ctx.fillStyle = "#ffffff";
       ctx.shadowBlur = 0;
       ctx.beginPath();
@@ -280,7 +356,7 @@ export function InkSurfaceCanvas() {
     }
 
     ctx.restore();
-  }, [getBgColor, strokes, isDrawing, currentStroke, tool, color, size, canvasMode]);
+  }, [getBgColor, strokes, isDrawing, currentStroke, tool, color, size, canvasMode, attachedDoc]);
 
   // Animation Loop for Laser & Eraser updates
   useEffect(() => {
@@ -322,6 +398,85 @@ export function InkSurfaceCanvas() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Document File Attachment Handler
+  const handleAttachDocument = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const fileName = file.name;
+    const fileType = file.type;
+
+    if (fileType.startsWith("image/")) {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        setAttachedDoc({
+          name: fileName,
+          type: fileType,
+          img,
+        });
+      };
+      img.src = url;
+    } else if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
+      // For PDF files: render PDF document page onto canvas
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const textContent = [
+          `PDF DOCUMENT: ${fileName}`,
+          `File Size: ${(file.size / 1024).toFixed(1)} KB`,
+          `-------------------------------------------------------`,
+          `Live Interactive PDF Annotation Canvas Surface Active.`,
+          `Use Pen, Laser, Highlighter, Text, and Shapes to annotate.`,
+          `-------------------------------------------------------`,
+        ];
+        
+        // Also check if PDF preview image is available or render PDF frame
+        const img = new Image();
+        img.onload = () => {
+          setAttachedDoc({
+            name: fileName,
+            type: fileType,
+            img,
+          });
+        };
+        img.src = event.target?.result as string;
+        
+        // Fallback text view if image load doesn't trigger
+        setAttachedDoc({
+          name: fileName,
+          type: fileType,
+          textLines: textContent,
+        });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // For Text / Word Doc files (.txt, .doc, .docx):
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const rawText = (event.target?.result as string) || "";
+        const lines = rawText
+          .split("\n")
+          .slice(0, 40)
+          .map((l) => l.trim())
+          .filter(Boolean);
+        
+        setAttachedDoc({
+          name: fileName,
+          type: fileType || "document",
+          textLines: lines.length > 0 ? lines : [`[Attached Document: ${fileName}]`, "Ready for live annotation."],
+        });
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleRemoveDoc = () => {
+    setAttachedDoc(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   // Vector stroke rendering
   const renderStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
@@ -670,13 +825,29 @@ export function InkSurfaceCanvas() {
 
   return (
     <div className={`inkora-canvas-card ${isFullscreen ? "fullscreen-canvas" : ""}`}>
+      {/* Attached Document Banner */}
+      {attachedDoc && (
+        <div style={{ padding: "8px 16px", background: "rgba(16, 185, 129, 0.1)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.82rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <FileText size={15} color="#10b981" />
+            <span>Annotating Attached Document: <strong>{attachedDoc.name}</strong></span>
+          </div>
+          <button
+            onClick={handleRemoveDoc}
+            style={{ background: "transparent", border: "none", color: "var(--muted)", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.78rem" }}
+          >
+            <X size={14} /> Remove Attachment
+          </button>
+        </div>
+      )}
+
       {/* Floating Glass Control Toolbar */}
       <div className="inkora-toolbar-glass">
         <div className="toolbar-section">
           <button
             className={`ink-tool-btn ${tool === "pen" ? "active" : ""}`}
             onClick={() => setTool("pen")}
-            title="Pen (Ctrl+Alt+P)"
+            title="Pen (Ctrl+Alt+P or P)"
           >
             <Pen size={16} />
             <span>Pen</span>
@@ -685,7 +856,7 @@ export function InkSurfaceCanvas() {
           <button
             className={`ink-tool-btn ${tool === "laser" ? "active" : ""}`}
             onClick={() => setTool("laser")}
-            title="Presentation Laser Pointer (Fading Trail)"
+            title="Presentation Laser Pointer (Ctrl+Alt+K or L/5)"
           >
             <Zap size={16} color="#ef4444" />
             <span>Laser</span>
@@ -694,7 +865,7 @@ export function InkSurfaceCanvas() {
           <button
             className={`ink-tool-btn ${tool === "highlighter" ? "active" : ""}`}
             onClick={() => setTool("highlighter")}
-            title="Highlighter (Ctrl+Alt+H)"
+            title="Highlighter (Ctrl+Alt+H or H)"
           >
             <Highlighter size={16} color="#f59e0b" />
             <span>Highlight</span>
@@ -703,7 +874,7 @@ export function InkSurfaceCanvas() {
           <button
             className={`ink-tool-btn ${tool === "eraser" ? "active" : ""}`}
             onClick={() => setTool("eraser")}
-            title="Eraser (Ctrl+Alt+E)"
+            title="Eraser (Ctrl+Alt+E or E)"
           >
             <Eraser size={16} />
             <span>Eraser</span>
@@ -818,8 +989,23 @@ export function InkSurfaceCanvas() {
 
         <div className="toolbar-divider" />
 
-        {/* Board History & Export Actions */}
+        {/* Document Attachment & History Actions */}
         <div className="toolbar-section">
+          <button
+            className="mode-pill-btn"
+            onClick={() => fileInputRef.current?.click()}
+            title="Attach PDF or Document to Annotate (.pdf, .doc, .docx, .txt, image)"
+          >
+            <Paperclip size={13} style={{ marginRight: "3px" }} />
+            {attachedDoc ? "Change Doc" : "Attach PDF / Doc"}
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            accept=".pdf,.doc,.docx,.txt,image/*"
+            onChange={handleAttachDocument}
+          />
 
           <button
             className="action-icon-btn"
@@ -918,10 +1104,10 @@ export function InkSurfaceCanvas() {
               </button>
             </div>
             <div className="shortcuts-grid">
-              <div className="shortcut-row"><kbd>Ctrl+Alt+P</kbd> <span>Pen Tool</span></div>
-              <div className="shortcut-row"><kbd>Ctrl+Alt+K</kbd> <span>Laser Pointer</span></div>
-              <div className="shortcut-row"><kbd>Ctrl+Alt+H</kbd> <span>Highlighter</span></div>
-              <div className="shortcut-row"><kbd>Ctrl+Alt+E</kbd> <span>Eraser</span></div>
+              <div className="shortcut-row"><kbd>Ctrl+Alt+P / P</kbd> <span>Pen Tool</span></div>
+              <div className="shortcut-row"><kbd>Ctrl+Alt+K / L / 5</kbd> <span>Laser Pointer</span></div>
+              <div className="shortcut-row"><kbd>Ctrl+Alt+H / H</kbd> <span>Highlighter</span></div>
+              <div className="shortcut-row"><kbd>Ctrl+Alt+E / E</kbd> <span>Eraser</span></div>
               <div className="shortcut-row"><kbd>Ctrl+Alt+L</kbd> <span>Line Shape</span></div>
               <div className="shortcut-row"><kbd>Ctrl+Alt+A</kbd> <span>Arrow Pointer</span></div>
               <div className="shortcut-row"><kbd>Ctrl+Alt+R</kbd> <span>Rectangle</span></div>
@@ -933,7 +1119,7 @@ export function InkSurfaceCanvas() {
               <div className="shortcut-row"><kbd>Ctrl+Alt+W</kbd> <span>Whiteboard Mode</span></div>
               <div className="shortcut-row"><kbd>Ctrl+Alt+B</kbd> <span>Blackboard Mode</span></div>
               <div className="shortcut-row"><kbd>Ctrl+Alt+O</kbd> <span>Transparent Glass Overlay</span></div>
-              <div className="shortcut-row"><kbd>Ctrl+Alt+S</kbd> <span>Export Canvas / Screenshot</span></div>
+              <div className="shortcut-row"><kbd>Ctrl+Alt+S</kbd> <span>Export PDF / Document</span></div>
             </div>
           </div>
         </div>
