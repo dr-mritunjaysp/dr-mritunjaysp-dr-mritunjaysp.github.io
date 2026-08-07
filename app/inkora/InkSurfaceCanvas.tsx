@@ -441,6 +441,81 @@ export function InkSurfaceCanvas() {
     link.click();
   };
 
+  const exportAsPDF = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    try {
+      // Render high-quality canvas frame
+      const imgDataUrl = canvas.toDataURL("image/jpeg", 0.95);
+      const base64Str = imgDataUrl.split(",")[1];
+      const binaryStr = atob(base64Str);
+      const imgLen = binaryStr.length;
+
+      // PDF 72dpi page scale
+      const pdfWidth = Math.round(canvas.width * 0.75);
+      const pdfHeight = Math.round(canvas.height * 0.75);
+
+      const header = "%PDF-1.4\n";
+      let body = "";
+      const offsets: number[] = [];
+
+      // Obj 1: Catalog
+      offsets.push(header.length + body.length);
+      body += "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
+
+      // Obj 2: Pages tree
+      offsets.push(header.length + body.length);
+      body += "2 0 obj\n<< /Type /Pages /Count 1 /Kids [ 3 0 R ] >>\nendobj\n";
+
+      // Obj 3: Page definition
+      offsets.push(header.length + body.length);
+      body += `3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [ 0 0 ${pdfWidth} ${pdfHeight} ] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>\nendobj\n`;
+
+      // Obj 4: Image XObject header
+      offsets.push(header.length + body.length);
+      const imgObjHeader = `4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLen} >>\nstream\n`;
+
+      const encoder = new TextEncoder();
+      const p1 = encoder.encode(header + body + imgObjHeader);
+
+      const imgBytes = new Uint8Array(imgLen);
+      for (let i = 0; i < imgLen; i++) {
+        imgBytes[i] = binaryStr.charCodeAt(i);
+      }
+
+      const imgFooterStr = "\nendstream\nendobj\n";
+      const p2 = encoder.encode(imgFooterStr);
+
+      const contentStreamStr = `q ${pdfWidth} 0 0 ${pdfHeight} 0 0 cm /Im1 Do Q`;
+      const obj5Offset = p1.length + imgBytes.length + p2.length;
+      const obj5Str = `5 0 obj\n<< /Length ${contentStreamStr.length} >>\nstream\n${contentStreamStr}\nendstream\nendobj\n`;
+      const p3 = encoder.encode(obj5Str);
+
+      const xrefStart = obj5Offset + p3.length;
+      let xref = `xref\n0 6\n0000000000 65535 f \n`;
+      const allOffsets = [...offsets, obj5Offset];
+      allOffsets.forEach((off) => {
+        xref += off.toString().padStart(10, "0") + " 00000 n \n";
+      });
+      xref += `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF\n`;
+      const p4 = encoder.encode(xref);
+
+      const pdfBlob = new Blob([p1, imgBytes, p2, p3, p4], { type: "application/pdf" });
+      const url = URL.createObjectURL(pdfBlob);
+
+      const link = document.createElement("a");
+      link.download = `inkora-annotation-${Date.now()}.pdf`;
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch {
+      exportAsImage();
+    }
+  };
+
   return (
     <div className={`inkora-canvas-card ${isFullscreen ? "fullscreen-canvas" : ""}`}>
       {/* Floating Glass Control Toolbar */}
@@ -619,10 +694,11 @@ export function InkSurfaceCanvas() {
           </button>
           <button
             className="action-icon-btn primary"
-            onClick={exportAsImage}
-            title="Export Canvas PNG (Ctrl+Alt+S)"
+            onClick={exportAsPDF}
+            title="Export Canvas Document as PDF (Ctrl+Alt+S)"
+            style={{ width: "auto", padding: "0 10px", gap: "5px", fontSize: "0.76rem", fontWeight: 750 }}
           >
-            <Download size={15} />
+            <Download size={14} /> PDF
           </button>
           <button
             className="action-icon-btn"
