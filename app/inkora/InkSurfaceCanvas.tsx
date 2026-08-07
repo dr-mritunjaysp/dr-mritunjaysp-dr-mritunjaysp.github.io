@@ -783,6 +783,94 @@ export function InkSurfaceCanvas() {
     }
   };
 
+  // Native Mobile Touch & Stylus Drawing Handlers (iOS Safari & Android Chrome)
+  const getTouchCoords = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0] || e.changedTouches[0];
+    if (!touch) return { x: 0, y: 0 };
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.cancelable) e.preventDefault();
+    const pt = getTouchCoords(e);
+    if (tool === "text") {
+      setTextPos(pt);
+      return;
+    }
+    setIsDrawing(true);
+
+    if (tool === "laser") {
+      laserDotRef.current = pt;
+      laserPointsRef.current.push({ x: pt.x, y: pt.y, time: Date.now() });
+    } else if (tool === "eraser") {
+      eraserDotRef.current = pt;
+      eraseStrokesAt(pt);
+    } else {
+      setCurrentStroke([pt]);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.cancelable) e.preventDefault();
+    const pt = getTouchCoords(e);
+    penDotRef.current = pt;
+
+    if (tool === "laser") {
+      laserDotRef.current = pt;
+      const now = Date.now();
+      const lastPt = laserPointsRef.current[laserPointsRef.current.length - 1];
+
+      if (lastPt) {
+        const dist = Math.hypot(pt.x - lastPt.x, pt.y - lastPt.y);
+        if (dist >= 3) {
+          const steps = Math.min(5, Math.ceil(dist / 12));
+          for (let i = 1; i <= steps; i++) {
+            const t = i / steps;
+            laserPointsRef.current.push({
+              x: lastPt.x + (pt.x - lastPt.x) * t,
+              y: lastPt.y + (pt.y - lastPt.y) * t,
+              time: now,
+            });
+          }
+        }
+      } else {
+        laserPointsRef.current.push({ x: pt.x, y: pt.y, time: now });
+      }
+
+      if (laserPointsRef.current.length > 35) {
+        laserPointsRef.current = laserPointsRef.current.slice(-35);
+      }
+
+      renderCanvas();
+      return;
+    }
+
+    if (tool === "eraser") {
+      eraserDotRef.current = pt;
+      eraseStrokesAt(pt);
+      renderCanvas();
+      return;
+    }
+
+    if (!isDrawing) return;
+    setCurrentStroke((prev) => [...prev, pt]);
+
+    if (pt.y > canvasHeight - 150) {
+      setCanvasHeight((h) => h + 400);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.cancelable) e.preventDefault();
+    handleMouseUp();
+  };
+
   const handleAddText = () => {
     if (!textPos || !textInput.trim()) {
       setTextPos(null);
@@ -1143,6 +1231,10 @@ export function InkSurfaceCanvas() {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
           className={`inkora-canvas-surface ${tool}`}
         />
 
