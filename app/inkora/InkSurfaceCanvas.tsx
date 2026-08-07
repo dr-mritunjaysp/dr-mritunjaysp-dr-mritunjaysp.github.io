@@ -282,7 +282,6 @@ export function InkSurfaceCanvas() {
     const { r, g, b } = hexToRgb(color);
 
     if (laserPts.length >= 2 || (tool === "laser" && laserDotRef.current)) {
-      // Connect laser head directly to current active mouse position
       const pts = [...laserPts];
       if (tool === "laser" && laserDotRef.current) {
         pts.push({ x: laserDotRef.current.x, y: laserDotRef.current.y, time: now });
@@ -293,65 +292,53 @@ export function InkSurfaceCanvas() {
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
 
-        // Pass 1: Outer Glowing Colored Aura (Selected Color)
-        for (let i = 1; i < pts.length; i++) {
-          const p1 = pts[i - 1];
-          const p2 = pts[i];
+        // Calculate overall trail fade opacity
+        const newestPt = pts[pts.length - 1];
+        const ageMs = Math.max(0, now - newestPt.time);
+        const trailAlpha = Math.max(0, 1 - ageMs / delay);
 
-          const progress = i / (pts.length - 1);
-          const age = now - p2.time;
-          const alpha = Math.max(0, (1 - age / delay) * (0.15 + 0.85 * progress));
-          const segWidth = minWidth + (maxWidth - minWidth) * Math.pow(progress, 0.7);
-
+        // Build one single continuous smooth Bezier curve path across all points
+        const buildPath = () => {
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-          ctx.lineWidth = segWidth;
-          ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
-          ctx.shadowBlur = 18 * progress;
-
-          if (i === 1) {
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
+          ctx.moveTo(pts[0].x, pts[0].y);
+          if (pts.length < 3) {
+            for (let i = 1; i < pts.length; i++) {
+              ctx.lineTo(pts[i].x, pts[i].y);
+            }
           } else {
-            const prevMidX = (pts[i - 2].x + p1.x) / 2;
-            const prevMidY = (pts[i - 2].y + p1.y) / 2;
-            const currMidX = (p1.x + p2.x) / 2;
-            const currMidY = (p1.y + p2.y) / 2;
-            ctx.moveTo(prevMidX, prevMidY);
-            ctx.quadraticCurveTo(p1.x, p1.y, currMidX, currMidY);
+            for (let i = 1; i < pts.length - 1; i++) {
+              const xc = (pts[i].x + pts[i + 1].x) / 2;
+              const yc = (pts[i].y + pts[i + 1].y) / 2;
+              ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+            }
+            const last = pts[pts.length - 1];
+            ctx.lineTo(last.x, last.y);
           }
-          ctx.stroke();
-        }
+        };
 
-        // Pass 2: Inner Hot White Beam Core Effect
-        for (let i = 1; i < pts.length; i++) {
-          const p1 = pts[i - 1];
-          const p2 = pts[i];
+        // Pass 1: Wide Translucent Color Aura Glow (Single stroke = ZERO overlapping dots!)
+        buildPath();
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${0.35 * trailAlpha})`;
+        ctx.lineWidth = maxWidth * 1.5;
+        ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+        ctx.shadowBlur = 18;
+        ctx.stroke();
 
-          const progress = i / (pts.length - 1);
-          const age = now - p2.time;
-          const alpha = Math.max(0, (1 - age / delay) * (0.2 + 0.8 * progress));
-          const segWidth = minWidth + (maxWidth - minWidth) * Math.pow(progress, 0.7);
+        // Pass 2: Main Solid Color Beam Body (Single stroke = ZERO overlapping dots!)
+        buildPath();
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${0.95 * trailAlpha})`;
+        ctx.lineWidth = maxWidth;
+        ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+        ctx.shadowBlur = 8;
+        ctx.stroke();
 
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
-          ctx.lineWidth = Math.max(1, segWidth * 0.35);
-          ctx.shadowColor = "#ffffff";
-          ctx.shadowBlur = 4 * progress;
-
-          if (i === 1) {
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-          } else {
-            const prevMidX = (pts[i - 2].x + p1.x) / 2;
-            const prevMidY = (pts[i - 2].y + p1.y) / 2;
-            const currMidX = (pts[i - 1].x + p2.x) / 2;
-            const currMidY = (pts[i - 1].y + p2.y) / 2;
-            ctx.moveTo(prevMidX, prevMidY);
-            ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, currMidX, currMidY);
-          }
-          ctx.stroke();
-        }
+        // Pass 3: Inner Pure Hot White Core Beam (Single stroke = ZERO overlapping dots!)
+        buildPath();
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.98 * trailAlpha})`;
+        ctx.lineWidth = Math.max(1.5, maxWidth * 0.35);
+        ctx.shadowColor = "#ffffff";
+        ctx.shadowBlur = 0;
+        ctx.stroke();
 
         ctx.restore();
       }
