@@ -281,72 +281,80 @@ export function InkSurfaceCanvas() {
 
     const { r, g, b } = hexToRgb(color);
 
-    if (laserPts.length >= 2) {
-      ctx.save();
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-
-      // Pass 1: Outer Glowing Colored Aura (Selected Color)
-      for (let i = 1; i < laserPts.length; i++) {
-        const p1 = laserPts[i - 1];
-        const p2 = laserPts[i];
-
-        const progress = i / (laserPts.length - 1);
-        const age = now - p2.time;
-        const alpha = Math.max(0, (1 - age / delay) * (0.15 + 0.85 * progress));
-        const segWidth = minWidth + (maxWidth - minWidth) * progress;
-
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        ctx.lineWidth = segWidth;
-        ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
-        ctx.shadowBlur = 16 * progress;
-
-        if (i === 1) {
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-        } else {
-          const prevMidX = (laserPts[i - 2].x + p1.x) / 2;
-          const prevMidY = (laserPts[i - 2].y + p1.y) / 2;
-          const currMidX = (p1.x + p2.x) / 2;
-          const currMidY = (p1.y + p2.y) / 2;
-          ctx.moveTo(prevMidX, prevMidY);
-          ctx.quadraticCurveTo(p1.x, p1.y, currMidX, currMidY);
-        }
-        ctx.stroke();
+    if (laserPts.length >= 2 || (tool === "laser" && laserDotRef.current)) {
+      // Connect laser head directly to current active mouse position
+      const pts = [...laserPts];
+      if (tool === "laser" && laserDotRef.current) {
+        pts.push({ x: laserDotRef.current.x, y: laserDotRef.current.y, time: now });
       }
 
-      // Pass 2: Inner Hot White Beam Core Effect
-      for (let i = 1; i < laserPts.length; i++) {
-        const p1 = laserPts[i - 1];
-        const p2 = laserPts[i];
+      if (pts.length >= 2) {
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
 
-        const progress = i / (laserPts.length - 1);
-        const age = now - p2.time;
-        const alpha = Math.max(0, (1 - age / delay) * (0.2 + 0.8 * progress));
-        const segWidth = minWidth + (maxWidth - minWidth) * progress;
+        // Pass 1: Outer Glowing Colored Aura (Selected Color)
+        for (let i = 1; i < pts.length; i++) {
+          const p1 = pts[i - 1];
+          const p2 = pts[i];
 
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
-        ctx.lineWidth = Math.max(1, segWidth * 0.38);
-        ctx.shadowColor = "#ffffff";
-        ctx.shadowBlur = 4 * progress;
+          const progress = i / (pts.length - 1);
+          const age = now - p2.time;
+          const alpha = Math.max(0, (1 - age / delay) * (0.15 + 0.85 * progress));
+          const segWidth = minWidth + (maxWidth - minWidth) * Math.pow(progress, 0.7);
 
-        if (i === 1) {
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-        } else {
-          const prevMidX = (laserPts[i - 2].x + p1.x) / 2;
-          const prevMidY = (laserPts[i - 2].y + p1.y) / 2;
-          const currMidX = (p1.x + p2.x) / 2;
-          const currMidY = (p1.y + p2.y) / 2;
-          ctx.moveTo(prevMidX, prevMidY);
-          ctx.quadraticCurveTo(p1.x, p1.y, currMidX, currMidY);
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          ctx.lineWidth = segWidth;
+          ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+          ctx.shadowBlur = 18 * progress;
+
+          if (i === 1) {
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+          } else {
+            const prevMidX = (pts[i - 2].x + p1.x) / 2;
+            const prevMidY = (pts[i - 2].y + p1.y) / 2;
+            const currMidX = (p1.x + p2.x) / 2;
+            const currMidY = (p1.y + p2.y) / 2;
+            ctx.moveTo(prevMidX, prevMidY);
+            ctx.quadraticCurveTo(p1.x, p1.y, currMidX, currMidY);
+          }
+          ctx.stroke();
         }
-        ctx.stroke();
-      }
 
-      ctx.restore();
+        // Pass 2: Inner Hot White Beam Core Effect
+        for (let i = 1; i < pts.length; i++) {
+          const p1 = pts[i - 1];
+          const p2 = pts[i];
+
+          const progress = i / (pts.length - 1);
+          const age = now - p2.time;
+          const alpha = Math.max(0, (1 - age / delay) * (0.2 + 0.8 * progress));
+          const segWidth = minWidth + (maxWidth - minWidth) * Math.pow(progress, 0.7);
+
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
+          ctx.lineWidth = Math.max(1, segWidth * 0.35);
+          ctx.shadowColor = "#ffffff";
+          ctx.shadowBlur = 4 * progress;
+
+          if (i === 1) {
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+          } else {
+            const prevMidX = (pts[i - 2].x + p1.x) / 2;
+            const prevMidY = (pts[i - 2].y + p1.y) / 2;
+            const currMidX = (pts[i - 1].x + p2.x) / 2;
+            const currMidY = (pts[i - 1].y + p2.y) / 2;
+            ctx.moveTo(prevMidX, prevMidY);
+            ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, currMidX, currMidY);
+          }
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
     }
 
     // SilentTiger Laser Pointer Head (Follows selected color & size)
