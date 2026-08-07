@@ -99,18 +99,15 @@ export function InkoraApp() {
     setDownloadState("working");
     setDownloadCount((prev) => prev + 1);
 
-    setTimeout(() => {
-      setDownloadState("done");
-      // Trigger download of official Windows Setup Executable
-      const link = document.createElement("a");
-      link.href = "/downloads/Inkora-Setup-1.0.0-x64.exe";
-      link.download = "Inkora-Setup-1.0.0-x64.exe";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    const link = document.createElement("a");
+    link.href = "/downloads/Inkora-Setup-1.0.0-x64.exe";
+    link.download = "Inkora-Setup-1.0.0-x64.exe";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-      setTimeout(() => setDownloadState("idle"), 3000);
-    }, 600);
+    setTimeout(() => setDownloadState("done"), 800);
+    setTimeout(() => setDownloadState("idle"), 3000);
   };
 
   const handleAuthSubmit = (e: React.FormEvent) => {

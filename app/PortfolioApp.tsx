@@ -2564,9 +2564,19 @@ function ProjectsPage() {
               <span className="attribute-pill">Subdomain App</span>
             </div>
           </div>
-          <Link className="btn-sort-primary" href="/inkora" style={{ textDecoration: "none", textAlign: "center", justifyContent: "center", background: "linear-gradient(135deg, #10b981, #059669)" }}>
-            Open Inkora PenApp <ChevronRight size={16} />
-          </Link>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <Link className="btn-sort-primary" href="/inkora" style={{ flex: "1", textDecoration: "none", textAlign: "center", justifyContent: "center", background: "linear-gradient(135deg, #10b981, #059669)" }}>
+              Open Inkora PenApp <ChevronRight size={16} />
+            </Link>
+            <a
+              className="btn-sort-secondary"
+              href="/downloads/Inkora-Setup-1.0.0-x64.exe"
+              download="Inkora-Setup-1.0.0-x64.exe"
+              style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.86rem", padding: "8px 14px" }}
+            >
+              <Download size={15} /> Download .exe Setup
+            </a>
+          </div>
         </div>
 
         <div className="project-feature-card">
