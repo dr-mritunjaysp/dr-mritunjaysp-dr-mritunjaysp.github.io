@@ -300,38 +300,45 @@ export function InkSurfaceCanvas() {
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
 
-        // Pen App 5-Layer Multi-Pass Geometry Glow (InkSurface.cs DrawLaserStroke)
+        // 5-Layer Multi-Pass Geometry Glow with Small Thin Tail Tapering
         const layers = [
-          { mult: 5.0, alpha: 0.10, blur: 18 },
-          { mult: 3.2, alpha: 0.32, blur: 12 },
-          { mult: 1.8, alpha: 0.70, blur: 6 },
+          { mult: 5.0, alpha: 0.08, blur: 18 },
+          { mult: 3.2, alpha: 0.28, blur: 12 },
+          { mult: 1.8, alpha: 0.65, blur: 6 },
           { mult: 1.1, alpha: 0.98, blur: 2, strokeColor: `rgba(${r}, ${g}, ${b}, 0.98)` },
           { mult: 0.35, alpha: 0.98, blur: 0, strokeColor: `rgba(255, 255, 255, 0.98)` },
         ];
 
-        layers.forEach((layer) => {
-          ctx.beginPath();
-          ctx.lineWidth = baseWidth * layer.mult;
-          ctx.strokeStyle = layer.strokeColor || `rgba(${r}, ${g}, ${b}, ${layer.alpha})`;
-          ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
-          ctx.shadowBlur = layer.blur;
+        for (let i = 1; i < visiblePts.length; i++) {
+          const p1 = visiblePts[i - 1];
+          const p2 = visiblePts[i];
 
-          ctx.moveTo(visiblePts[0].x, visiblePts[0].y);
-          if (visiblePts.length < 3) {
-            for (let i = 1; i < visiblePts.length; i++) {
-              ctx.lineTo(visiblePts[i].x, visiblePts[i].y);
+          // Progress from tail (0) to head (1)
+          const progress = i / (visiblePts.length - 1);
+          // Small thin tail tapering: starts at 12% width at tail, opens to 100% at head
+          const taper = 0.12 + 0.88 * Math.pow(progress, 0.65);
+
+          layers.forEach((layer) => {
+            ctx.beginPath();
+            ctx.lineWidth = Math.max(0.5, baseWidth * taper * layer.mult);
+            ctx.strokeStyle = layer.strokeColor || `rgba(${r}, ${g}, ${b}, ${layer.alpha * (0.2 + 0.8 * progress)})`;
+            ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+            ctx.shadowBlur = layer.blur * progress;
+
+            if (i === 1) {
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+            } else {
+              const prevMidX = (visiblePts[i - 2].x + p1.x) / 2;
+              const prevMidY = (visiblePts[i - 2].y + p1.y) / 2;
+              const currMidX = (p1.x + p2.x) / 2;
+              const currMidY = (p1.y + p2.y) / 2;
+              ctx.moveTo(prevMidX, prevMidY);
+              ctx.quadraticCurveTo(p1.x, p1.y, currMidX, currMidY);
             }
-          } else {
-            for (let i = 1; i < visiblePts.length - 1; i++) {
-              const xc = (visiblePts[i].x + visiblePts[i + 1].x) / 2;
-              const yc = (visiblePts[i].y + visiblePts[i + 1].y) / 2;
-              ctx.quadraticCurveTo(visiblePts[i].x, visiblePts[i].y, xc, yc);
-            }
-            const last = visiblePts[visiblePts.length - 1];
-            ctx.lineTo(last.x, last.y);
-          }
-          ctx.stroke();
-        });
+            ctx.stroke();
+          });
+        }
 
         ctx.restore();
       }
@@ -702,7 +709,7 @@ export function InkSurfaceCanvas() {
 
       if (lastPt) {
         const dist = Math.hypot(pt.x - lastPt.x, pt.y - lastPt.y);
-        const steps = Math.min(25, Math.floor(dist / 3));
+        const steps = Math.min(30, Math.floor(dist / 1.8));
         if (steps > 1) {
           for (let i = 1; i <= steps; i++) {
             const t = i / steps;
