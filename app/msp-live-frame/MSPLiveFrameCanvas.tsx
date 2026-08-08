@@ -423,21 +423,47 @@ export function MSPLiveFrameCanvas() {
             const leftHand = handsWithPoints[0];
             const rightHand = handsWithPoints[1];
 
-            // Left Hand: top is index, bottom is thumb
-            const leftPts = [leftHand.index, leftHand.thumb].sort((a, b) => a.y - b.y);
-            const topLeft = leftPts[0];
-            const bottomLeft = leftPts[1];
+            const rawPts: Point[] = [
+              leftHand.index,
+              rightHand.index,
+              rightHand.thumb,
+              leftHand.thumb,
+            ];
 
-            // Right Hand: top is index, bottom is thumb
-            const rightPts = [rightHand.index, rightHand.thumb].sort((a, b) => a.y - b.y);
-            const topRight = rightPts[0];
-            const bottomRight = rightPts[1];
+            // Centroid of 4 fingertips
+            const cx = (rawPts[0].x + rawPts[1].x + rawPts[2].x + rawPts[3].x) / 4;
+            const cy = (rawPts[0].y + rawPts[1].y + rawPts[2].y + rawPts[3].y) / 4;
 
-            const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
-            const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
+            // Sort points by polar angle around centroid to eliminate self-intersecting hourglass quads when fingers cross
+            const sortedPts = [...rawPts].sort((a, b) => {
+              const angleA = Math.atan2(a.y - cy, a.x - cx);
+              const angleB = Math.atan2(b.y - cy, b.x - cx);
+              return angleA - angleB;
+            });
 
-            if (quadWidth > 35 && quadHeight > 35) {
-              detectedQuad = [topLeft, topRight, bottomRight, bottomLeft];
+            // Find top-leftmost point (min x + y) to keep corner 0 anchored
+            let topIdx = 0;
+            let minSum = Infinity;
+            sortedPts.forEach((pt, i) => {
+              const sum = pt.x + pt.y;
+              if (sum < minSum) {
+                minSum = sum;
+                topIdx = i;
+              }
+            });
+
+            const quadSorted: [Point, Point, Point, Point] = [
+              sortedPts[topIdx],
+              sortedPts[(topIdx + 1) % 4],
+              sortedPts[(topIdx + 2) % 4],
+              sortedPts[(topIdx + 3) % 4],
+            ];
+
+            const quadWidth = Math.hypot(quadSorted[1].x - quadSorted[0].x, quadSorted[1].y - quadSorted[0].y);
+            const quadHeight = Math.hypot(quadSorted[3].x - quadSorted[0].x, quadSorted[3].y - quadSorted[0].y);
+
+            if (quadWidth > 25 && quadHeight > 25) {
+              detectedQuad = quadSorted;
             }
           }
         } catch (err) {
