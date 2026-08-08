@@ -8759,12 +8759,6 @@ function MSPLiveFrameCanvas() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 						className: "pro-action-btn",
-						onClick: () => setShowShortcuts(true),
-						title: "Shortcuts (?)",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { size: 16 })
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-						className: "pro-action-btn",
 						onClick: toggleFullscreen,
 						title: "Fullscreen (F)",
 						children: isFullscreen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Minimize2, { size: 16 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Maximize2, { size: 16 })
@@ -8951,85 +8945,6 @@ function MSPLiveFrameCanvas() {
 								onClick: saveKey,
 								children: "Save & Connect AI"
 							})]
-						})
-					]
-				})
-			}),
-			showShortcuts && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "msp-modal-backdrop",
-				onClick: () => setShowShortcuts(false),
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "msp-modal-card",
-					onClick: (e) => e.stopPropagation(),
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "msp-modal-header",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, {
-								size: 18,
-								color: "#10b981"
-							}), " Pro Keyboard Shortcuts"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-								className: "close-btn",
-								onClick: () => setShowShortcuts(false),
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { size: 18 })
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "msp-modal-body",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "shortcut-list",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "shortcut-item",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "1" }),
-											" - ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "6" }),
-											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Switch AI & GPU Style Effects" })
-										]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "shortcut-item",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "C" }),
-											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Live Webcam On / Off" })
-										]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "shortcut-item",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "K" }),
-											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Open Decart AI API Key Drawer" })
-										]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "shortcut-item",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "F" }),
-											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Pro Fullscreen Studio" })
-										]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "shortcut-item",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "?" }),
-											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Keyboard Shortcuts" })
-										]
-									})
-								]
-							})
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "msp-modal-footer",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-								className: "btn-sort-primary",
-								onClick: () => setShowShortcuts(false),
-								children: "Got It"
-							})
 						})
 					]
 				})
