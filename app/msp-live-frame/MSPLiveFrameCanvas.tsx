@@ -145,6 +145,9 @@ export function MSPLiveFrameCanvas() {
   const [showKeyPanel, setShowKeyPanel] = useState<boolean>(false);
   const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
 
+  const [aiConnectionState, setAiConnectionState] = useState<"disconnected" | "connecting" | "connected" | "error">("disconnected");
+  const [aiDiagnosticMsg, setAiDiagnosticMsg] = useState<string | null>(null);
+
   const [cameraActive, setCameraActive] = useState<boolean>(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [statusState, setStatusState] = useState<"loading" | "ready" | "connecting" | "live" | "error">("loading");
@@ -281,26 +284,46 @@ export function MSPLiveFrameCanvas() {
 
   // Connect Decart Lucy 2.5 Realtime AI
   const connectLucyAI = useCallback(async () => {
-    if (!apiKey.trim() || !videoRef.current || !videoRef.current.srcObject) return;
+    if (!apiKey.trim()) {
+      setAiConnectionState("disconnected");
+      setAiDiagnosticMsg("No Decart API Key provided. Operating in zero-latency GPU canvas mode.");
+      setLiveMode("canvas");
+      return;
+    }
 
     try {
+      setAiConnectionState("connecting");
+      setAiDiagnosticMsg("Exchanging WebRTC SDP handshake with Decart Lucy 2.5 servers...");
       setStatusState("connecting");
       setStatusText("CONNECTING TO DECART LUCY 2.5…");
 
-      const { createDecartClient, models } = await import(/* webpackIgnore: true */ DECART_SDK_URL);
+      // Dynamic ESM loader resistant to bundler import transformations
+      const decartModule = await new Function("u", "return import(u)")(DECART_SDK_URL);
+      const { createDecartClient, models } = decartModule;
+
       const model = models.realtime("lucy-2.5");
       const client = createDecartClient({ apiKey: apiKey.trim() });
 
       const effectObj = MSP_EFFECTS.find((e) => e.id === effect);
       const promptText = effectObj?.prompt || customPrompt || "Transform the video style inside the hand frame.";
 
-      const realtimeClient = await client.realtime.connect(videoRef.current.srcObject, {
+      const mediaStream = videoRef.current && videoRef.current.srcObject
+        ? (videoRef.current.srcObject as MediaStream)
+        : null;
+
+      if (!mediaStream) {
+        throw new Error("Camera stream not active. Please launch camera first.");
+      }
+
+      const realtimeClient = await client.realtime.connect(mediaStream, {
         model,
         initialState: { prompt: { text: promptText, enhance: true } },
         onRemoteStream: (remoteStream: MediaStream) => {
           if (lucyVidRef.current) {
             lucyVidRef.current.srcObject = remoteStream;
             lucyVidRef.current.play().catch(() => {});
+            setAiConnectionState("connected");
+            setAiDiagnosticMsg("30fps WebRTC video-to-video AI stream connected.");
             setStatusState("live");
             setStatusText("LIVE AI — 30 FPS");
             setLiveMode("ai");
@@ -311,8 +334,11 @@ export function MSPLiveFrameCanvas() {
       realtimeClientRef.current = realtimeClient;
     } catch (err: any) {
       console.error("Decart connection error:", err);
+      const errTxt = err.message || "Invalid API key, network error, or WebRTC blocked.";
+      setAiConnectionState("error");
+      setAiDiagnosticMsg(`Connection Failed: ${errTxt}`);
       setStatusState("error");
-      setStatusText(`AI OFFLINE — ${err.message || "connect failed"}`);
+      setStatusText(`AI DISCONNECTED — ${errTxt}`);
       setLiveMode("canvas");
     }
   }, [apiKey, effect, customPrompt]);
@@ -666,7 +692,17 @@ export function MSPLiveFrameCanvas() {
       <div className={`msp-pro-telemetry ${statusState} ${cameraActive ? "on" : ""}`}>
         <div className="telemetry-badge">
           <span className="live-pulse-dot" />
-          <span className="telemetry-text">{statusState === "live" ? "LIVE AI STUDIO" : statusText}</span>
+          <span className="telemetry-text">
+            {aiConnectionState === "connected"
+              ? "🟢 DECART LUCY AI CONNECTED"
+              : aiConnectionState === "connecting"
+              ? "🟡 CONNECTING DECART AI…"
+              : aiConnectionState === "error"
+              ? "🔴 AI DISCONNECTED — GPU FX MODE"
+              : cameraActive
+              ? "⚡ GPU FX ENGINE (Offline)"
+              : statusText}
+          </span>
         </div>
         {cameraActive && (
           <div className="telemetry-sub">
@@ -784,8 +820,44 @@ export function MSPLiveFrameCanvas() {
               <p style={{ fontSize: "0.88rem", color: "#94a3b8", marginBottom: "16px", lineHeight: "1.6" }}>
                 Enter your <strong>Decart AI API Key</strong> to activate 30fps Realtime WebRTC video-to-video AI rendering inside your hand frame.
               </p>
+
+              {/* AI Connection Status Diagnostics Card */}
+              <div style={{ marginBottom: "18px", padding: "12px 14px", borderRadius: "12px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#cbd5e1", letterSpacing: "0.02em" }}>AI CONNECTION STATUS</span>
+                  {aiConnectionState === "connected" && (
+                    <span style={{ background: "rgba(16, 185, 129, 0.2)", color: "#10b981", border: "1px solid #10b981", padding: "2px 10px", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 800, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 8px #10b981" }} />
+                      CONNECTED (30 FPS)
+                    </span>
+                  )}
+                  {aiConnectionState === "connecting" && (
+                    <span style={{ background: "rgba(234, 179, 8, 0.2)", color: "#eab308", border: "1px solid #eab308", padding: "2px 10px", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 800, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#eab308" }} />
+                      CONNECTING...
+                    </span>
+                  )}
+                  {aiConnectionState === "error" && (
+                    <span style={{ background: "rgba(239, 68, 68, 0.2)", color: "#ef4444", border: "1px solid #ef4444", padding: "2px 10px", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 800, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ef4444" }} />
+                      DISCONNECTED / ERROR
+                    </span>
+                  )}
+                  {aiConnectionState === "disconnected" && (
+                    <span style={{ background: "rgba(148, 163, 184, 0.15)", color: "#94a3b8", border: "1px solid rgba(255, 255, 255, 0.12)", padding: "2px 10px", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 700 }}>
+                      OFFLINE (GPU Canvas Mode)
+                    </span>
+                  )}
+                </div>
+                {aiDiagnosticMsg && (
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: aiConnectionState === "error" ? "#fca5a5" : aiConnectionState === "connected" ? "#a7f3d0" : "#94a3b8", lineHeight: "1.4" }}>
+                    {aiDiagnosticMsg}
+                  </p>
+                )}
+              </div>
+
               <div className="input-group" style={{ marginBottom: "16px" }}>
-                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px", color: "#e2e8f0" }}>
                   DECART API KEY
                 </label>
                 <input
@@ -798,7 +870,7 @@ export function MSPLiveFrameCanvas() {
               </div>
 
               <div className="input-group" style={{ marginBottom: "20px" }}>
-                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px", color: "#e2e8f0" }}>
                   CUSTOM STYLE PROMPT (OPTIONAL)
                 </label>
                 <textarea
