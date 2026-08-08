@@ -24,6 +24,7 @@ async function prerender() {
     "/inkora",
     "/pen-app",
     "/penapp",
+    "/msp-live-frame",
     "/cv",
     "/teaching",
     "/people",

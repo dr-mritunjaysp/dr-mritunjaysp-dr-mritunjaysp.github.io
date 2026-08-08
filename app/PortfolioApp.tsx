@@ -43,6 +43,7 @@ import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationC
 import type { ScholarMetrics } from "./firebase";
 import { SortingVisualizer } from "./sorting/SortingVisualizer";
 import { InkoraApp } from "./inkora/InkoraApp";
+import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
 
 type SectionKey =
   | "home"
@@ -53,6 +54,10 @@ type SectionKey =
   | "inkora"
   | "pen-app"
   | "penapp"
+  | "msp-live-frame"
+  | "mspliveframe"
+  | "mriframe"
+  | "finger-frame"
   | "cv"
   | "teaching"
   | "people"
@@ -93,6 +98,7 @@ const primaryNav = [
 const moreNav = [
   { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
+  { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "Awards & FDP", href: "/award-fdp", key: "award-fdp" },
   { label: "Game", href: "/game", key: "game" },
   { label: "Daily Mantra", href: "/daily-mantra", key: "daily-mantra" },
@@ -2582,6 +2588,34 @@ function ProjectsPage() {
         <div className="project-feature-card">
           <div>
             <div className="project-badge-tag">
+              <Sparkles size={13} strokeWidth={2.5} color="#10b981" /> Hand Gesture AI Vision Studio
+            </div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
+              MSP Live Frame AI Studio
+            </h3>
+            <div className="subdomain-badge-banner" style={{ fontSize: "0.78rem", padding: "4px 10px", marginBottom: "12px" }}>
+              <span className="subdomain-badge-link">https://dr-mritunjaysp.com/msp-live-frame</span>
+            </div>
+            <p style={{ color: "var(--muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "16px" }}>
+              Real-time AI video-to-video hand-gesture framing system powered by MediaPipe Hand Landmarker, Decart Lucy 2.5 WebRTC, and zero-latency GPU canvas artistic filters. Created by Dr. Mritunjay Shall Peelam.
+            </p>
+            <div className="pub-attributes-row" style={{ marginBottom: "20px" }}>
+              <span className="attribute-pill">MediaPipe Vision</span>
+              <span className="attribute-pill">Decart Lucy 2.5 WebRTC</span>
+              <span className="attribute-pill">Hand Box Hysteresis</span>
+              <span className="attribute-pill">Subdomain App</span>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <Link className="btn-sort-primary" href="/msp-live-frame" style={{ flex: "1", textDecoration: "none", textAlign: "center", justifyContent: "center", background: "linear-gradient(135deg, #10b981, #059669)" }}>
+              Launch MSP Live Frame <ChevronRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        <div className="project-feature-card">
+          <div>
+            <div className="project-badge-tag">
               <Code2 size={13} /> Research System
             </div>
             <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
@@ -3764,6 +3798,12 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     case "pen-app":
     case "penapp":
       content = <InkoraApp />;
+      break;
+    case "msp-live-frame":
+    case "mspliveframe":
+    case "mriframe":
+    case "finger-frame":
+      content = <MSPLiveFrameApp />;
       break;
     case "people":
       content = <ComingSoonPage kind="People" />;
