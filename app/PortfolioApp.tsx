@@ -97,9 +97,9 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
-  { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame", badge: "AI Vision" },
-  { label: "Inkora PenApp", href: "/inkora", key: "inkora", badge: "App" },
-  { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer", badge: "Interactive" },
+  { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
+  { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
+  { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
   { label: "Awards & FDP", href: "/award-fdp", key: "award-fdp" },
   { label: "Game", href: "/game", key: "game" },
   { label: "Daily Mantra", href: "/daily-mantra", key: "daily-mantra" },
@@ -652,9 +652,6 @@ function Header({
                     }}
                   >
                     {item.label}
-                    {"badge" in item && (item as any).badge && (
-                      <span className="subdomain-mini-pill">{(item as any).badge}</span>
-                    )}
                   </Link>
                 ))}
               </div>
