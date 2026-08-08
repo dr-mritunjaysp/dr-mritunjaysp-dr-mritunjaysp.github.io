@@ -9158,11 +9158,101 @@ function MSPLiveFrameCanvas() {
 								maxHeight: "70vh",
 								overflowY: "auto"
 							},
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								style: { marginBottom: "24px" },
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									style: { marginBottom: "24px" },
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
+										style: {
+											color: "#10b981",
+											fontSize: "0.92rem",
+											fontWeight: 800,
+											marginBottom: "12px",
+											display: "flex",
+											alignItems: "center",
+											gap: "8px"
+										},
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cpu, { size: 16 }), " How It Operates"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "help-step-list",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "help-step-item",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "step-num",
+													children: "1"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													style: { color: "#f8fafc" },
+													children: "Dual Hand Tracking (MediaPipe)"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													style: {
+														margin: "2px 0 0",
+														fontSize: "0.82rem",
+														color: "#94a3b8",
+														lineHeight: "1.5"
+													},
+													children: "Detects left and right hand landmarks in real time using MediaPipe Hand Landmarker GPU model, tracking index and thumb tips."
+												})] })]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "help-step-item",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "step-num",
+													children: "2"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													style: { color: "#f8fafc" },
+													children: "Dynamic Quad Warp"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													style: {
+														margin: "2px 0 0",
+														fontSize: "0.82rem",
+														color: "#94a3b8",
+														lineHeight: "1.5"
+													},
+													children: "Calculates smoothed 4-corner perspective quadrilaterals with exponential lerp motion and hysteresis filtering to eliminate video flicker."
+												})] })]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "help-step-item",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "step-num",
+													children: "3"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													style: { color: "#f8fafc" },
+													children: "Decart Lucy 2.5 Realtime AI"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													style: {
+														margin: "2px 0 0",
+														fontSize: "0.82rem",
+														color: "#94a3b8",
+														lineHeight: "1.5"
+													},
+													children: "Streams live WebRTC video-to-video style transformations using Decart Lucy 2.5 AI at 30fps with sub-100ms latency."
+												})] })]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "help-step-item",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "step-num",
+													children: "4"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													style: { color: "#f8fafc" },
+													children: "Zero-Latency GPU Canvas Fallback"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													style: {
+														margin: "2px 0 0",
+														fontSize: "0.82rem",
+														color: "#94a3b8",
+														lineHeight: "1.5"
+													},
+													children: "Includes 10 built-in GPU canvas artistic filters (3D CGI, Anime, Cyberpunk, Watercolor, LEGO, Matrix Code, Thermal IR, Comic Book, Oil Painting) working offline instantly."
+												})] })]
+											})
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
 									style: {
-										color: "#10b981",
+										color: "#60a5fa",
 										fontSize: "0.92rem",
 										fontWeight: 800,
 										marginBottom: "12px",
@@ -9170,36 +9260,50 @@ function MSPLiveFrameCanvas() {
 										alignItems: "center",
 										gap: "8px"
 									},
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cpu, { size: 16 }), " How It Operates"]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { size: 16 }), " How to Get Your Decart AI API Key"]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "help-step-list",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "help-step-item",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "step-num",
+												className: "step-num blue",
 												children: "1"
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
 												style: { color: "#f8fafc" },
-												children: "Dual Hand Tracking (MediaPipe)"
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												children: "Visit Decart AI Platform"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 												style: {
 													margin: "2px 0 0",
 													fontSize: "0.82rem",
 													color: "#94a3b8",
 													lineHeight: "1.5"
 												},
-												children: "Detects left and right hand landmarks in real time using MediaPipe Hand Landmarker GPU model, tracking index and thumb tips."
+												children: [
+													"Open ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+														href: "https://platform.decart.ai",
+														target: "_blank",
+														rel: "noreferrer",
+														style: {
+															color: "#60a5fa",
+															textDecoration: "underline",
+															fontWeight: 700
+														},
+														children: "platform.decart.ai"
+													}),
+													" in your web browser."
+												]
 											})] })]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "help-step-item",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "step-num",
+												className: "step-num blue",
 												children: "2"
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
 												style: { color: "#f8fafc" },
-												children: "Dynamic Quad Warp"
+												children: "Sign Up / Log In"
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 												style: {
 													margin: "2px 0 0",
@@ -9207,177 +9311,196 @@ function MSPLiveFrameCanvas() {
 													color: "#94a3b8",
 													lineHeight: "1.5"
 												},
-												children: "Calculates smoothed 4-corner perspective quadrilaterals with exponential lerp motion and hysteresis filtering to eliminate video flicker."
+												children: "Create a free Decart account or log in with your credentials."
 											})] })]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "help-step-item",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "step-num",
+												className: "step-num blue",
 												children: "3"
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
 												style: { color: "#f8fafc" },
-												children: "Decart Lucy 2.5 Realtime AI"
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												children: "Generate API Secret Key"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 												style: {
 													margin: "2px 0 0",
 													fontSize: "0.82rem",
 													color: "#94a3b8",
 													lineHeight: "1.5"
 												},
-												children: "Streams live WebRTC video-to-video style transformations using Decart Lucy 2.5 AI at 30fps with sub-100ms latency."
+												children: [
+													"Go to the ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "API Keys" }),
+													" section in your dashboard and click ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Create New Secret Key" }),
+													". Copy your key starting with ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("code", {
+														style: {
+															color: "#34d399",
+															background: "rgba(16, 185, 129, 0.15)",
+															padding: "1px 6px",
+															borderRadius: "4px"
+														},
+														children: "decart_sec_..."
+													}),
+													"."
+												]
 											})] })]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "help-step-item",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "step-num",
+												className: "step-num blue",
 												children: "4"
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
 												style: { color: "#f8fafc" },
-												children: "Zero-Latency GPU Canvas Fallback"
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												children: "Enter Key & Connect"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 												style: {
 													margin: "2px 0 0",
 													fontSize: "0.82rem",
 													color: "#94a3b8",
 													lineHeight: "1.5"
 												},
-												children: "Includes 10 built-in GPU canvas artistic filters (3D CGI, Anime, Cyberpunk, Watercolor, LEGO, Matrix Code, Thermal IR, Comic Book, Oil Painting) working offline instantly."
+												children: [
+													"Click the 🔑 Key button in the top right (or press ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", {
+														style: {
+															background: "rgba(255,255,255,0.1)",
+															padding: "1px 6px",
+															borderRadius: "4px",
+															color: "#10b981"
+														},
+														children: "K"
+													}),
+													") and paste your key to activate 30fps Realtime AI streaming!"
+												]
 											})] })]
 										})
 									]
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
-								style: {
-									color: "#60a5fa",
-									fontSize: "0.92rem",
-									fontWeight: 800,
-									marginBottom: "12px",
-									display: "flex",
-									alignItems: "center",
-									gap: "8px"
-								},
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { size: 16 }), " How to Get Your Decart AI API Key"]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "help-step-list",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "help-step-item",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "step-num blue",
-											children: "1"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
-											style: { color: "#f8fafc" },
-											children: "Visit Decart AI Platform"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-											style: {
-												margin: "2px 0 0",
-												fontSize: "0.82rem",
-												color: "#94a3b8",
-												lineHeight: "1.5"
-											},
-											children: [
-												"Open ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-													href: "https://platform.decart.ai",
-													target: "_blank",
-													rel: "noreferrer",
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									style: { marginTop: "24px" },
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
+										style: {
+											color: "#a855f7",
+											fontSize: "0.92rem",
+											fontWeight: 800,
+											marginBottom: "12px",
+											display: "flex",
+											alignItems: "center",
+											gap: "8px"
+										},
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { size: 16 }), " Connection Status Badges & Diagnostics"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "help-step-list",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "help-step-item",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: {
+													width: 10,
+													height: 10,
+													borderRadius: "50%",
+													background: "#10b981",
+													boxShadow: "0 0 10px #10b981",
+													marginTop: "6px",
+													flexShrink: 0
+												} }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													style: { color: "#34d399" },
+													children: "🟢 CONNECTED (30 FPS)"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 													style: {
-														color: "#60a5fa",
-														textDecoration: "underline",
-														fontWeight: 700
+														margin: "2px 0 0",
+														fontSize: "0.82rem",
+														color: "#94a3b8",
+														lineHeight: "1.5"
 													},
-													children: "platform.decart.ai"
-												}),
-												" in your web browser."
-											]
-										})] })]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "help-step-item",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "step-num blue",
-											children: "2"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
-											style: { color: "#f8fafc" },
-											children: "Sign Up / Log In"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											style: {
-												margin: "2px 0 0",
-												fontSize: "0.82rem",
-												color: "#94a3b8",
-												lineHeight: "1.5"
-											},
-											children: "Create a free Decart account or log in with your credentials."
-										})] })]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "help-step-item",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "step-num blue",
-											children: "3"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
-											style: { color: "#f8fafc" },
-											children: "Generate API Secret Key"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-											style: {
-												margin: "2px 0 0",
-												fontSize: "0.82rem",
-												color: "#94a3b8",
-												lineHeight: "1.5"
-											},
-											children: [
-												"Go to the ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "API Keys" }),
-												" section in your dashboard and click ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Create New Secret Key" }),
-												". Copy your key starting with ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("code", {
+													children: "Decart Lucy 2.5 WebRTC session is active! Streaming 30fps video-to-video AI rendering inside your gesture box."
+												})] })]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "help-step-item",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: {
+													width: 10,
+													height: 10,
+													borderRadius: "50%",
+													background: "#eab308",
+													marginTop: "6px",
+													flexShrink: 0
+												} }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													style: { color: "#fde047" },
+													children: "🟡 CONNECTING…"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 													style: {
-														color: "#34d399",
-														background: "rgba(16, 185, 129, 0.15)",
-														padding: "1px 6px",
-														borderRadius: "4px"
+														margin: "2px 0 0",
+														fontSize: "0.82rem",
+														color: "#94a3b8",
+														lineHeight: "1.5"
 													},
-													children: "decart_sec_..."
-												}),
-												"."
-											]
-										})] })]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "help-step-item",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "step-num blue",
-											children: "4"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
-											style: { color: "#f8fafc" },
-											children: "Enter Key & Connect"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-											style: {
-												margin: "2px 0 0",
-												fontSize: "0.82rem",
-												color: "#94a3b8",
-												lineHeight: "1.5"
-											},
-											children: [
-												"Click the 🔑 Key button in the top right (or press ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", {
+													children: "Exchanging WebRTC SDP handshake & audio/video tracks with Decart AI servers."
+												})] })]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "help-step-item",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: {
+													width: 10,
+													height: 10,
+													borderRadius: "50%",
+													background: "#ef4444",
+													marginTop: "6px",
+													flexShrink: 0
+												} }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													style: { color: "#fca5a5" },
+													children: "🔴 DISCONNECTED / ERROR"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 													style: {
-														background: "rgba(255,255,255,0.1)",
-														padding: "1px 6px",
-														borderRadius: "4px",
-														color: "#10b981"
+														margin: "2px 0 0",
+														fontSize: "0.82rem",
+														color: "#94a3b8",
+														lineHeight: "1.5"
 													},
-													children: "K"
-												}),
-												") and paste your key to activate 30fps Realtime AI streaming!"
-											]
-										})] })]
-									})
-								]
-							})] })]
+													children: [
+														"Connection failed. Verify key starts with ",
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("code", {
+															style: {
+																color: "#ef4444",
+																background: "rgba(239,68,68,0.15)",
+																padding: "1px 6px",
+																borderRadius: "4px"
+															},
+															children: "decart_sec_..."
+														}),
+														", check network, and launch camera."
+													]
+												})] })]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "help-step-item",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: {
+													width: 10,
+													height: 10,
+													borderRadius: "50%",
+													background: "#94a3b8",
+													marginTop: "6px",
+													flexShrink: 0
+												} }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													style: { color: "#cbd5e1" },
+													children: "⚪ OFFLINE (GPU Canvas Mode)"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													style: {
+														margin: "2px 0 0",
+														fontSize: "0.82rem",
+														color: "#94a3b8",
+														lineHeight: "1.5"
+													},
+													children: "No API key provided. Studio seamlessly uses built-in GPU canvas artistic filters working 100% offline with zero latency."
+												})] })]
+											})
+										]
+									})]
+								})
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "msp-modal-footer",
