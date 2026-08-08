@@ -8505,7 +8505,6 @@ function MSPLiveFrameCanvas() {
 		pushPromptToLucy
 	]);
 	(0, import_react.useEffect)(() => {
-		let lastTime = -1;
 		let frameCount = 0;
 		let lastFpsCalc = performance.now();
 		const renderLoop = () => {
@@ -8535,52 +8534,49 @@ function MSPLiveFrameCanvas() {
 			ctx.drawImage(video, 0, 0, w, h);
 			ctx.restore();
 			let detectedQuad = null;
-			if (landmarkerRef.current && now - lastTime >= 25) {
-				lastTime = now;
-				try {
-					const results = landmarkerRef.current.detectForVideo(video, now);
-					if (results && results.landmarks && results.landmarks.length >= 2) {
-						const handPoints = [];
-						results.landmarks.forEach((hand) => {
-							const thumbTip = hand[4];
-							const indexTip = hand[8];
-							if (thumbTip && indexTip) {
-								handPoints.push({
-									x: (1 - thumbTip.x) * w,
-									y: thumbTip.y * h
-								});
-								handPoints.push({
-									x: (1 - indexTip.x) * w,
-									y: indexTip.y * h
-								});
-							}
-						});
-						if (handPoints.length >= 4) {
-							const sortedByY = [...handPoints].sort((a, b) => a.y - b.y);
-							const topTwo = sortedByY.slice(0, 2).sort((a, b) => a.x - b.x);
-							const bottomTwo = sortedByY.slice(2, 4).sort((a, b) => b.x - a.x);
-							const topLeft = topTwo[0];
-							const topRight = topTwo[1];
-							const bottomRight = bottomTwo[0];
-							const bottomLeft = bottomTwo[1];
-							const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
-							const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
-							if (quadWidth > 40 && quadHeight > 40) detectedQuad = [
-								topLeft,
-								topRight,
-								bottomRight,
-								bottomLeft
-							];
-						}
-					}
-				} catch (err) {}
-			}
+			if (landmarkerRef.current) try {
+				const results = landmarkerRef.current.detectForVideo(video, now);
+				if (results && results.landmarks && results.landmarks.length >= 2) {
+					const handsWithPoints = results.landmarks.slice(0, 2).map((hand) => {
+						const thumb = {
+							x: (1 - hand[4].x) * w,
+							y: hand[4].y * h
+						};
+						const index = {
+							x: (1 - hand[8].x) * w,
+							y: hand[8].y * h
+						};
+						return {
+							hand,
+							thumb,
+							index,
+							avgX: (thumb.x + index.x) / 2
+						};
+					}).sort((a, b) => a.avgX - b.avgX);
+					const leftHand = handsWithPoints[0];
+					const rightHand = handsWithPoints[1];
+					const leftPts = [leftHand.index, leftHand.thumb].sort((a, b) => a.y - b.y);
+					const topLeft = leftPts[0];
+					const bottomLeft = leftPts[1];
+					const rightPts = [rightHand.index, rightHand.thumb].sort((a, b) => a.y - b.y);
+					const topRight = rightPts[0];
+					const bottomRight = rightPts[1];
+					const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
+					const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
+					if (quadWidth > 35 && quadHeight > 35) detectedQuad = [
+						topLeft,
+						topRight,
+						bottomRight,
+						bottomLeft
+					];
+				}
+			} catch (err) {}
 			if (detectedQuad) {
 				lostFramesRef.current = 0;
 				setHandDetected(true);
 				if (!cornersRef.current) cornersRef.current = detectedQuad;
 				else {
-					const alpha = .65;
+					const alpha = .85;
 					cornersRef.current = [
 						{
 							x: cornersRef.current[0].x + (detectedQuad[0].x - cornersRef.current[0].x) * alpha,
@@ -8600,7 +8596,7 @@ function MSPLiveFrameCanvas() {
 						}
 					];
 				}
-				presenceRef.current = Math.min(1, presenceRef.current + .2);
+				presenceRef.current = Math.min(1, presenceRef.current + .25);
 			} else {
 				lostFramesRef.current += 1;
 				if (lostFramesRef.current > 90) {
@@ -8639,24 +8635,18 @@ function MSPLiveFrameCanvas() {
 				ctx.lineTo(quad[2].x, quad[2].y);
 				ctx.lineTo(quad[3].x, quad[3].y);
 				ctx.closePath();
-				ctx.lineWidth = 3;
-				ctx.strokeStyle = "#10b981";
-				ctx.shadowColor = "#10b981";
-				ctx.shadowBlur = 18;
+				ctx.lineWidth = 2;
+				ctx.setLineDash([5, 5]);
+				ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
 				ctx.stroke();
-				const cornerColors = [
-					"#ec4899",
-					"#3b82f6",
-					"#8b5cf6",
-					"#10b981"
-				];
-				quad.forEach((pt, i) => {
+				ctx.setLineDash([]);
+				quad.forEach((pt) => {
 					ctx.beginPath();
 					ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
-					ctx.fillStyle = cornerColors[i];
+					ctx.fillStyle = "#ffffff";
 					ctx.fill();
-					ctx.lineWidth = 2;
-					ctx.strokeStyle = "#ffffff";
+					ctx.lineWidth = 1.5;
+					ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
 					ctx.stroke();
 				});
 				ctx.restore();
