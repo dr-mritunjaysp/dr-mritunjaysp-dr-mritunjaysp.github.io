@@ -37,9 +37,6 @@ async function prerender() {
     "/blockchain",
     "/poems",
     "/motivations",
-    "/resumebuilder",
-    "/ResumeBuilder",
-    "/resume-builder",
   ];
 
   const distDir = path.join(projectRoot, "dist");
@@ -99,6 +96,16 @@ async function prerender() {
 
   // Create .nojekyll in dist/
   fs.writeFileSync(path.join(distDir, ".nojekyll"), "# Disable Jekyll", "utf8");
+
+  // Copy Resume Builder standalone app into dist/ResumeBuilder/
+  const resumeBuilderDist = path.resolve(projectRoot, "..", "Resume Builder", "frontend", "dist");
+  const resumeBuilderTarget = path.join(distDir, "ResumeBuilder");
+  if (fs.existsSync(resumeBuilderDist)) {
+    fs.cpSync(resumeBuilderDist, resumeBuilderTarget, { recursive: true });
+    console.log("Copied Resume Builder app into dist/ResumeBuilder/");
+  } else {
+    console.warn("WARNING: Resume Builder build not found at", resumeBuilderDist);
+  }
 
   console.log("Static pre-rendering completed successfully!");
 }

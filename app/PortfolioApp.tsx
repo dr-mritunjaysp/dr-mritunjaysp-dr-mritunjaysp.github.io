@@ -42,7 +42,7 @@ import { FaLinkedinIn, FaEnvelope, FaFileLines } from "react-icons/fa6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LiveUpdateRefresh } from "./LiveUpdateRefresh";
 import { LottieIcon } from "./LottieIcon";
-import { ResumeBuilderApp } from "./resumebuilder/ResumeBuilderApp";
+
 import { ScrollJumpButton } from "./ScrollJumpButton";
 import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationCitations } from "./firebase";
 import type { ScholarMetrics } from "./firebase";
@@ -63,9 +63,7 @@ type SectionKey =
   | "mspliveframe"
   | "mriframe"
   | "finger-frame"
-  | "resumebuilder"
-  | "ResumeBuilder"
-  | "resume-builder"
+
   | "cv"
   | "teaching"
   | "people"
@@ -104,7 +102,7 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
-  { label: "Resume Builder", href: "/ResumeBuilder", key: "resumebuilder" },
+
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
   { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
@@ -647,6 +645,17 @@ function Header({
             </button>
             {moreOpen && (
               <div className="more-menu" role="menu">
+                <a
+                  href="/ResumeBuilder/"
+                  role="menuitem"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
+                  Resume Builder
+                </a>
                 {moreNav.map((item) => (
                   <Link
                     href={item.href}
@@ -3851,9 +3860,6 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     "home",
     ...primaryNav.map((item) => item.key),
     ...moreNav.map((item) => item.key),
-    "resumebuilder",
-    "ResumeBuilder",
-    "resume-builder",
     "msp-live-frame",
     "mspliveframe",
     "mriframe",
@@ -3870,19 +3876,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     let target = section;
     if (typeof window !== "undefined") {
       const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
-      if (pathSeg) {
-        const lower = pathSeg.toLowerCase();
-        if (lower === "resumebuilder" || lower === "resume-builder") {
-          return "resumebuilder" as SectionKey;
-        }
-        if (validSections.includes(pathSeg)) {
-          target = pathSeg;
-        }
+      if (pathSeg && validSections.includes(pathSeg)) {
+        target = pathSeg;
       }
-    }
-    const lowerTarget = target ? target.toLowerCase() : "home";
-    if (lowerTarget === "resumebuilder" || lowerTarget === "resume-builder") {
-      return "resumebuilder" as SectionKey;
     }
     return (validSections.includes(target) ? target : "home") as SectionKey;
   };
@@ -4001,11 +3997,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     case "profiles":
       content = <ProfilesPage />;
       break;
-    case "resumebuilder":
-    case "ResumeBuilder":
-    case "resume-builder":
-      content = <ResumeBuilderApp />;
-      break;
+
     default:
       content = <HomePage />;
   }
