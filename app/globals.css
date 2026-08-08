@@ -7398,6 +7398,47 @@ body::before {
   .btn-util span {
     display: none;
   }
+
+  /* Mobile Only: Prevent Top Action Controls & Telemetry Dock Overlap */
+  .msp-pro-telemetry {
+    top: 8px !important;
+    left: 8px !important;
+    padding: 5px 8px !important;
+    max-width: calc(48% - 8px) !important;
+    gap: 2px !important;
+    border-radius: 10px !important;
+  }
+
+  .telemetry-badge {
+    font-size: 0.65rem !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .telemetry-sub {
+    font-size: 0.6rem !important;
+    gap: 4px !important;
+  }
+
+  .msp-top-actions {
+    top: 8px !important;
+    right: 8px !important;
+    gap: 4px !important;
+  }
+
+  .pro-action-btn {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+    padding: 0 !important;
+  }
+
+  .pro-action-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
 }
 
 
