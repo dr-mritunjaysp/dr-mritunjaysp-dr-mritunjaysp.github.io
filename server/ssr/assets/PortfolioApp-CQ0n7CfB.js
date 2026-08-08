@@ -8157,6 +8157,78 @@ var CircleAlert = createLucideIcon("circle-alert", [
 		key: "4dfq90"
 	}]
 ]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Cpu = createLucideIcon("cpu", [
+	["path", {
+		d: "M12 20v2",
+		key: "1lh1kg"
+	}],
+	["path", {
+		d: "M12 2v2",
+		key: "tus03m"
+	}],
+	["path", {
+		d: "M17 20v2",
+		key: "1rnc9c"
+	}],
+	["path", {
+		d: "M17 2v2",
+		key: "11trls"
+	}],
+	["path", {
+		d: "M2 12h2",
+		key: "1t8f8n"
+	}],
+	["path", {
+		d: "M2 17h2",
+		key: "7oei6x"
+	}],
+	["path", {
+		d: "M2 7h2",
+		key: "asdhe0"
+	}],
+	["path", {
+		d: "M20 12h2",
+		key: "1q8mjw"
+	}],
+	["path", {
+		d: "M20 17h2",
+		key: "1fpfkl"
+	}],
+	["path", {
+		d: "M20 7h2",
+		key: "1o8tra"
+	}],
+	["path", {
+		d: "M7 20v2",
+		key: "4gnj0m"
+	}],
+	["path", {
+		d: "M7 2v2",
+		key: "1i4yhu"
+	}],
+	["rect", {
+		x: "4",
+		y: "4",
+		width: "16",
+		height: "16",
+		rx: "2",
+		key: "1vbyd7"
+	}],
+	["rect", {
+		x: "8",
+		y: "8",
+		width: "8",
+		height: "8",
+		rx: "1",
+		key: "z9xiuo"
+	}]
+]);
 //#endregion
 //#region app/msp-live-frame/MSPLiveFrameCanvas.tsx
 var WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm";
@@ -8166,32 +8238,50 @@ var MSP_EFFECTS = [
 	{
 		id: "movie3d",
 		label: "3D Movie",
-		prompt: "Change the style of the video to a 3D animated movie: stylized CGI animation, the person as an animated character with expressive big eyes and smooth skin, soft cinematic lighting."
+		badge: "CGI AI",
+		iconName: "Wand2",
+		prompt: "Change the style of the video to a 3D animated movie: stylized CGI animation, the person as an animated character with expressive big eyes and smooth skin, soft cinematic lighting.",
+		description: "Stylized CGI movie character with warm cinematic lighting"
 	},
 	{
 		id: "anime",
 		label: "Anime",
-		prompt: "Change the style of the video to hand-drawn anime: clean black line art, flat cel shading, vibrant colors, large expressive eyes."
+		badge: "Cel Shaded",
+		iconName: "Sparkles",
+		prompt: "Change the style of the video to hand-drawn anime: clean black line art, flat cel shading, vibrant colors, large expressive eyes.",
+		description: "Hand-drawn line art and vibrant cel-shaded Japanese anime"
 	},
 	{
 		id: "cyberpunk",
 		label: "Cyberpunk",
-		prompt: "Change the style of the video to neon cyberpunk: glowing pink and cyan neon light on the person and walls, rain-slick reflective surfaces, holographic signs in the background."
+		badge: "Neon 2077",
+		iconName: "Zap",
+		prompt: "Change the style of the video to neon cyberpunk: glowing pink and cyan neon light on the person and walls, rain-slick reflective surfaces, holographic signs in the background.",
+		description: "Neon cyan & magenta lighting with futuristic holographic reflections"
 	},
 	{
 		id: "watercolor",
 		label: "Watercolor",
-		prompt: "Change the style of the video to a watercolor painting: soft loose brushstrokes, gentle color bleeds, visible paper texture, muted pastel palette."
+		badge: "Impressionist",
+		iconName: "Layers",
+		prompt: "Change the style of the video to a watercolor painting: soft loose brushstrokes, gentle color bleeds, visible paper texture, muted pastel palette.",
+		description: "Soft fluid brushstrokes with subtle watercolor paper canvas texture"
 	},
 	{
 		id: "lego",
 		label: "LEGO",
-		prompt: "Change the style of the video to a LEGO stop-motion animation: the person is a yellow LEGO minifigure with a cylindrical head, painted face, and claw hands, and the room is built entirely from glossy plastic LEGO bricks with visible round studs on every surface."
+		badge: "Stop Motion",
+		iconName: "Flame",
+		prompt: "Change the style of the video to a LEGO stop-motion animation: the person is a yellow LEGO minifigure with a cylindrical head, painted face, and claw hands, and the room is built entirely from glossy plastic LEGO bricks with visible round studs on every surface.",
+		description: "Yellow LEGO minifigure and plastic stud brick architecture"
 	},
 	{
 		id: "custom",
 		label: "Custom ✨",
-		prompt: null
+		badge: "User Pro",
+		iconName: "Sliders",
+		prompt: null,
+		description: "Write your own custom Decart Lucy 2.5 realtime prompt"
 	}
 ];
 function MSPLiveFrameCanvas() {
@@ -8207,10 +8297,11 @@ function MSPLiveFrameCanvas() {
 	const [cameraActive, setCameraActive] = (0, import_react.useState)(false);
 	const [cameraError, setCameraError] = (0, import_react.useState)(null);
 	const [statusState, setStatusState] = (0, import_react.useState)("loading");
-	const [statusText, setStatusText] = (0, import_react.useState)("Initializing MediaPipe Hand Landmarker...");
+	const [statusText, setStatusText] = (0, import_react.useState)("Initializing MediaPipe Vision Model...");
 	const [liveMode, setLiveMode] = (0, import_react.useState)("canvas");
 	const [isFullscreen, setIsFullscreen] = (0, import_react.useState)(false);
 	const [handDetected, setHandDetected] = (0, import_react.useState)(false);
+	const [fps, setFps] = (0, import_react.useState)(30);
 	const landmarkerRef = (0, import_react.useRef)(null);
 	const realtimeClientRef = (0, import_react.useRef)(null);
 	const animFrameId = (0, import_react.useRef)(null);
@@ -8231,11 +8322,11 @@ function MSPLiveFrameCanvas() {
 		async function initMediaPipe() {
 			try {
 				setStatusState("loading");
-				setStatusText("Loading MediaPipe Vision WASM...");
+				setStatusText("Initializing MediaPipe WASM...");
 				const { HandLandmarker, FilesetResolver } = await new Function("u", "return import(u)")("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm");
 				const vision = await FilesetResolver.forVisionTasks(WASM_URL);
 				if (!active) return;
-				setStatusText("Loading Hand Landmarker AI Model...");
+				setStatusText("Loading Hand Landmarker GPU Model...");
 				const landmarker = await HandLandmarker.createFromOptions(vision, {
 					baseOptions: {
 						modelAssetPath: MODEL_URL,
@@ -8250,12 +8341,12 @@ function MSPLiveFrameCanvas() {
 				if (!active) return;
 				landmarkerRef.current = landmarker;
 				setStatusState("ready");
-				setStatusText("Hold up both hands to frame the scene!");
+				setStatusText("Camera Ready — Frame your hands!");
 			} catch (err) {
-				console.error("MediaPipe initialization error:", err);
+				console.error("MediaPipe load error:", err);
 				if (active) {
 					setStatusState("error");
-					setStatusText(`MediaPipe Fallback: Built-in Canvas Engine active (${err.message || "WASM load fallback"})`);
+					setStatusText(`Canvas FX Engine Active (${err.message || "WASM fallback"})`);
 				}
 			}
 		}
@@ -8283,11 +8374,11 @@ function MSPLiveFrameCanvas() {
 				await videoRef.current.play();
 				setCameraActive(true);
 				setStatusState(apiKey ? "connecting" : "ready");
-				setStatusText(apiKey ? "Connecting to Decart Lucy 2.5 WebRTC..." : "Camera active — Hold up both hands!");
+				setStatusText(apiKey ? "Connecting Decart Lucy 2.5 WebRTC..." : "Camera Active — Make a finger frame!");
 			}
 		} catch (err) {
-			console.error("Camera access failed:", err);
-			setCameraError(err.message || "Failed to access webcam. Please verify browser permissions.");
+			console.error("Camera access error:", err);
+			setCameraError(err.message || "Unable to access camera. Check browser permissions.");
 		}
 	}, [apiKey]);
 	const stopCamera = (0, import_react.useCallback)(() => {
@@ -8314,7 +8405,7 @@ function MSPLiveFrameCanvas() {
 );
 			const model = models.realtime("lucy-2.5");
 			const client = createDecartClient({ apiKey: apiKey.trim() });
-			const promptText = MSP_EFFECTS.find((e) => e.id === effect)?.prompt || customPrompt || "Transform the style inside the hand frame.";
+			const promptText = MSP_EFFECTS.find((e) => e.id === effect)?.prompt || customPrompt || "Transform the video style inside the hand frame.";
 			realtimeClientRef.current = await client.realtime.connect(videoRef.current.srcObject, {
 				model,
 				initialState: { prompt: {
@@ -8326,7 +8417,7 @@ function MSPLiveFrameCanvas() {
 						lucyVidRef.current.srcObject = remoteStream;
 						lucyVidRef.current.play().catch(() => {});
 						setStatusState("live");
-						setStatusText("LIVE");
+						setStatusText("LIVE AI — 30 FPS");
 						setLiveMode("ai");
 					}
 				}
@@ -8357,7 +8448,7 @@ function MSPLiveFrameCanvas() {
 					enhance: true
 				});
 			} catch (err) {
-				console.warn("Prompt update attempt failed:", err);
+				console.warn("Prompt update error:", err);
 			}
 		}
 	}, [effect, customPrompt]);
@@ -8370,6 +8461,8 @@ function MSPLiveFrameCanvas() {
 	]);
 	(0, import_react.useEffect)(() => {
 		let lastTime = -1;
+		let frameCount = 0;
+		let lastFpsCalc = performance.now();
 		const renderLoop = () => {
 			animFrameId.current = requestAnimationFrame(renderLoop);
 			const video = videoRef.current;
@@ -8377,6 +8470,13 @@ function MSPLiveFrameCanvas() {
 			if (!video || !canvas || video.readyState < 2) return;
 			const ctx = canvas.getContext("2d");
 			if (!ctx) return;
+			frameCount++;
+			const now = performance.now();
+			if (now - lastFpsCalc >= 1e3) {
+				setFps(Math.round(frameCount * 1e3 / (now - lastFpsCalc)));
+				frameCount = 0;
+				lastFpsCalc = now;
+			}
 			if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
 				canvas.width = video.videoWidth || 1280;
 				canvas.height = video.videoHeight || 720;
@@ -8492,7 +8592,7 @@ function MSPLiveFrameCanvas() {
 				ctx.lineWidth = 3;
 				ctx.strokeStyle = "#10b981";
 				ctx.shadowColor = "#10b981";
-				ctx.shadowBlur = 15;
+				ctx.shadowBlur = 18;
 				ctx.stroke();
 				const cornerColors = [
 					"#ec4899",
@@ -8596,7 +8696,7 @@ function MSPLiveFrameCanvas() {
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		ref: containerRef,
-		className: `msp-frame-container ${isFullscreen ? "fullscreen-canvas" : ""}`,
+		className: `msp-pro-stage ${isFullscreen ? "fullscreen-canvas" : ""}`,
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("video", {
 				ref: videoRef,
@@ -8612,125 +8712,159 @@ function MSPLiveFrameCanvas() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("canvas", {
 				ref: canvasRef,
-				className: "msp-frame-canvas"
+				className: "msp-pro-canvas"
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: `msp-live-pill ${statusState} ${cameraActive ? "on" : ""}`,
+				className: `msp-pro-telemetry ${statusState} ${cameraActive ? "on" : ""}`,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "telemetry-badge",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "live-pulse-dot" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "telemetry-text",
+						children: statusState === "live" ? "LIVE AI STUDIO" : statusText
+					})]
+				}), cameraActive && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "telemetry-sub",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "fps-pill",
+						children: [fps, " FPS"]
+					}), handDetected ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "hand-active-tag",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { size: 12 }), " ✋ Frame Lock"]
+					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "hand-searching-tag",
+						children: "Searching Hands"
+					})]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "msp-top-actions",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "live-dot" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "live-pill-text",
-						children: statusState === "live" ? "LIVE" : statusText
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: `pro-action-btn ${cameraActive ? "active" : ""}`,
+						onClick: toggleCamera,
+						title: "Toggle Camera (C)",
+						children: cameraActive ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Video, { size: 16 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VideoOff, { size: 16 })
 					}),
-					handDetected && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "hand-badge",
-						children: "✋ Hands Frame"
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: `pro-action-btn ${apiKey ? "configured" : ""}`,
+						onClick: () => setShowKeyPanel(true),
+						title: "Decart AI API Key (K)",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { size: 16 })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "pro-action-btn",
+						onClick: captureSnapshot,
+						title: "Capture Snapshot",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { size: 16 })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "pro-action-btn",
+						onClick: () => setShowShortcuts(true),
+						title: "Shortcuts (?)",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { size: 16 })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "pro-action-btn",
+						onClick: toggleFullscreen,
+						title: "Fullscreen (F)",
+						children: isFullscreen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Minimize2, { size: 16 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Maximize2, { size: 16 })
 					})
 				]
 			}),
 			cameraActive && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: `msp-floating-hint ${handDetected ? "hidden" : ""}`,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					id: "hint-text",
-					children: "Hold up both hands to frame the scene"
+				className: `msp-pro-floating-hint ${handDetected ? "hidden" : ""}`,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "hint-pill",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, {
+						size: 16,
+						color: "#10b981",
+						className: "hint-icon"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Hold up both hands to frame the scene" })]
 				})
 			}),
 			!cameraActive && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "msp-camera-starter-overlay",
+				className: "msp-pro-starter-hero",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "starter-card",
+					className: "pro-starter-card",
 					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "starter-glow-halo" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "starter-icon-wrap",
+							className: "starter-icon-ring",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Camera, {
-								size: 36,
+								size: 40,
 								color: "#10b981"
 							})
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: "MSP Live Frame AI" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+							className: "pro-hero-title",
+							children: "MSP Live Frame AI"
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-							style: {
-								color: "var(--muted)",
-								fontSize: "0.92rem",
-								maxWidth: "420px",
-								margin: "8px auto 20px"
-							},
+							className: "pro-hero-sub",
 							children: [
-								"Hold up both hands and frame a box with your fingers — experience a live AI transformed world inside your hand frame! Created by ",
+								"Real-time video-to-video AI world transformation framed directly inside your hands gesture box. Created by ",
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Dr. Mritunjay Shall Peelam" }),
 								"."
 							]
 						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "starter-features-row",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "mini-feature-tag",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cpu, { size: 12 }), " MediaPipe Vision"]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "mini-feature-tag",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { size: 12 }), " Decart Lucy 2.5"]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "mini-feature-tag",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Layers, { size: 12 }), " 30 FPS Realtime"]
+								})
+							]
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-							className: "btn-sort-primary",
+							className: "pro-launch-btn",
 							onClick: startCamera,
-							style: {
-								fontSize: "1rem",
-								padding: "12px 28px"
-							},
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { size: 18 }), " Launch Live Camera & Hand Frame"]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { size: 18 }), " Launch Live AI Studio"]
 						})
 					]
 				})
 			}),
 			cameraError && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "msp-alert-banner",
+				className: "msp-pro-error-banner",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { size: 18 }),
 					" ",
 					cameraError
 				]
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "msp-toolbar-glass",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "effect-pills-row",
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "msp-pro-dock",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "dock-effects-row",
 					children: MSP_EFFECTS.map((eff, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						className: `effect-pill-btn ${effect === eff.id ? "active" : ""}`,
+						className: `pro-dock-card ${effect === eff.id ? "active" : ""}`,
 						onClick: () => {
 							setEffect(eff.id);
 							if (eff.id === "custom" && !apiKey) setShowKeyPanel(true);
 						},
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "key-number",
-							children: index + 1
-						}), eff.label]
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "dock-card-top",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "hotkey-badge",
+								children: index + 1
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "effect-badge-pill",
+								children: eff.badge
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "dock-card-label",
+							children: eff.label
+						})]
 					}, eff.id))
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "msp-utility-row",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-							className: `btn-util ${cameraActive ? "active" : ""}`,
-							onClick: toggleCamera,
-							title: "Toggle Camera (C)",
-							children: [cameraActive ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Video, { size: 16 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VideoOff, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: cameraActive ? "Stop Camera" : "Start Camera" })]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-							className: `btn-util ${apiKey ? "configured" : ""}`,
-							onClick: () => setShowKeyPanel(true),
-							title: "Decart AI API Key (K)",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: apiKey ? "Decart AI Active" : "Decart AI Key" })]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-							className: "btn-util",
-							onClick: captureSnapshot,
-							title: "Download Snapshot",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Snapshot" })]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-							className: "btn-util",
-							onClick: () => setShowShortcuts(true),
-							title: "Shortcuts (?)",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Shortcuts" })]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-							className: "btn-util",
-							onClick: toggleFullscreen,
-							title: "Fullscreen (F)",
-							children: isFullscreen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Minimize2, { size: 16 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Maximize2, { size: 16 })
-						})
-					]
-				})]
+				})
 			}),
 			showKeyPanel && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "msp-modal-backdrop",
@@ -8757,12 +8891,13 @@ function MSPLiveFrameCanvas() {
 									style: {
 										fontSize: "0.88rem",
 										color: "var(--muted)",
-										marginBottom: "12px"
+										marginBottom: "16px",
+										lineHeight: "1.6"
 									},
 									children: [
 										"Enter your ",
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Decart AI API Key" }),
-										" to enable 30fps Realtime WebRTC video-to-video AI generation inside your hand frame."
+										" to activate 30fps Realtime WebRTC video-to-video AI rendering inside your hand frame."
 									]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -8770,7 +8905,7 @@ function MSPLiveFrameCanvas() {
 									style: { marginBottom: "16px" },
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
 										style: {
-											fontSize: "0.8rem",
+											fontSize: "0.78rem",
 											fontWeight: 700,
 											display: "block",
 											marginBottom: "6px"
@@ -8789,7 +8924,7 @@ function MSPLiveFrameCanvas() {
 									style: { marginBottom: "20px" },
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
 										style: {
-											fontSize: "0.8rem",
+											fontSize: "0.78rem",
 											fontWeight: 700,
 											display: "block",
 											marginBottom: "6px"
@@ -8832,7 +8967,7 @@ function MSPLiveFrameCanvas() {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, {
 								size: 18,
 								color: "#10b981"
-							}), " Keyboard Shortcuts"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							}), " Pro Keyboard Shortcuts"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 								className: "close-btn",
 								onClick: () => setShowShortcuts(false),
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { size: 18 })
@@ -8850,7 +8985,7 @@ function MSPLiveFrameCanvas() {
 											" - ",
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "6" }),
 											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Switch Style Effects" })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Switch AI & GPU Style Effects" })
 										]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -8858,7 +8993,7 @@ function MSPLiveFrameCanvas() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "C" }),
 											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Webcam On / Off" })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Live Webcam On / Off" })
 										]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -8866,7 +9001,7 @@ function MSPLiveFrameCanvas() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "K" }),
 											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Open Decart AI Key Panel" })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Open Decart AI API Key Drawer" })
 										]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -8874,7 +9009,7 @@ function MSPLiveFrameCanvas() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "F" }),
 											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Fullscreen Mode" })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Pro Fullscreen Studio" })
 										]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
