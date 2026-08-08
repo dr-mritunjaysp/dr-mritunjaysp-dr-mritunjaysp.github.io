@@ -8176,51 +8176,32 @@ var MSP_EFFECTS = [
 	{
 		id: "movie3d",
 		label: "3D Movie",
-		badge: "CGI AI",
-		prompt: "Change the style of the video to a 3D animated movie: stylized CGI animation, the person as an animated character with expressive big eyes and smooth skin, soft cinematic lighting.",
-		description: "Stylized CGI movie character with warm cinematic illumination."
+		prompt: "Change the style of the video to a 3D animated movie: stylized CGI animation, the person as an animated character with expressive big eyes and smooth skin, soft cinematic lighting."
 	},
 	{
 		id: "anime",
 		label: "Anime",
-		badge: "Cel Shaded",
-		prompt: "Change the style of the video to hand-drawn anime: clean black line art, flat cel shading, vibrant colors, large expressive eyes.",
-		description: "Clean black line art and vibrant cel-shaded Japanese anime aesthetics."
+		prompt: "Change the style of the video to hand-drawn anime: clean black line art, flat cel shading, vibrant colors, large expressive eyes."
 	},
 	{
 		id: "cyberpunk",
 		label: "Cyberpunk",
-		badge: "Neon 2077",
-		prompt: "Change the style of the video to neon cyberpunk: glowing pink and cyan neon light on the person and walls, rain-slick reflective surfaces, holographic signs in the background.",
-		description: "Futuristic neon city lighting with cyan and magenta holographic reflections."
+		prompt: "Change the style of the video to neon cyberpunk: glowing pink and cyan neon light on the person and walls, rain-slick reflective surfaces, holographic signs in the background."
 	},
 	{
 		id: "watercolor",
 		label: "Watercolor",
-		badge: "Impressionist",
-		prompt: "Change the style of the video to a watercolor painting: soft loose brushstrokes, gentle color bleeds, visible paper texture, muted pastel palette.",
-		description: "Soft fluid paint brushstrokes with subtle paper canvas texture."
+		prompt: "Change the style of the video to a watercolor painting: soft loose brushstrokes, gentle color bleeds, visible paper texture, muted pastel palette."
 	},
 	{
-		id: "matrix",
-		label: "Matrix Code",
-		badge: "Digital Green",
-		prompt: "Change the style of the video to green digital matrix cascade: streaming rain of glowing green code, cybernetic wireframe, dark terminal aesthetic.",
-		description: "Glowing green digital code stream and cybernetic wireframe."
-	},
-	{
-		id: "thermal",
-		label: "Thermal IR",
-		badge: "Heatmap",
-		prompt: "Change the style of the video to a high-contrast thermal vision camera: glowing heat signatures, indigo, yellow, red, and electric blue infrared color spectrum.",
-		description: "Infrared heat signature spectrum rendering with vibrant thermal gradients."
+		id: "lego",
+		label: "LEGO",
+		prompt: "Change the style of the video to a LEGO stop-motion animation: the person is a yellow LEGO minifigure with a cylindrical head, painted face, and claw hands, and the room is built entirely from glossy plastic LEGO bricks with visible round studs on every surface."
 	},
 	{
 		id: "custom",
-		label: "Custom Prompt",
-		badge: "User ✨",
-		prompt: null,
-		description: "Write your own custom Decart Lucy 2.5 realtime prompt."
+		label: "Custom ✨",
+		prompt: null
 	}
 ];
 function MSPLiveFrameCanvas() {
@@ -8228,7 +8209,7 @@ function MSPLiveFrameCanvas() {
 	const lucyVidRef = (0, import_react.useRef)(null);
 	const canvasRef = (0, import_react.useRef)(null);
 	const containerRef = (0, import_react.useRef)(null);
-	const [activeEffect, setActiveEffect] = (0, import_react.useState)("movie3d");
+	const [effect, setEffect] = (0, import_react.useState)("movie3d");
 	const [customPrompt, setCustomPrompt] = (0, import_react.useState)("");
 	const [apiKey, setApiKey] = (0, import_react.useState)("");
 	const [showKeyPanel, setShowKeyPanel] = (0, import_react.useState)(false);
@@ -8260,6 +8241,7 @@ function MSPLiveFrameCanvas() {
 		async function initMediaPipe() {
 			try {
 				setStatusState("loading");
+				setStatusText("Loading MediaPipe Vision WASM...");
 				const { HandLandmarker, FilesetResolver } = await new Function("u", "return import(u)")("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm");
 				const vision = await FilesetResolver.forVisionTasks(WASM_URL);
 				if (!active) return;
@@ -8278,12 +8260,12 @@ function MSPLiveFrameCanvas() {
 				if (!active) return;
 				landmarkerRef.current = landmarker;
 				setStatusState("ready");
-				setStatusText("Camera Ready — Frame your hands!");
+				setStatusText("Hold up both hands to frame the scene!");
 			} catch (err) {
 				console.error("MediaPipe initialization error:", err);
 				if (active) {
 					setStatusState("error");
-					setStatusText(`Initialization Notice: Using Canvas FX Fallback Engine (${err.message || "WASM load fallback"})`);
+					setStatusText(`MediaPipe Fallback: Built-in Canvas Engine active (${err.message || "WASM load fallback"})`);
 				}
 			}
 		}
@@ -8311,11 +8293,11 @@ function MSPLiveFrameCanvas() {
 				await videoRef.current.play();
 				setCameraActive(true);
 				setStatusState(apiKey ? "connecting" : "ready");
-				setStatusText(apiKey ? "Connecting to Decart Lucy 2.5 AI..." : "Camera Active — Make a finger box frame!");
+				setStatusText(apiKey ? "Connecting to Decart Lucy 2.5 WebRTC..." : "Camera active — Hold up both hands!");
 			}
 		} catch (err) {
 			console.error("Camera access failed:", err);
-			setCameraError(err.message || "Failed to access webcam. Please check browser permissions.");
+			setCameraError(err.message || "Failed to access webcam. Please verify browser permissions.");
 		}
 	}, [apiKey]);
 	const stopCamera = (0, import_react.useCallback)(() => {
@@ -8335,14 +8317,14 @@ function MSPLiveFrameCanvas() {
 		if (!apiKey.trim() || !videoRef.current || !videoRef.current.srcObject) return;
 		try {
 			setStatusState("connecting");
-			setStatusText("Connecting to Decart Lucy 2.5 WebRTC...");
+			setStatusText("CONNECTING TO DECART LUCY 2.5…");
 			const { createDecartClient, models } = await import(
 				/* webpackIgnore: true */
 				DECART_SDK_URL
 );
 			const model = models.realtime("lucy-2.5");
 			const client = createDecartClient({ apiKey: apiKey.trim() });
-			const promptText = MSP_EFFECTS.find((e) => e.id === activeEffect)?.prompt || customPrompt || "Transform the video style inside the hand frame.";
+			const promptText = MSP_EFFECTS.find((e) => e.id === effect)?.prompt || customPrompt || "Transform the style inside the hand frame.";
 			realtimeClientRef.current = await client.realtime.connect(videoRef.current.srcObject, {
 				model,
 				initialState: { prompt: {
@@ -8354,7 +8336,7 @@ function MSPLiveFrameCanvas() {
 						lucyVidRef.current.srcObject = remoteStream;
 						lucyVidRef.current.play().catch(() => {});
 						setStatusState("live");
-						setStatusText("MSP Live Frame AI — 30fps Realtime WebRTC Connected!");
+						setStatusText("LIVE");
 						setLiveMode("ai");
 					}
 				}
@@ -8362,17 +8344,17 @@ function MSPLiveFrameCanvas() {
 		} catch (err) {
 			console.error("Decart connection error:", err);
 			setStatusState("error");
-			setStatusText(`Decart AI connection failed (${err.message || "Invalid API key"}). Active in Canvas FX mode.`);
+			setStatusText(`AI OFFLINE — ${err.message || "connect failed"}`);
 			setLiveMode("canvas");
 		}
 	}, [
 		apiKey,
-		activeEffect,
+		effect,
 		customPrompt
 	]);
 	const pushPromptToLucy = (0, import_react.useCallback)(async () => {
 		if (!realtimeClientRef.current) return;
-		const promptText = MSP_EFFECTS.find((e) => e.id === activeEffect)?.prompt || customPrompt || "Transform style inside frame.";
+		const promptText = MSP_EFFECTS.find((e) => e.id === effect)?.prompt || customPrompt || "Transform style inside frame.";
 		try {
 			await realtimeClientRef.current.set({
 				prompt: { text: promptText },
@@ -8388,11 +8370,11 @@ function MSPLiveFrameCanvas() {
 				console.warn("Prompt update attempt failed:", err);
 			}
 		}
-	}, [activeEffect, customPrompt]);
+	}, [effect, customPrompt]);
 	(0, import_react.useEffect)(() => {
 		pushPromptToLucy();
 	}, [
-		activeEffect,
+		effect,
 		customPrompt,
 		pushPromptToLucy
 	]);
@@ -8507,7 +8489,7 @@ function MSPLiveFrameCanvas() {
 				ctx.clip();
 				const lucyVid = lucyVidRef.current;
 				if (liveMode === "ai" && lucyVid && lucyVid.readyState >= 2) ctx.drawImage(lucyVid, 0, 0, w, h);
-				else drawCanvasEffect(ctx, video, w, h, activeEffect);
+				else drawCanvasEffect(ctx, video, w, h, effect);
 				ctx.restore();
 				ctx.save();
 				ctx.globalAlpha = presenceRef.current;
@@ -8544,7 +8526,7 @@ function MSPLiveFrameCanvas() {
 		return () => {
 			if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
 		};
-	}, [liveMode, activeEffect]);
+	}, [liveMode, effect]);
 	const drawCanvasEffect = (ctx, video, w, h, effectId) => {
 		ctx.save();
 		ctx.scale(-1, 1);
@@ -8567,17 +8549,8 @@ function MSPLiveFrameCanvas() {
 				ctx.filter = "blur(2px) contrast(140%) saturate(160%) brightness(105%)";
 				ctx.drawImage(video, 0, 0, w, h);
 				break;
-			case "matrix":
-				ctx.filter = "grayscale(100%) brightness(120%) contrast(200%)";
-				ctx.drawImage(video, 0, 0, w, h);
-				ctx.restore();
-				ctx.save();
-				ctx.globalCompositeOperation = "source-atop";
-				ctx.fillStyle = "rgba(16, 185, 129, 0.4)";
-				ctx.fillRect(0, 0, w, h);
-				break;
-			case "thermal":
-				ctx.filter = "invert(100%) hue-rotate(240deg) contrast(200%) saturate(300%)";
+			case "lego":
+				ctx.filter = "posterize(4) contrast(150%) saturate(180%)";
 				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			default:
@@ -8598,15 +8571,18 @@ function MSPLiveFrameCanvas() {
 		const handleKeyDown = (e) => {
 			if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 			const num = parseInt(e.key, 10);
-			if (!isNaN(num) && num >= 1 && num <= MSP_EFFECTS.length) setActiveEffect(MSP_EFFECTS[num - 1].id);
-			else if (e.key.toLowerCase() === "f") toggleFullscreen();
+			if (!isNaN(num) && num >= 1 && num <= MSP_EFFECTS.length) {
+				const sel = MSP_EFFECTS[num - 1].id;
+				setEffect(sel);
+				if (sel === "custom" && !apiKey) setShowKeyPanel(true);
+			} else if (e.key.toLowerCase() === "f") toggleFullscreen();
 			else if (e.key.toLowerCase() === "k") setShowKeyPanel((prev) => !prev);
 			else if (e.key.toLowerCase() === "c") toggleCamera();
 			else if (e.key === "?") setShowShortcuts((prev) => !prev);
 		};
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, []);
+	}, [apiKey]);
 	const saveKey = () => {
 		if (typeof window !== "undefined") {
 			localStorage.setItem("msp-decart-key", apiKey.trim());
@@ -8649,18 +8625,25 @@ function MSPLiveFrameCanvas() {
 				className: "msp-frame-canvas"
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: `msp-live-pill ${statusState}`,
+				className: `msp-live-pill ${statusState} ${cameraActive ? "on" : ""}`,
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "live-dot" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 						className: "live-pill-text",
-						children: statusState === "live" ? "MSP LIVE FRAME AI (30 FPS)" : statusText
+						children: statusState === "live" ? "LIVE" : statusText
 					}),
 					handDetected && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 						className: "hand-badge",
-						children: "✋ Hands Detected"
+						children: "✋ Hands Frame"
 					})
 				]
+			}),
+			cameraActive && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: `msp-floating-hint ${handDetected ? "hidden" : ""}`,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					id: "hint-text",
+					children: "Hold up both hands to frame the scene"
+				})
 			}),
 			!cameraActive && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "msp-camera-starter-overlay",
@@ -8683,7 +8666,7 @@ function MSPLiveFrameCanvas() {
 								margin: "8px auto 20px"
 							},
 							children: [
-								"Experience real-time AI world transformations right inside your hands gesture box! Created by ",
+								"Hold up both hands and frame a box with your fingers — experience a live AI transformed world inside your hand frame! Created by ",
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Dr. Mritunjay Shall Peelam" }),
 								"."
 							]
@@ -8695,7 +8678,7 @@ function MSPLiveFrameCanvas() {
 								fontSize: "1rem",
 								padding: "12px 28px"
 							},
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { size: 18 }), " Launch Camera & Hand Frame"]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { size: 18 }), " Launch Live Camera & Hand Frame"]
 						})
 					]
 				})
@@ -8713,22 +8696,15 @@ function MSPLiveFrameCanvas() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "effect-pills-row",
 					children: MSP_EFFECTS.map((eff, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						className: `effect-pill-btn ${activeEffect === eff.id ? "active" : ""}`,
+						className: `effect-pill-btn ${effect === eff.id ? "active" : ""}`,
 						onClick: () => {
-							setActiveEffect(eff.id);
+							setEffect(eff.id);
 							if (eff.id === "custom" && !apiKey) setShowKeyPanel(true);
 						},
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "key-number",
-								children: index + 1
-							}),
-							eff.label,
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "effect-badge",
-								children: eff.badge
-							})
-						]
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "key-number",
+							children: index + 1
+						}), eff.label]
 					}, eff.id))
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "msp-utility-row",
@@ -8748,7 +8724,7 @@ function MSPLiveFrameCanvas() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 							className: "btn-util",
 							onClick: captureSnapshot,
-							title: "Download Frame Snapshot",
+							title: "Download Snapshot",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Snapshot" })]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
@@ -8866,7 +8842,7 @@ function MSPLiveFrameCanvas() {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, {
 								size: 18,
 								color: "#10b981"
-							}), " MSP Live Frame — Keyboard Shortcuts"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							}), " Keyboard Shortcuts"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 								className: "close-btn",
 								onClick: () => setShowShortcuts(false),
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { size: 18 })
@@ -8882,7 +8858,7 @@ function MSPLiveFrameCanvas() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "1" }),
 											" - ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "7" }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "6" }),
 											" ",
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Switch Style Effects" })
 										]
@@ -8900,7 +8876,7 @@ function MSPLiveFrameCanvas() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "K" }),
 											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Open Decart AI API Key Drawer" })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Open Decart AI Key Panel" })
 										]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
