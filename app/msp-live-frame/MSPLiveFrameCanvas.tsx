@@ -14,6 +14,13 @@ import {
   X,
   Play,
   HelpCircle,
+  Zap,
+  Sliders,
+  Cpu,
+  Layers,
+  CheckCircle2,
+  Flame,
+  Wand2,
 } from "lucide-react";
 
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm";
@@ -23,42 +30,66 @@ const DECART_SDK_URL = "https://esm.sh/@decartai/sdk@0.1.17";
 export interface EffectItem {
   id: string;
   label: string;
-  badge?: string;
+  badge: string;
+  iconName: string;
   prompt: string | null;
+  description: string;
 }
 
 export const MSP_EFFECTS: EffectItem[] = [
   {
     id: "movie3d",
     label: "3D Movie",
+    badge: "CGI AI",
+    iconName: "Wand2",
     prompt:
       "Change the style of the video to a 3D animated movie: stylized CGI animation, the person as an animated character with expressive big eyes and smooth skin, soft cinematic lighting.",
+    description: "Stylized CGI movie character with warm cinematic lighting",
   },
   {
     id: "anime",
     label: "Anime",
+    badge: "Cel Shaded",
+    iconName: "Sparkles",
     prompt:
       "Change the style of the video to hand-drawn anime: clean black line art, flat cel shading, vibrant colors, large expressive eyes.",
+    description: "Hand-drawn line art and vibrant cel-shaded Japanese anime",
   },
   {
     id: "cyberpunk",
     label: "Cyberpunk",
+    badge: "Neon 2077",
+    iconName: "Zap",
     prompt:
       "Change the style of the video to neon cyberpunk: glowing pink and cyan neon light on the person and walls, rain-slick reflective surfaces, holographic signs in the background.",
+    description: "Neon cyan & magenta lighting with futuristic holographic reflections",
   },
   {
     id: "watercolor",
     label: "Watercolor",
+    badge: "Impressionist",
+    iconName: "Layers",
     prompt:
       "Change the style of the video to a watercolor painting: soft loose brushstrokes, gentle color bleeds, visible paper texture, muted pastel palette.",
+    description: "Soft fluid brushstrokes with subtle watercolor paper canvas texture",
   },
   {
     id: "lego",
     label: "LEGO",
+    badge: "Stop Motion",
+    iconName: "Flame",
     prompt:
       "Change the style of the video to a LEGO stop-motion animation: the person is a yellow LEGO minifigure with a cylindrical head, painted face, and claw hands, and the room is built entirely from glossy plastic LEGO bricks with visible round studs on every surface.",
+    description: "Yellow LEGO minifigure and plastic stud brick architecture",
   },
-  { id: "custom", label: "Custom ✨", prompt: null },
+  {
+    id: "custom",
+    label: "Custom ✨",
+    badge: "User Pro",
+    iconName: "Sliders",
+    prompt: null,
+    description: "Write your own custom Decart Lucy 2.5 realtime prompt",
+  },
 ];
 
 interface Point {
@@ -81,21 +112,22 @@ export function MSPLiveFrameCanvas() {
   const [cameraActive, setCameraActive] = useState<boolean>(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [statusState, setStatusState] = useState<"loading" | "ready" | "connecting" | "live" | "error">("loading");
-  const [statusText, setStatusText] = useState<string>("Initializing MediaPipe Hand Landmarker...");
+  const [statusText, setStatusText] = useState<string>("Initializing MediaPipe Vision Model...");
   const [liveMode, setLiveMode] = useState<"ai" | "canvas">("canvas");
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [handDetected, setHandDetected] = useState<boolean>(false);
+  const [fps, setFps] = useState<number>(30);
 
   const landmarkerRef = useRef<any>(null);
   const realtimeClientRef = useRef<any>(null);
   const animFrameId = useRef<number | null>(null);
 
-  // Quad tracking state with hysteresis lerp
+  // Quad tracking state with lerp & hysteresis
   const cornersRef = useRef<[Point, Point, Point, Point] | null>(null);
   const presenceRef = useRef<number>(0);
   const lostFramesRef = useRef<number>(0);
 
-  // Load saved Decart API Key and prompt on mount
+  // Load saved API Key & prompt
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedKey = localStorage.getItem("msp-decart-key") || sessionStorage.getItem("msp-decart-key") || "";
@@ -108,14 +140,14 @@ export function MSPLiveFrameCanvas() {
     }
   }, []);
 
-  // Initialize MediaPipe Hand Landmarker from CDN
+  // Initialize MediaPipe Hand Landmarker
   useEffect(() => {
     let active = true;
 
     async function initMediaPipe() {
       try {
         setStatusState("loading");
-        setStatusText("Loading MediaPipe Vision WASM...");
+        setStatusText("Initializing MediaPipe WASM...");
         const { HandLandmarker, FilesetResolver } = await new Function(
           "u",
           "return import(u)"
@@ -125,7 +157,7 @@ export function MSPLiveFrameCanvas() {
 
         if (!active) return;
 
-        setStatusText("Loading Hand Landmarker AI Model...");
+        setStatusText("Loading Hand Landmarker GPU Model...");
         const landmarker = await HandLandmarker.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath: MODEL_URL,
@@ -142,12 +174,12 @@ export function MSPLiveFrameCanvas() {
 
         landmarkerRef.current = landmarker;
         setStatusState("ready");
-        setStatusText("Hold up both hands to frame the scene!");
+        setStatusText("Camera Ready — Frame your hands!");
       } catch (err: any) {
-        console.error("MediaPipe initialization error:", err);
+        console.error("MediaPipe load error:", err);
         if (active) {
           setStatusState("error");
-          setStatusText(`MediaPipe Fallback: Built-in Canvas Engine active (${err.message || "WASM load fallback"})`);
+          setStatusText(`Canvas FX Engine Active (${err.message || "WASM fallback"})`);
         }
       }
     }
@@ -182,11 +214,11 @@ export function MSPLiveFrameCanvas() {
         await videoRef.current.play();
         setCameraActive(true);
         setStatusState(apiKey ? "connecting" : "ready");
-        setStatusText(apiKey ? "Connecting to Decart Lucy 2.5 WebRTC..." : "Camera active — Hold up both hands!");
+        setStatusText(apiKey ? "Connecting Decart Lucy 2.5 WebRTC..." : "Camera Active — Make a finger frame!");
       }
     } catch (err: any) {
-      console.error("Camera access failed:", err);
-      setCameraError(err.message || "Failed to access webcam. Please verify browser permissions.");
+      console.error("Camera access error:", err);
+      setCameraError(err.message || "Unable to access camera. Check browser permissions.");
     }
   }, [apiKey]);
 
@@ -211,7 +243,7 @@ export function MSPLiveFrameCanvas() {
     }
   };
 
-  // Connect Decart Lucy 2.5 Realtime WebRTC
+  // Connect Decart Lucy 2.5 Realtime AI
   const connectLucyAI = useCallback(async () => {
     if (!apiKey.trim() || !videoRef.current || !videoRef.current.srcObject) return;
 
@@ -224,7 +256,7 @@ export function MSPLiveFrameCanvas() {
       const client = createDecartClient({ apiKey: apiKey.trim() });
 
       const effectObj = MSP_EFFECTS.find((e) => e.id === effect);
-      const promptText = effectObj?.prompt || customPrompt || "Transform the style inside the hand frame.";
+      const promptText = effectObj?.prompt || customPrompt || "Transform the video style inside the hand frame.";
 
       const realtimeClient = await client.realtime.connect(videoRef.current.srcObject, {
         model,
@@ -234,7 +266,7 @@ export function MSPLiveFrameCanvas() {
             lucyVidRef.current.srcObject = remoteStream;
             lucyVidRef.current.play().catch(() => {});
             setStatusState("live");
-            setStatusText("LIVE");
+            setStatusText("LIVE AI — 30 FPS");
             setLiveMode("ai");
           }
         },
@@ -260,7 +292,7 @@ export function MSPLiveFrameCanvas() {
       try {
         await realtimeClientRef.current.set({ prompt: promptText, enhance: true });
       } catch (err) {
-        console.warn("Prompt update attempt failed:", err);
+        console.warn("Prompt update error:", err);
       }
     }
   }, [effect, customPrompt]);
@@ -269,9 +301,11 @@ export function MSPLiveFrameCanvas() {
     pushPromptToLucy();
   }, [effect, customPrompt, pushPromptToLucy]);
 
-  // Main Render & Landmark Tracking Loop
+  // FPS Counter & Render Loop
   useEffect(() => {
     let lastTime = -1;
+    let frameCount = 0;
+    let lastFpsCalc = performance.now();
 
     const renderLoop = () => {
       animFrameId.current = requestAnimationFrame(renderLoop);
@@ -283,6 +317,15 @@ export function MSPLiveFrameCanvas() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
+      // Calculate FPS
+      frameCount++;
+      const now = performance.now();
+      if (now - lastFpsCalc >= 1000) {
+        setFps(Math.round((frameCount * 1000) / (now - lastFpsCalc)));
+        frameCount = 0;
+        lastFpsCalc = now;
+      }
+
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth || 1280;
         canvas.height = video.videoHeight || 720;
@@ -293,14 +336,14 @@ export function MSPLiveFrameCanvas() {
 
       ctx.clearRect(0, 0, w, h);
 
-      // Mirrored background webcam frame
+      // Mirrored video background
       ctx.save();
       ctx.scale(-1, 1);
       ctx.translate(-w, 0);
       ctx.drawImage(video, 0, 0, w, h);
       ctx.restore();
 
-      // Hand Landmarker
+      // Hand Landmarker Detection
       let detectedQuad: [Point, Point, Point, Point] | null = null;
 
       if (landmarkerRef.current && video.currentTime !== lastTime) {
@@ -337,11 +380,11 @@ export function MSPLiveFrameCanvas() {
             }
           }
         } catch (err) {
-          // Frame glitch ignore
+          // Ignore transient detection glitch
         }
       }
 
-      // Smooth Quad lerp
+      // Lerp Quad smoothing
       if (detectedQuad) {
         lostFramesRef.current = 0;
         setHandDetected(true);
@@ -368,7 +411,7 @@ export function MSPLiveFrameCanvas() {
         }
       }
 
-      // Render inside finger quad frame
+      // Render inside framed quad
       const quad = cornersRef.current;
       if (quad && presenceRef.current > 0.05) {
         ctx.save();
@@ -392,6 +435,8 @@ export function MSPLiveFrameCanvas() {
         ctx.restore();
         ctx.save();
         ctx.globalAlpha = presenceRef.current;
+
+        // Glowing Quad Border
         ctx.beginPath();
         ctx.moveTo(quad[0].x, quad[0].y);
         ctx.lineTo(quad[1].x, quad[1].y);
@@ -401,9 +446,10 @@ export function MSPLiveFrameCanvas() {
         ctx.lineWidth = 3;
         ctx.strokeStyle = "#10b981";
         ctx.shadowColor = "#10b981";
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 18;
         ctx.stroke();
 
+        // Corner target markers
         const cornerColors = ["#ec4899", "#3b82f6", "#8b5cf6", "#10b981"];
         quad.forEach((pt, i) => {
           ctx.beginPath();
@@ -428,7 +474,7 @@ export function MSPLiveFrameCanvas() {
     };
   }, [liveMode, effect]);
 
-  // Built-in Canvas Artistic FX
+  // Built-in GPU Canvas FX Engine
   const drawCanvasEffect = (ctx: CanvasRenderingContext2D, video: HTMLVideoElement, w: number, h: number, effectId: string) => {
     ctx.save();
     ctx.scale(-1, 1);
@@ -535,42 +581,87 @@ export function MSPLiveFrameCanvas() {
   return (
     <div
       ref={containerRef}
-      className={`msp-frame-container ${isFullscreen ? "fullscreen-canvas" : ""}`}
+      className={`msp-pro-stage ${isFullscreen ? "fullscreen-canvas" : ""}`}
     >
       <video ref={videoRef} playsInline muted style={{ display: "none" }} />
       <video ref={lucyVidRef} playsInline muted style={{ display: "none" }} />
 
-      <canvas ref={canvasRef} className="msp-frame-canvas" />
+      <canvas ref={canvasRef} className="msp-pro-canvas" />
 
-      {/* Floating Status Pill (Matches sophiamyang live site) */}
-      <div className={`msp-live-pill ${statusState} ${cameraActive ? "on" : ""}`}>
-        <span className="live-dot" />
-        <span className="live-pill-text">
-          {statusState === "live" ? "LIVE" : statusText}
-        </span>
-        {handDetected && <span className="hand-badge">✋ Hands Frame</span>}
+      {/* Pro Telemetry Floating Dock (Top Left) */}
+      <div className={`msp-pro-telemetry ${statusState} ${cameraActive ? "on" : ""}`}>
+        <div className="telemetry-badge">
+          <span className="live-pulse-dot" />
+          <span className="telemetry-text">{statusState === "live" ? "LIVE AI STUDIO" : statusText}</span>
+        </div>
+        {cameraActive && (
+          <div className="telemetry-sub">
+            <span className="fps-pill">{fps} FPS</span>
+            {handDetected ? (
+              <span className="hand-active-tag"><CheckCircle2 size={12} /> ✋ Frame Lock</span>
+            ) : (
+              <span className="hand-searching-tag">Searching Hands</span>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Floating Hint Text (Matches sophiamyang live site) */}
+      {/* Pro Quick Controls (Top Right) */}
+      <div className="msp-top-actions">
+        <button
+          className={`pro-action-btn ${cameraActive ? "active" : ""}`}
+          onClick={toggleCamera}
+          title="Toggle Camera (C)"
+        >
+          {cameraActive ? <Video size={16} /> : <VideoOff size={16} />}
+        </button>
+        <button
+          className={`pro-action-btn ${apiKey ? "configured" : ""}`}
+          onClick={() => setShowKeyPanel(true)}
+          title="Decart AI API Key (K)"
+        >
+          <Key size={16} />
+        </button>
+        <button className="pro-action-btn" onClick={captureSnapshot} title="Capture Snapshot">
+          <Download size={16} />
+        </button>
+        <button className="pro-action-btn" onClick={() => setShowShortcuts(true)} title="Shortcuts (?)">
+          <HelpCircle size={16} />
+        </button>
+        <button className="pro-action-btn" onClick={toggleFullscreen} title="Fullscreen (F)">
+          {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+        </button>
+      </div>
+
+      {/* Pro Floating Gesture Hint Banner */}
       {cameraActive && (
-        <div className={`msp-floating-hint ${handDetected ? "hidden" : ""}`}>
-          <div id="hint-text">Hold up both hands to frame the scene</div>
+        <div className={`msp-pro-floating-hint ${handDetected ? "hidden" : ""}`}>
+          <div className="hint-pill">
+            <Sparkles size={16} color="#10b981" className="hint-icon" />
+            <span>Hold up both hands to frame the scene</span>
+          </div>
         </div>
       )}
 
-      {/* Camera Starter Card (When Camera is off) */}
+      {/* Pro Camera Starter Hero (When camera is stopped) */}
       {!cameraActive && (
-        <div className="msp-camera-starter-overlay">
-          <div className="starter-card">
-            <div className="starter-icon-wrap">
-              <Camera size={36} color="#10b981" />
+        <div className="msp-pro-starter-hero">
+          <div className="pro-starter-card">
+            <div className="starter-glow-halo" />
+            <div className="starter-icon-ring">
+              <Camera size={40} color="#10b981" />
             </div>
-            <h2>MSP Live Frame AI</h2>
-            <p style={{ color: "var(--muted)", fontSize: "0.92rem", maxWidth: "420px", margin: "8px auto 20px" }}>
-              Hold up both hands and frame a box with your fingers — experience a live AI transformed world inside your hand frame! Created by <strong>Dr. Mritunjay Shall Peelam</strong>.
+            <h1 className="pro-hero-title">MSP Live Frame AI</h1>
+            <p className="pro-hero-sub">
+              Real-time video-to-video AI world transformation framed directly inside your hands gesture box. Created by <strong>Dr. Mritunjay Shall Peelam</strong>.
             </p>
-            <button className="btn-sort-primary" onClick={startCamera} style={{ fontSize: "1rem", padding: "12px 28px" }}>
-              <Play size={18} /> Launch Live Camera & Hand Frame
+            <div className="starter-features-row">
+              <span className="mini-feature-tag"><Cpu size={12} /> MediaPipe Vision</span>
+              <span className="mini-feature-tag"><Zap size={12} /> Decart Lucy 2.5</span>
+              <span className="mini-feature-tag"><Layers size={12} /> 30 FPS Realtime</span>
+            </div>
+            <button className="pro-launch-btn" onClick={startCamera}>
+              <Play size={18} /> Launch Live AI Studio
             </button>
           </div>
         </div>
@@ -578,18 +669,18 @@ export function MSPLiveFrameCanvas() {
 
       {/* Camera Error Banner */}
       {cameraError && (
-        <div className="msp-alert-banner">
+        <div className="msp-pro-error-banner">
           <AlertCircle size={18} /> {cameraError}
         </div>
       )}
 
-      {/* Bottom Floating Glass Toolbar (Matches sophiamyang live site) */}
-      <div className="msp-toolbar-glass">
-        <div className="effect-pills-row">
+      {/* Pro Floating Style Dock (Bottom Centered) */}
+      <div className="msp-pro-dock">
+        <div className="dock-effects-row">
           {MSP_EFFECTS.map((eff, index) => (
             <button
               key={eff.id}
-              className={`effect-pill-btn ${effect === eff.id ? "active" : ""}`}
+              className={`pro-dock-card ${effect === eff.id ? "active" : ""}`}
               onClick={() => {
                 setEffect(eff.id);
                 if (eff.id === "custom" && !apiKey) {
@@ -597,40 +688,17 @@ export function MSPLiveFrameCanvas() {
                 }
               }}
             >
-              <span className="key-number">{index + 1}</span>
-              {eff.label}
+              <div className="dock-card-top">
+                <span className="hotkey-badge">{index + 1}</span>
+                <span className="effect-badge-pill">{eff.badge}</span>
+              </div>
+              <div className="dock-card-label">{eff.label}</div>
             </button>
           ))}
         </div>
-
-        <div className="msp-utility-row">
-          <button className={`btn-util ${cameraActive ? "active" : ""}`} onClick={toggleCamera} title="Toggle Camera (C)">
-            {cameraActive ? <Video size={16} /> : <VideoOff size={16} />}
-            <span>{cameraActive ? "Stop Camera" : "Start Camera"}</span>
-          </button>
-
-          <button className={`btn-util ${apiKey ? "configured" : ""}`} onClick={() => setShowKeyPanel(true)} title="Decart AI API Key (K)">
-            <Key size={16} />
-            <span>{apiKey ? "Decart AI Active" : "Decart AI Key"}</span>
-          </button>
-
-          <button className="btn-util" onClick={captureSnapshot} title="Download Snapshot">
-            <Download size={16} />
-            <span>Snapshot</span>
-          </button>
-
-          <button className="btn-util" onClick={() => setShowShortcuts(true)} title="Shortcuts (?)">
-            <HelpCircle size={16} />
-            <span>Shortcuts</span>
-          </button>
-
-          <button className="btn-util" onClick={toggleFullscreen} title="Fullscreen (F)">
-            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-          </button>
-        </div>
       </div>
 
-      {/* Decart Key Drawer Modal */}
+      {/* Decart API Key Modal Drawer */}
       {showKeyPanel && (
         <div className="msp-modal-backdrop" onClick={() => setShowKeyPanel(false)}>
           <div className="msp-modal-card" onClick={(e) => e.stopPropagation()}>
@@ -639,11 +707,11 @@ export function MSPLiveFrameCanvas() {
               <button className="close-btn" onClick={() => setShowKeyPanel(false)}><X size={18} /></button>
             </div>
             <div className="msp-modal-body">
-              <p style={{ fontSize: "0.88rem", color: "var(--muted)", marginBottom: "12px" }}>
-                Enter your <strong>Decart AI API Key</strong> to enable 30fps Realtime WebRTC video-to-video AI generation inside your hand frame.
+              <p style={{ fontSize: "0.88rem", color: "var(--muted)", marginBottom: "16px", lineHeight: "1.6" }}>
+                Enter your <strong>Decart AI API Key</strong> to activate 30fps Realtime WebRTC video-to-video AI rendering inside your hand frame.
               </p>
               <div className="input-group" style={{ marginBottom: "16px" }}>
-                <label style={{ fontSize: "0.8rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>
                   DECART API KEY
                 </label>
                 <input
@@ -656,7 +724,7 @@ export function MSPLiveFrameCanvas() {
               </div>
 
               <div className="input-group" style={{ marginBottom: "20px" }}>
-                <label style={{ fontSize: "0.8rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>
                   CUSTOM STYLE PROMPT (OPTIONAL)
                 </label>
                 <textarea
@@ -681,15 +749,15 @@ export function MSPLiveFrameCanvas() {
         <div className="msp-modal-backdrop" onClick={() => setShowShortcuts(false)}>
           <div className="msp-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="msp-modal-header">
-              <h3><Sparkles size={18} color="#10b981" /> Keyboard Shortcuts</h3>
+              <h3><Sparkles size={18} color="#10b981" /> Pro Keyboard Shortcuts</h3>
               <button className="close-btn" onClick={() => setShowShortcuts(false)}><X size={18} /></button>
             </div>
             <div className="msp-modal-body">
               <div className="shortcut-list">
-                <div className="shortcut-item"><kbd>1</kbd> - <kbd>6</kbd> <span>Switch Style Effects</span></div>
-                <div className="shortcut-item"><kbd>C</kbd> <span>Toggle Webcam On / Off</span></div>
-                <div className="shortcut-item"><kbd>K</kbd> <span>Open Decart AI Key Panel</span></div>
-                <div className="shortcut-item"><kbd>F</kbd> <span>Toggle Fullscreen Mode</span></div>
+                <div className="shortcut-item"><kbd>1</kbd> - <kbd>6</kbd> <span>Switch AI & GPU Style Effects</span></div>
+                <div className="shortcut-item"><kbd>C</kbd> <span>Toggle Live Webcam On / Off</span></div>
+                <div className="shortcut-item"><kbd>K</kbd> <span>Open Decart AI API Key Drawer</span></div>
+                <div className="shortcut-item"><kbd>F</kbd> <span>Toggle Pro Fullscreen Studio</span></div>
                 <div className="shortcut-item"><kbd>?</kbd> <span>Toggle Keyboard Shortcuts</span></div>
               </div>
             </div>
