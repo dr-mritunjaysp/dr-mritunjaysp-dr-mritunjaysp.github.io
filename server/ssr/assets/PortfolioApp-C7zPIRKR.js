@@ -8555,20 +8555,35 @@ function MSPLiveFrameCanvas() {
 					}).sort((a, b) => a.avgX - b.avgX);
 					const leftHand = handsWithPoints[0];
 					const rightHand = handsWithPoints[1];
-					const leftPts = [leftHand.index, leftHand.thumb].sort((a, b) => a.y - b.y);
-					const topLeft = leftPts[0];
-					const bottomLeft = leftPts[1];
-					const rightPts = [rightHand.index, rightHand.thumb].sort((a, b) => a.y - b.y);
-					const topRight = rightPts[0];
-					const bottomRight = rightPts[1];
-					const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
-					const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
-					if (quadWidth > 35 && quadHeight > 35) detectedQuad = [
-						topLeft,
-						topRight,
-						bottomRight,
-						bottomLeft
+					const rawPts = [
+						leftHand.index,
+						rightHand.index,
+						rightHand.thumb,
+						leftHand.thumb
 					];
+					const cx = (rawPts[0].x + rawPts[1].x + rawPts[2].x + rawPts[3].x) / 4;
+					const cy = (rawPts[0].y + rawPts[1].y + rawPts[2].y + rawPts[3].y) / 4;
+					const sortedPts = [...rawPts].sort((a, b) => {
+						return Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx);
+					});
+					let topIdx = 0;
+					let minSum = Infinity;
+					sortedPts.forEach((pt, i) => {
+						const sum = pt.x + pt.y;
+						if (sum < minSum) {
+							minSum = sum;
+							topIdx = i;
+						}
+					});
+					const quadSorted = [
+						sortedPts[topIdx],
+						sortedPts[(topIdx + 1) % 4],
+						sortedPts[(topIdx + 2) % 4],
+						sortedPts[(topIdx + 3) % 4]
+					];
+					const quadWidth = Math.hypot(quadSorted[1].x - quadSorted[0].x, quadSorted[1].y - quadSorted[0].y);
+					const quadHeight = Math.hypot(quadSorted[3].x - quadSorted[0].x, quadSorted[3].y - quadSorted[0].y);
+					if (quadWidth > 25 && quadHeight > 25) detectedQuad = quadSorted;
 				}
 			} catch (err) {}
 			if (detectedQuad) {
