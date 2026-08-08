@@ -263,16 +263,7 @@ img {
 }
 
 .more-menu::before {
-  position: absolute;
-  top: -9px;
-  right: 42px;
-  width: 16px;
-  height: 16px;
-  border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
-  background: var(--surface-strong);
-  content: "";
-  transform: rotate(45deg);
+  display: none;
 }
 
 .more-menu a {

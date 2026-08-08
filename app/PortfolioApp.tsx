@@ -90,7 +90,6 @@ const primaryNav = [
   { label: "Blog", href: "/blog", key: "blog" },
   { label: "Publications", href: "/publications", key: "publications" },
   { label: "Projects", href: "/projects", key: "projects" },
-  { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "CV", href: "/cv", key: "cv" },
   { label: "Teaching", href: "/teaching", key: "teaching" },
   { label: "People", href: "/people", key: "people" },
