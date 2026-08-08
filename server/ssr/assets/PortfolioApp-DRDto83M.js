@@ -8689,10 +8689,21 @@ function MSPLiveFrameCanvas() {
 		link.href = canvasRef.current.toDataURL("image/png");
 		link.click();
 	};
+	(0, import_react.useEffect)(() => {
+		const handleFullscreenChange = () => {
+			setIsFullscreen(!!document.fullscreenElement);
+		};
+		document.addEventListener("fullscreenchange", handleFullscreenChange);
+		return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+	}, []);
 	const toggleFullscreen = () => {
 		if (!containerRef.current) return;
-		if (!document.fullscreenElement) containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
-		else document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+		if (!document.fullscreenElement) containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {
+			setIsFullscreen(true);
+		});
+		else document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {
+			setIsFullscreen(false);
+		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		ref: containerRef,
