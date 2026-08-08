@@ -9214,20 +9214,17 @@ var moreNav = [
 	{
 		label: "MSP Live Frame",
 		href: "/msp-live-frame",
-		key: "msp-live-frame",
-		badge: "AI Vision"
+		key: "msp-live-frame"
 	},
 	{
 		label: "Inkora PenApp",
 		href: "/inkora",
-		key: "inkora",
-		badge: "App"
+		key: "inkora"
 	},
 	{
 		label: "Sorting Visualizer",
 		href: "/sorting-visualizer",
-		key: "sorting-visualizer",
-		badge: "Interactive"
+		key: "sorting-visualizer"
 	},
 	{
 		label: "Awards & FDP",
@@ -9800,7 +9797,7 @@ function Header({ section, theme, onTheme, onSearch }) {
 								}), moreOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "more-menu",
 									role: "menu",
-									children: moreNav.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+									children: moreNav.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 										href: item.href,
 										role: "menuitem",
 										className: section === item.key ? "active" : "",
@@ -9809,10 +9806,7 @@ function Header({ section, theme, onTheme, onSearch }) {
 											setMoreOpen(false);
 											setMobileOpen(false);
 										},
-										children: [item.label, "badge" in item && item.badge && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "subdomain-mini-pill",
-											children: item.badge
-										})]
+										children: item.label
 									}, item.key))
 								})]
 							})
