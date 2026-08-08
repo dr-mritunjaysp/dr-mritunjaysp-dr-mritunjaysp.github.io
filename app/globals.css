@@ -6493,6 +6493,42 @@ body::before {
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+.msp-floating-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  transition: opacity 0.4s;
+  z-index: 18;
+  animation: hint-float 3.2s ease-in-out infinite;
+}
+
+.msp-floating-hint.hidden {
+  opacity: 0;
+}
+
+#hint-text {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+  animation: hint-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+@keyframes hint-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
 .msp-frame-page {
   padding-bottom: 60px;
 }

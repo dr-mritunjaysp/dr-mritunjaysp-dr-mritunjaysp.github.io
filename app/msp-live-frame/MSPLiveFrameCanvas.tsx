@@ -7,18 +7,13 @@ import {
   Key,
   Maximize2,
   Minimize2,
-  RefreshCw,
-  HelpCircle,
   Video,
   VideoOff,
   Download,
-  Zap,
-  Sliders,
-  CheckCircle2,
   AlertCircle,
-  Layers,
   X,
   Play,
+  HelpCircle,
 } from "lucide-react";
 
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm";
@@ -28,61 +23,42 @@ const DECART_SDK_URL = "https://esm.sh/@decartai/sdk@0.1.17";
 export interface EffectItem {
   id: string;
   label: string;
-  badge: string;
+  badge?: string;
   prompt: string | null;
-  description: string;
 }
 
 export const MSP_EFFECTS: EffectItem[] = [
   {
     id: "movie3d",
     label: "3D Movie",
-    badge: "CGI AI",
-    prompt: "Change the style of the video to a 3D animated movie: stylized CGI animation, the person as an animated character with expressive big eyes and smooth skin, soft cinematic lighting.",
-    description: "Stylized CGI movie character with warm cinematic illumination.",
+    prompt:
+      "Change the style of the video to a 3D animated movie: stylized CGI animation, the person as an animated character with expressive big eyes and smooth skin, soft cinematic lighting.",
   },
   {
     id: "anime",
     label: "Anime",
-    badge: "Cel Shaded",
-    prompt: "Change the style of the video to hand-drawn anime: clean black line art, flat cel shading, vibrant colors, large expressive eyes.",
-    description: "Clean black line art and vibrant cel-shaded Japanese anime aesthetics.",
+    prompt:
+      "Change the style of the video to hand-drawn anime: clean black line art, flat cel shading, vibrant colors, large expressive eyes.",
   },
   {
     id: "cyberpunk",
     label: "Cyberpunk",
-    badge: "Neon 2077",
-    prompt: "Change the style of the video to neon cyberpunk: glowing pink and cyan neon light on the person and walls, rain-slick reflective surfaces, holographic signs in the background.",
-    description: "Futuristic neon city lighting with cyan and magenta holographic reflections.",
+    prompt:
+      "Change the style of the video to neon cyberpunk: glowing pink and cyan neon light on the person and walls, rain-slick reflective surfaces, holographic signs in the background.",
   },
   {
     id: "watercolor",
     label: "Watercolor",
-    badge: "Impressionist",
-    prompt: "Change the style of the video to a watercolor painting: soft loose brushstrokes, gentle color bleeds, visible paper texture, muted pastel palette.",
-    description: "Soft fluid paint brushstrokes with subtle paper canvas texture.",
+    prompt:
+      "Change the style of the video to a watercolor painting: soft loose brushstrokes, gentle color bleeds, visible paper texture, muted pastel palette.",
   },
   {
-    id: "matrix",
-    label: "Matrix Code",
-    badge: "Digital Green",
-    prompt: "Change the style of the video to green digital matrix cascade: streaming rain of glowing green code, cybernetic wireframe, dark terminal aesthetic.",
-    description: "Glowing green digital code stream and cybernetic wireframe.",
+    id: "lego",
+    label: "LEGO",
+    prompt:
+      "Change the style of the video to a LEGO stop-motion animation: the person is a yellow LEGO minifigure with a cylindrical head, painted face, and claw hands, and the room is built entirely from glossy plastic LEGO bricks with visible round studs on every surface.",
   },
-  {
-    id: "thermal",
-    label: "Thermal IR",
-    badge: "Heatmap",
-    prompt: "Change the style of the video to a high-contrast thermal vision camera: glowing heat signatures, indigo, yellow, red, and electric blue infrared color spectrum.",
-    description: "Infrared heat signature spectrum rendering with vibrant thermal gradients.",
-  },
-  {
-    id: "custom",
-    label: "Custom Prompt",
-    badge: "User ✨",
-    prompt: null,
-    description: "Write your own custom Decart Lucy 2.5 realtime prompt.",
-  },
+  { id: "custom", label: "Custom ✨", prompt: null },
 ];
 
 interface Point {
@@ -96,7 +72,7 @@ export function MSPLiveFrameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [activeEffect, setActiveEffect] = useState<string>("movie3d");
+  const [effect, setEffect] = useState<string>("movie3d");
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
   const [showKeyPanel, setShowKeyPanel] = useState<boolean>(false);
@@ -114,12 +90,12 @@ export function MSPLiveFrameCanvas() {
   const realtimeClientRef = useRef<any>(null);
   const animFrameId = useRef<number | null>(null);
 
-  // Quad tracking state
+  // Quad tracking state with hysteresis lerp
   const cornersRef = useRef<[Point, Point, Point, Point] | null>(null);
   const presenceRef = useRef<number>(0);
   const lostFramesRef = useRef<number>(0);
 
-  // Load saved configuration from localStorage
+  // Load saved Decart API Key and prompt on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedKey = localStorage.getItem("msp-decart-key") || sessionStorage.getItem("msp-decart-key") || "";
@@ -132,13 +108,14 @@ export function MSPLiveFrameCanvas() {
     }
   }, []);
 
-  // Initialize MediaPipe Hand Landmarker
+  // Initialize MediaPipe Hand Landmarker from CDN
   useEffect(() => {
     let active = true;
 
     async function initMediaPipe() {
       try {
         setStatusState("loading");
+        setStatusText("Loading MediaPipe Vision WASM...");
         const { HandLandmarker, FilesetResolver } = await new Function(
           "u",
           "return import(u)"
@@ -165,12 +142,12 @@ export function MSPLiveFrameCanvas() {
 
         landmarkerRef.current = landmarker;
         setStatusState("ready");
-        setStatusText("Camera Ready — Frame your hands!");
+        setStatusText("Hold up both hands to frame the scene!");
       } catch (err: any) {
         console.error("MediaPipe initialization error:", err);
         if (active) {
           setStatusState("error");
-          setStatusText(`Initialization Notice: Using Canvas FX Fallback Engine (${err.message || "WASM load fallback"})`);
+          setStatusText(`MediaPipe Fallback: Built-in Canvas Engine active (${err.message || "WASM load fallback"})`);
         }
       }
     }
@@ -205,11 +182,11 @@ export function MSPLiveFrameCanvas() {
         await videoRef.current.play();
         setCameraActive(true);
         setStatusState(apiKey ? "connecting" : "ready");
-        setStatusText(apiKey ? "Connecting to Decart Lucy 2.5 AI..." : "Camera Active — Make a finger box frame!");
+        setStatusText(apiKey ? "Connecting to Decart Lucy 2.5 WebRTC..." : "Camera active — Hold up both hands!");
       }
     } catch (err: any) {
       console.error("Camera access failed:", err);
-      setCameraError(err.message || "Failed to access webcam. Please check browser permissions.");
+      setCameraError(err.message || "Failed to access webcam. Please verify browser permissions.");
     }
   }, [apiKey]);
 
@@ -234,20 +211,20 @@ export function MSPLiveFrameCanvas() {
     }
   };
 
-  // Connect Decart Lucy 2.5 Realtime AI
+  // Connect Decart Lucy 2.5 Realtime WebRTC
   const connectLucyAI = useCallback(async () => {
     if (!apiKey.trim() || !videoRef.current || !videoRef.current.srcObject) return;
 
     try {
       setStatusState("connecting");
-      setStatusText("Connecting to Decart Lucy 2.5 WebRTC...");
+      setStatusText("CONNECTING TO DECART LUCY 2.5…");
 
       const { createDecartClient, models } = await import(/* webpackIgnore: true */ DECART_SDK_URL);
       const model = models.realtime("lucy-2.5");
       const client = createDecartClient({ apiKey: apiKey.trim() });
 
-      const effectObj = MSP_EFFECTS.find((e) => e.id === activeEffect);
-      const promptText = effectObj?.prompt || customPrompt || "Transform the video style inside the hand frame.";
+      const effectObj = MSP_EFFECTS.find((e) => e.id === effect);
+      const promptText = effectObj?.prompt || customPrompt || "Transform the style inside the hand frame.";
 
       const realtimeClient = await client.realtime.connect(videoRef.current.srcObject, {
         model,
@@ -257,7 +234,7 @@ export function MSPLiveFrameCanvas() {
             lucyVidRef.current.srcObject = remoteStream;
             lucyVidRef.current.play().catch(() => {});
             setStatusState("live");
-            setStatusText("MSP Live Frame AI — 30fps Realtime WebRTC Connected!");
+            setStatusText("LIVE");
             setLiveMode("ai");
           }
         },
@@ -267,15 +244,15 @@ export function MSPLiveFrameCanvas() {
     } catch (err: any) {
       console.error("Decart connection error:", err);
       setStatusState("error");
-      setStatusText(`Decart AI connection failed (${err.message || "Invalid API key"}). Active in Canvas FX mode.`);
+      setStatusText(`AI OFFLINE — ${err.message || "connect failed"}`);
       setLiveMode("canvas");
     }
-  }, [apiKey, activeEffect, customPrompt]);
+  }, [apiKey, effect, customPrompt]);
 
-  // Update prompt on active Decart connection
+  // Update prompt on active Decart session
   const pushPromptToLucy = useCallback(async () => {
     if (!realtimeClientRef.current) return;
-    const effectObj = MSP_EFFECTS.find((e) => e.id === activeEffect);
+    const effectObj = MSP_EFFECTS.find((e) => e.id === effect);
     const promptText = effectObj?.prompt || customPrompt || "Transform style inside frame.";
     try {
       await realtimeClientRef.current.set({ prompt: { text: promptText }, enhance: true });
@@ -286,13 +263,13 @@ export function MSPLiveFrameCanvas() {
         console.warn("Prompt update attempt failed:", err);
       }
     }
-  }, [activeEffect, customPrompt]);
+  }, [effect, customPrompt]);
 
   useEffect(() => {
     pushPromptToLucy();
-  }, [activeEffect, customPrompt, pushPromptToLucy]);
+  }, [effect, customPrompt, pushPromptToLucy]);
 
-  // Main Animation / Render Loop
+  // Main Render & Landmark Tracking Loop
   useEffect(() => {
     let lastTime = -1;
 
@@ -306,7 +283,6 @@ export function MSPLiveFrameCanvas() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Adjust canvas resolution to match video
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth || 1280;
         canvas.height = video.videoHeight || 720;
@@ -315,17 +291,16 @@ export function MSPLiveFrameCanvas() {
       const w = canvas.width;
       const h = canvas.height;
 
-      // Clear canvas
       ctx.clearRect(0, 0, w, h);
 
-      // Draw mirrored main webcam frame
+      // Mirrored background webcam frame
       ctx.save();
       ctx.scale(-1, 1);
       ctx.translate(-w, 0);
       ctx.drawImage(video, 0, 0, w, h);
       ctx.restore();
 
-      // Hand Landmarker Detection
+      // Hand Landmarker
       let detectedQuad: [Point, Point, Point, Point] | null = null;
 
       if (landmarkerRef.current && video.currentTime !== lastTime) {
@@ -333,20 +308,17 @@ export function MSPLiveFrameCanvas() {
         try {
           const results = landmarkerRef.current.detectForVideo(video, performance.now());
           if (results && results.landmarks && results.landmarks.length >= 1) {
-            // Find thumb tip (4) and index tip (8) for detected hands
             const handPoints: Point[] = [];
             results.landmarks.forEach((hand: any) => {
               const thumbTip = hand[4];
               const indexTip = hand[8];
               if (thumbTip && indexTip) {
-                // Invert X because camera display is mirrored
                 handPoints.push({ x: (1 - thumbTip.x) * w, y: thumbTip.y * h });
                 handPoints.push({ x: (1 - indexTip.x) * w, y: indexTip.y * h });
               }
             });
 
             if (handPoints.length >= 4) {
-              // Form a bounding box / 4 corners quad
               const sortedByY = [...handPoints].sort((a, b) => a.y - b.y);
               const topTwo = sortedByY.slice(0, 2).sort((a, b) => a.x - b.x);
               const bottomTwo = sortedByY.slice(2, 4).sort((a, b) => b.x - a.x);
@@ -356,7 +328,6 @@ export function MSPLiveFrameCanvas() {
               const bottomRight = bottomTwo[0];
               const bottomLeft = bottomTwo[1];
 
-              // Check min distance between corners
               const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
               const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
 
@@ -366,18 +337,17 @@ export function MSPLiveFrameCanvas() {
             }
           }
         } catch (err) {
-          // Ignore frame detection glitch
+          // Frame glitch ignore
         }
       }
 
-      // Smooth Quad with lerp and presence hysteresis
+      // Smooth Quad lerp
       if (detectedQuad) {
         lostFramesRef.current = 0;
         setHandDetected(true);
         if (!cornersRef.current) {
           cornersRef.current = detectedQuad;
         } else {
-          // Lerp corners for smooth motion
           const alpha = 0.35;
           cornersRef.current = [
             { x: cornersRef.current[0].x + (detectedQuad[0].x - cornersRef.current[0].x) * alpha, y: cornersRef.current[0].y + (detectedQuad[0].y - cornersRef.current[0].y) * alpha },
@@ -398,13 +368,12 @@ export function MSPLiveFrameCanvas() {
         }
       }
 
-      // Draw inside the quad when hands form a frame
+      // Render inside finger quad frame
       const quad = cornersRef.current;
       if (quad && presenceRef.current > 0.05) {
         ctx.save();
         ctx.globalAlpha = presenceRef.current;
 
-        // Create clipping polygon path
         ctx.beginPath();
         ctx.moveTo(quad[0].x, quad[0].y);
         ctx.lineTo(quad[1].x, quad[1].y);
@@ -413,17 +382,13 @@ export function MSPLiveFrameCanvas() {
         ctx.closePath();
         ctx.clip();
 
-        // Render AI stream or Canvas FX inside quad
         const lucyVid = lucyVidRef.current;
         if (liveMode === "ai" && lucyVid && lucyVid.readyState >= 2) {
-          // Draw Decart Lucy AI Video
           ctx.drawImage(lucyVid, 0, 0, w, h);
         } else {
-          // Apply Built-in Canvas Artistic FX
-          drawCanvasEffect(ctx, video, w, h, activeEffect);
+          drawCanvasEffect(ctx, video, w, h, effect);
         }
 
-        // Draw Glowing Frame Border
         ctx.restore();
         ctx.save();
         ctx.globalAlpha = presenceRef.current;
@@ -439,7 +404,6 @@ export function MSPLiveFrameCanvas() {
         ctx.shadowBlur = 15;
         ctx.stroke();
 
-        // Draw corner targets
         const cornerColors = ["#ec4899", "#3b82f6", "#8b5cf6", "#10b981"];
         quad.forEach((pt, i) => {
           ctx.beginPath();
@@ -462,12 +426,11 @@ export function MSPLiveFrameCanvas() {
         cancelAnimationFrame(animFrameId.current);
       }
     };
-  }, [liveMode, activeEffect]);
+  }, [liveMode, effect]);
 
-  // Built-in Canvas Filter Engine
+  // Built-in Canvas Artistic FX
   const drawCanvasEffect = (ctx: CanvasRenderingContext2D, video: HTMLVideoElement, w: number, h: number, effectId: string) => {
     ctx.save();
-    // Mirrored draw
     ctx.scale(-1, 1);
     ctx.translate(-w, 0);
 
@@ -480,7 +443,6 @@ export function MSPLiveFrameCanvas() {
       case "cyberpunk":
         ctx.filter = "contrast(160%) hue-rotate(180deg) saturate(280%)";
         ctx.drawImage(video, 0, 0, w, h);
-        // Neon overlay
         ctx.restore();
         ctx.save();
         ctx.globalCompositeOperation = "color-dodge";
@@ -493,18 +455,8 @@ export function MSPLiveFrameCanvas() {
         ctx.drawImage(video, 0, 0, w, h);
         break;
 
-      case "matrix":
-        ctx.filter = "grayscale(100%) brightness(120%) contrast(200%)";
-        ctx.drawImage(video, 0, 0, w, h);
-        ctx.restore();
-        ctx.save();
-        ctx.globalCompositeOperation = "source-atop";
-        ctx.fillStyle = "rgba(16, 185, 129, 0.4)";
-        ctx.fillRect(0, 0, w, h);
-        break;
-
-      case "thermal":
-        ctx.filter = "invert(100%) hue-rotate(240deg) contrast(200%) saturate(300%)";
+      case "lego":
+        ctx.filter = "posterize(4) contrast(150%) saturate(180%)";
         ctx.drawImage(video, 0, 0, w, h);
         break;
 
@@ -512,7 +464,6 @@ export function MSPLiveFrameCanvas() {
       default:
         ctx.filter = "contrast(130%) saturate(150%) brightness(108%)";
         ctx.drawImage(video, 0, 0, w, h);
-        // Soft vignette overlay
         ctx.restore();
         ctx.save();
         const grad = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.2, w / 2, h / 2, Math.max(w, h) * 0.7);
@@ -525,14 +476,18 @@ export function MSPLiveFrameCanvas() {
     ctx.restore();
   };
 
-  // Keyboard Shortcuts handler (1-7, f, k, c, ?)
+  // Keyboard Shortcuts (1-6, f, k, c, ?)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
       const num = parseInt(e.key, 10);
       if (!isNaN(num) && num >= 1 && num <= MSP_EFFECTS.length) {
-        setActiveEffect(MSP_EFFECTS[num - 1].id);
+        const sel = MSP_EFFECTS[num - 1].id;
+        setEffect(sel);
+        if (sel === "custom" && !apiKey) {
+          setShowKeyPanel(true);
+        }
       } else if (e.key.toLowerCase() === "f") {
         toggleFullscreen();
       } else if (e.key.toLowerCase() === "k") {
@@ -546,9 +501,8 @@ export function MSPLiveFrameCanvas() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [apiKey]);
 
-  // Save API Key
   const saveKey = () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("msp-decart-key", apiKey.trim());
@@ -561,7 +515,6 @@ export function MSPLiveFrameCanvas() {
     }
   };
 
-  // Capture Snapshot
   const captureSnapshot = () => {
     if (!canvasRef.current) return;
     const link = document.createElement("a");
@@ -570,7 +523,6 @@ export function MSPLiveFrameCanvas() {
     link.click();
   };
 
-  // Toggle Fullscreen
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
     if (!document.fullscreenElement) {
@@ -585,23 +537,28 @@ export function MSPLiveFrameCanvas() {
       ref={containerRef}
       className={`msp-frame-container ${isFullscreen ? "fullscreen-canvas" : ""}`}
     >
-      {/* Hidden elements for media streaming */}
       <video ref={videoRef} playsInline muted style={{ display: "none" }} />
       <video ref={lucyVidRef} playsInline muted style={{ display: "none" }} />
 
-      {/* Main Interactive Canvas */}
       <canvas ref={canvasRef} className="msp-frame-canvas" />
 
-      {/* Status Live Pill */}
-      <div className={`msp-live-pill ${statusState}`}>
+      {/* Floating Status Pill (Matches sophiamyang live site) */}
+      <div className={`msp-live-pill ${statusState} ${cameraActive ? "on" : ""}`}>
         <span className="live-dot" />
         <span className="live-pill-text">
-          {statusState === "live" ? "MSP LIVE FRAME AI (30 FPS)" : statusText}
+          {statusState === "live" ? "LIVE" : statusText}
         </span>
-        {handDetected && <span className="hand-badge">✋ Hands Detected</span>}
+        {handDetected && <span className="hand-badge">✋ Hands Frame</span>}
       </div>
 
-      {/* Center Camera Overlay Prompt (when camera is stopped) */}
+      {/* Floating Hint Text (Matches sophiamyang live site) */}
+      {cameraActive && (
+        <div className={`msp-floating-hint ${handDetected ? "hidden" : ""}`}>
+          <div id="hint-text">Hold up both hands to frame the scene</div>
+        </div>
+      )}
+
+      {/* Camera Starter Card (When Camera is off) */}
       {!cameraActive && (
         <div className="msp-camera-starter-overlay">
           <div className="starter-card">
@@ -610,32 +567,31 @@ export function MSPLiveFrameCanvas() {
             </div>
             <h2>MSP Live Frame AI</h2>
             <p style={{ color: "var(--muted)", fontSize: "0.92rem", maxWidth: "420px", margin: "8px auto 20px" }}>
-              Experience real-time AI world transformations right inside your hands gesture box! Created by <strong>Dr. Mritunjay Shall Peelam</strong>.
+              Hold up both hands and frame a box with your fingers — experience a live AI transformed world inside your hand frame! Created by <strong>Dr. Mritunjay Shall Peelam</strong>.
             </p>
             <button className="btn-sort-primary" onClick={startCamera} style={{ fontSize: "1rem", padding: "12px 28px" }}>
-              <Play size={18} /> Launch Camera & Hand Frame
+              <Play size={18} /> Launch Live Camera & Hand Frame
             </button>
           </div>
         </div>
       )}
 
-      {/* Camera Access Error Alert */}
+      {/* Camera Error Banner */}
       {cameraError && (
         <div className="msp-alert-banner">
           <AlertCircle size={18} /> {cameraError}
         </div>
       )}
 
-      {/* Bottom Floating Control Bar */}
+      {/* Bottom Floating Glass Toolbar (Matches sophiamyang live site) */}
       <div className="msp-toolbar-glass">
-        {/* Effect Selector Pills */}
         <div className="effect-pills-row">
           {MSP_EFFECTS.map((eff, index) => (
             <button
               key={eff.id}
-              className={`effect-pill-btn ${activeEffect === eff.id ? "active" : ""}`}
+              className={`effect-pill-btn ${effect === eff.id ? "active" : ""}`}
               onClick={() => {
-                setActiveEffect(eff.id);
+                setEffect(eff.id);
                 if (eff.id === "custom" && !apiKey) {
                   setShowKeyPanel(true);
                 }
@@ -643,12 +599,10 @@ export function MSPLiveFrameCanvas() {
             >
               <span className="key-number">{index + 1}</span>
               {eff.label}
-              <span className="effect-badge">{eff.badge}</span>
             </button>
           ))}
         </div>
 
-        {/* System Utility Buttons */}
         <div className="msp-utility-row">
           <button className={`btn-util ${cameraActive ? "active" : ""}`} onClick={toggleCamera} title="Toggle Camera (C)">
             {cameraActive ? <Video size={16} /> : <VideoOff size={16} />}
@@ -660,7 +614,7 @@ export function MSPLiveFrameCanvas() {
             <span>{apiKey ? "Decart AI Active" : "Decart AI Key"}</span>
           </button>
 
-          <button className="btn-util" onClick={captureSnapshot} title="Download Frame Snapshot">
+          <button className="btn-util" onClick={captureSnapshot} title="Download Snapshot">
             <Download size={16} />
             <span>Snapshot</span>
           </button>
@@ -676,7 +630,7 @@ export function MSPLiveFrameCanvas() {
         </div>
       </div>
 
-      {/* Custom Key / Prompt Modal Drawer */}
+      {/* Decart Key Drawer Modal */}
       {showKeyPanel && (
         <div className="msp-modal-backdrop" onClick={() => setShowKeyPanel(false)}>
           <div className="msp-modal-card" onClick={(e) => e.stopPropagation()}>
@@ -722,19 +676,19 @@ export function MSPLiveFrameCanvas() {
         </div>
       )}
 
-      {/* Keyboard Shortcuts Modal */}
+      {/* Shortcuts Modal */}
       {showShortcuts && (
         <div className="msp-modal-backdrop" onClick={() => setShowShortcuts(false)}>
           <div className="msp-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="msp-modal-header">
-              <h3><Sparkles size={18} color="#10b981" /> MSP Live Frame — Keyboard Shortcuts</h3>
+              <h3><Sparkles size={18} color="#10b981" /> Keyboard Shortcuts</h3>
               <button className="close-btn" onClick={() => setShowShortcuts(false)}><X size={18} /></button>
             </div>
             <div className="msp-modal-body">
               <div className="shortcut-list">
-                <div className="shortcut-item"><kbd>1</kbd> - <kbd>7</kbd> <span>Switch Style Effects</span></div>
+                <div className="shortcut-item"><kbd>1</kbd> - <kbd>6</kbd> <span>Switch Style Effects</span></div>
                 <div className="shortcut-item"><kbd>C</kbd> <span>Toggle Webcam On / Off</span></div>
-                <div className="shortcut-item"><kbd>K</kbd> <span>Open Decart AI API Key Drawer</span></div>
+                <div className="shortcut-item"><kbd>K</kbd> <span>Open Decart AI Key Panel</span></div>
                 <div className="shortcut-item"><kbd>F</kbd> <span>Toggle Fullscreen Mode</span></div>
                 <div className="shortcut-item"><kbd>?</kbd> <span>Toggle Keyboard Shortcuts</span></div>
               </div>
