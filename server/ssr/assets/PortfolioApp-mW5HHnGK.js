@@ -8600,11 +8600,11 @@ function MSPLiveFrameCanvas() {
 						}
 					];
 				}
-				presenceRef.current = Math.min(1, presenceRef.current + .1);
+				presenceRef.current = Math.min(1, presenceRef.current + .12);
 			} else {
 				lostFramesRef.current += 1;
-				if (lostFramesRef.current > 25) {
-					presenceRef.current = Math.max(0, presenceRef.current - .08);
+				if (lostFramesRef.current > 90) {
+					presenceRef.current = Math.max(0, presenceRef.current - .03);
 					if (presenceRef.current === 0) {
 						cornersRef.current = null;
 						setHandDetected(false);
@@ -8674,9 +8674,6 @@ function MSPLiveFrameCanvas() {
 			case "cyberpunk":
 				ctx.filter = "contrast(160%) hue-rotate(180deg) saturate(280%)";
 				ctx.drawImage(video, 0, 0, w, h);
-				ctx.restore();
-				ctx.save();
-				ctx.globalCompositeOperation = "color-dodge";
 				ctx.fillStyle = "rgba(236, 72, 153, 0.25)";
 				ctx.fillRect(0, 0, w, h);
 				break;
@@ -8691,9 +8688,6 @@ function MSPLiveFrameCanvas() {
 			case "matrix":
 				ctx.filter = "contrast(220%) hue-rotate(90deg) saturate(320%) brightness(90%)";
 				ctx.drawImage(video, 0, 0, w, h);
-				ctx.restore();
-				ctx.save();
-				ctx.globalCompositeOperation = "color-dodge";
 				ctx.fillStyle = "rgba(16, 185, 129, 0.35)";
 				ctx.fillRect(0, 0, w, h);
 				break;
@@ -8712,8 +8706,6 @@ function MSPLiveFrameCanvas() {
 			default:
 				ctx.filter = "contrast(130%) saturate(150%) brightness(108%)";
 				ctx.drawImage(video, 0, 0, w, h);
-				ctx.restore();
-				ctx.save();
 				const grad = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .2, w / 2, h / 2, Math.max(w, h) * .7);
 				grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
 				grad.addColorStop(1, "rgba(15, 23, 42, 0.4)");
@@ -8721,6 +8713,7 @@ function MSPLiveFrameCanvas() {
 				ctx.fillRect(0, 0, w, h);
 				break;
 		}
+		ctx.filter = "none";
 		ctx.restore();
 	};
 	(0, import_react.useEffect)(() => {
