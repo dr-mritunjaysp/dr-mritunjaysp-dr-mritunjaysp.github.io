@@ -8623,8 +8623,13 @@ function MSPLiveFrameCanvas() {
 				ctx.closePath();
 				ctx.clip();
 				const lucyVid = lucyVidRef.current;
-				if (liveMode === "ai" && lucyVid && lucyVid.readyState >= 2) ctx.drawImage(lucyVid, 0, 0, w, h);
-				else drawCanvasEffect(ctx, video, w, h, effect);
+				if (liveMode === "ai" && lucyVid && lucyVid.readyState >= 2 && !lucyVid.paused) {
+					ctx.save();
+					ctx.scale(-1, 1);
+					ctx.translate(-w, 0);
+					ctx.drawImage(lucyVid, 0, 0, w, h);
+					ctx.restore();
+				} else drawCanvasEffect(ctx, video, w, h, effect);
 				ctx.restore();
 				ctx.save();
 				ctx.globalAlpha = presenceRef.current;
