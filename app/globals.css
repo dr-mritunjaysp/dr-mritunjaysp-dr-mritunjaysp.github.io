@@ -7075,6 +7075,49 @@ body::before {
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.55) !important;
 }
 
+/* Help Modal Drawer Styling */
+.help-modal-card {
+  width: min(540px, 100%) !important;
+}
+
+.help-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.help-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.help-step-item .step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.help-step-item .step-num.blue {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
 @media (max-width: 900px) {
   .dock-effects-row {
     grid-template-columns: repeat(3, 1fr);

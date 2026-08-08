@@ -143,7 +143,7 @@ export function MSPLiveFrameCanvas() {
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
   const [showKeyPanel, setShowKeyPanel] = useState<boolean>(false);
-  const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
+  const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
 
   const [cameraActive, setCameraActive] = useState<boolean>(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -702,6 +702,13 @@ export function MSPLiveFrameCanvas() {
         <button className="pro-action-btn" onClick={toggleFullscreen} title="Fullscreen (F)">
           {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
         </button>
+        <button
+          className="pro-action-btn"
+          onClick={() => setShowHelpModal(true)}
+          title="Help & API Key Guide (?)"
+        >
+          <HelpCircle size={16} />
+        </button>
       </div>
 
       {/* Pro Floating Gesture Hint Banner */}
@@ -774,7 +781,7 @@ export function MSPLiveFrameCanvas() {
               <button className="close-btn" onClick={() => setShowKeyPanel(false)}><X size={18} /></button>
             </div>
             <div className="msp-modal-body">
-              <p style={{ fontSize: "0.88rem", color: "var(--muted)", marginBottom: "16px", lineHeight: "1.6" }}>
+              <p style={{ fontSize: "0.88rem", color: "#94a3b8", marginBottom: "16px", lineHeight: "1.6" }}>
                 Enter your <strong>Decart AI API Key</strong> to activate 30fps Realtime WebRTC video-to-video AI rendering inside your hand frame.
               </p>
               <div className="input-group" style={{ marginBottom: "16px" }}>
@@ -806,6 +813,115 @@ export function MSPLiveFrameCanvas() {
             <div className="msp-modal-footer">
               <button className="btn-sort-secondary" onClick={() => setShowKeyPanel(false)}>Cancel</button>
               <button className="btn-sort-primary" onClick={saveKey}>Save & Connect AI</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Help & Guide Modal Drawer */}
+      {showHelpModal && (
+        <div className="msp-modal-backdrop" onClick={() => setShowHelpModal(false)}>
+          <div className="msp-modal-card help-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="msp-modal-header">
+              <h3><HelpCircle size={18} color="#10b981" /> How MSP Live Frame Works & API Key Guide</h3>
+              <button className="close-btn" onClick={() => setShowHelpModal(false)}><X size={18} /></button>
+            </div>
+            <div className="msp-modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
+              {/* Section 1: How It Works */}
+              <div style={{ marginBottom: "24px" }}>
+                <h4 style={{ color: "#10b981", fontSize: "0.92rem", fontWeight: 800, marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Cpu size={16} /> How It Operates
+                </h4>
+                <div className="help-step-list">
+                  <div className="help-step-item">
+                    <span className="step-num">1</span>
+                    <div>
+                      <strong style={{ color: "#f8fafc" }}>Dual Hand Tracking (MediaPipe)</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Detects left and right hand landmarks in real time using MediaPipe Hand Landmarker GPU model, tracking index and thumb tips.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="help-step-item">
+                    <span className="step-num">2</span>
+                    <div>
+                      <strong style={{ color: "#f8fafc" }}>Dynamic Quad Warp</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Calculates smoothed 4-corner perspective quadrilaterals with exponential lerp motion and hysteresis filtering to eliminate video flicker.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="help-step-item">
+                    <span className="step-num">3</span>
+                    <div>
+                      <strong style={{ color: "#f8fafc" }}>Decart Lucy 2.5 Realtime AI</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Streams live WebRTC video-to-video style transformations using Decart Lucy 2.5 AI at 30fps with sub-100ms latency.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="help-step-item">
+                    <span className="step-num">4</span>
+                    <div>
+                      <strong style={{ color: "#f8fafc" }}>Zero-Latency GPU Canvas Fallback</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Includes 10 built-in GPU canvas artistic filters (3D CGI, Anime, Cyberpunk, Watercolor, LEGO, Matrix Code, Thermal IR, Comic Book, Oil Painting) working offline instantly.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: How to Get Decart Key */}
+              <div>
+                <h4 style={{ color: "#60a5fa", fontSize: "0.92rem", fontWeight: 800, marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Key size={16} /> How to Get Your Decart AI API Key
+                </h4>
+                <div className="help-step-list">
+                  <div className="help-step-item">
+                    <span className="step-num blue">1</span>
+                    <div>
+                      <strong style={{ color: "#f8fafc" }}>Visit Decart AI Platform</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Open <a href="https://platform.decart.ai" target="_blank" rel="noreferrer" style={{ color: "#60a5fa", textDecoration: "underline", fontWeight: 700 }}>platform.decart.ai</a> in your web browser.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="help-step-item">
+                    <span className="step-num blue">2</span>
+                    <div>
+                      <strong style={{ color: "#f8fafc" }}>Sign Up / Log In</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Create a free Decart account or log in with your credentials.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="help-step-item">
+                    <span className="step-num blue">3</span>
+                    <div>
+                      <strong style={{ color: "#f8fafc" }}>Generate API Secret Key</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Go to the <strong>API Keys</strong> section in your dashboard and click <strong>Create New Secret Key</strong>. Copy your key starting with <code style={{ color: "#34d399", background: "rgba(16, 185, 129, 0.15)", padding: "1px 6px", borderRadius: "4px" }}>decart_sec_...</code>.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="help-step-item">
+                    <span className="step-num blue">4</span>
+                    <div>
+                      <strong style={{ color: "#f8fafc" }}>Enter Key & Connect</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Click the 🔑 Key button in the top right (or press <kbd style={{ background: "rgba(255,255,255,0.1)", padding: "1px 6px", borderRadius: "4px", color: "#10b981" }}>K</kbd>) and paste your key to activate 30fps Realtime AI streaming!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="msp-modal-footer">
+              <button className="btn-sort-secondary" onClick={() => { setShowHelpModal(false); setShowKeyPanel(true); }}>
+                <Key size={14} /> Enter API Key
+              </button>
+              <button className="btn-sort-primary" onClick={() => setShowHelpModal(false)}>Got It!</button>
             </div>
           </div>
         </div>
