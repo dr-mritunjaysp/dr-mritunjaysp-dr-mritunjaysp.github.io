@@ -8276,6 +8276,38 @@ var MSP_EFFECTS = [
 		description: "Yellow LEGO minifigure and plastic stud brick architecture"
 	},
 	{
+		id: "matrix",
+		label: "Matrix Rain",
+		badge: "Cyber HUD",
+		iconName: "Cpu",
+		prompt: "Change the style of the video to a futuristic Matrix computer code simulation: glowing green digital characters cascading down the screen, cyberpunk terminal HUD overlay, high-contrast dark green aesthetics.",
+		description: "Digital green code rain with futuristic cyberpunk terminal overlay"
+	},
+	{
+		id: "thermal",
+		label: "Thermal IR",
+		badge: "Heatmap",
+		iconName: "Zap",
+		prompt: "Change the style of the video to a thermal infrared camera heatmap: vibrant rainbow heat signature colors ranging from deep blue cold tones to glowing yellow and red high-temperature highlights.",
+		description: "Infrared thermal vision spectrum with vibrant heat signature highlights"
+	},
+	{
+		id: "comic",
+		label: "Comic Pop Art",
+		badge: "Vintage",
+		iconName: "Sparkles",
+		prompt: "Change the style of the video to a vintage superhero comic book illustration: bold thick black ink outlines, dotted halftone print texture, bright primary pop art colors.",
+		description: "Bold black ink outlines with vintage pop art halftone dot textures"
+	},
+	{
+		id: "oil",
+		label: "Oil Painting",
+		badge: "Renaissance",
+		iconName: "Layers",
+		prompt: "Change the style of the video to a classic Renaissance oil painting: thick textured impasto oil brushstrokes, rich warm amber lighting, dramatic chiaroscuro shadows.",
+		description: "Textured impasto oil brushstrokes with warm amber Renaissance lighting"
+	},
+	{
 		id: "custom",
 		label: "Custom ✨",
 		badge: "User Pro",
@@ -8640,7 +8672,28 @@ function MSPLiveFrameCanvas() {
 				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			case "lego":
-				ctx.filter = "posterize(4) contrast(150%) saturate(180%)";
+				ctx.filter = "contrast(150%) saturate(180%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				break;
+			case "matrix":
+				ctx.filter = "contrast(220%) hue-rotate(90deg) saturate(320%) brightness(90%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				ctx.restore();
+				ctx.save();
+				ctx.globalCompositeOperation = "color-dodge";
+				ctx.fillStyle = "rgba(16, 185, 129, 0.35)";
+				ctx.fillRect(0, 0, w, h);
+				break;
+			case "thermal":
+				ctx.filter = "invert(100%) hue-rotate(180deg) saturate(450%) contrast(160%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				break;
+			case "comic":
+				ctx.filter = "contrast(260%) saturate(220%) brightness(105%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				break;
+			case "oil":
+				ctx.filter = "sepia(35%) contrast(145%) saturate(180%) brightness(105%)";
 				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			default:
