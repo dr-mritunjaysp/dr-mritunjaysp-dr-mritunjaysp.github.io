@@ -9190,11 +9190,6 @@ var primaryNav = [
 		key: "projects"
 	},
 	{
-		label: "MSP Live Frame",
-		href: "/msp-live-frame",
-		key: "msp-live-frame"
-	},
-	{
 		label: "CV",
 		href: "/cv",
 		key: "cv"
