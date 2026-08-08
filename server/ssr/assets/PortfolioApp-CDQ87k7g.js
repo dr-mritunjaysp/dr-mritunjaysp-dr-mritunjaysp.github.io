@@ -8055,6 +8055,1122 @@ function InkoraApp() {
 		]
 	});
 }
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Camera = createLucideIcon("camera", [["path", {
+	d: "M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z",
+	key: "18u6gg"
+}], ["circle", {
+	cx: "12",
+	cy: "13",
+	r: "3",
+	key: "1vg3eu"
+}]]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Shield = createLucideIcon("shield", [["path", {
+	d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+	key: "oel41y"
+}]]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Key = createLucideIcon("key", [
+	["path", {
+		d: "m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4",
+		key: "g0fldk"
+	}],
+	["path", {
+		d: "m21 2-9.6 9.6",
+		key: "1j0ho8"
+	}],
+	["circle", {
+		cx: "7.5",
+		cy: "15.5",
+		r: "5.5",
+		key: "yqb3hr"
+	}]
+]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Video = createLucideIcon("video", [["path", {
+	d: "m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5",
+	key: "ftymec"
+}], ["rect", {
+	x: "2",
+	y: "6",
+	width: "14",
+	height: "12",
+	rx: "2",
+	key: "158x01"
+}]]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var VideoOff = createLucideIcon("video-off", [
+	["path", {
+		d: "M10.66 6H14a2 2 0 0 1 2 2v2.5l5.248-3.062A.5.5 0 0 1 22 7.87v8.196",
+		key: "w8jjjt"
+	}],
+	["path", {
+		d: "M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2",
+		key: "1xawa7"
+	}],
+	["path", {
+		d: "m2 2 20 20",
+		key: "1ooewy"
+	}]
+]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var CircleAlert = createLucideIcon("circle-alert", [
+	["circle", {
+		cx: "12",
+		cy: "12",
+		r: "10",
+		key: "1mglay"
+	}],
+	["line", {
+		x1: "12",
+		x2: "12",
+		y1: "8",
+		y2: "12",
+		key: "1pkeuh"
+	}],
+	["line", {
+		x1: "12",
+		x2: "12.01",
+		y1: "16",
+		y2: "16",
+		key: "4dfq90"
+	}]
+]);
+//#endregion
+//#region app/msp-live-frame/MSPLiveFrameCanvas.tsx
+var WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm";
+var MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
+var DECART_SDK_URL = "https://esm.sh/@decartai/sdk@0.1.17";
+var MSP_EFFECTS = [
+	{
+		id: "movie3d",
+		label: "3D Movie",
+		badge: "CGI AI",
+		prompt: "Change the style of the video to a 3D animated movie: stylized CGI animation, the person as an animated character with expressive big eyes and smooth skin, soft cinematic lighting.",
+		description: "Stylized CGI movie character with warm cinematic illumination."
+	},
+	{
+		id: "anime",
+		label: "Anime",
+		badge: "Cel Shaded",
+		prompt: "Change the style of the video to hand-drawn anime: clean black line art, flat cel shading, vibrant colors, large expressive eyes.",
+		description: "Clean black line art and vibrant cel-shaded Japanese anime aesthetics."
+	},
+	{
+		id: "cyberpunk",
+		label: "Cyberpunk",
+		badge: "Neon 2077",
+		prompt: "Change the style of the video to neon cyberpunk: glowing pink and cyan neon light on the person and walls, rain-slick reflective surfaces, holographic signs in the background.",
+		description: "Futuristic neon city lighting with cyan and magenta holographic reflections."
+	},
+	{
+		id: "watercolor",
+		label: "Watercolor",
+		badge: "Impressionist",
+		prompt: "Change the style of the video to a watercolor painting: soft loose brushstrokes, gentle color bleeds, visible paper texture, muted pastel palette.",
+		description: "Soft fluid paint brushstrokes with subtle paper canvas texture."
+	},
+	{
+		id: "matrix",
+		label: "Matrix Code",
+		badge: "Digital Green",
+		prompt: "Change the style of the video to green digital matrix cascade: streaming rain of glowing green code, cybernetic wireframe, dark terminal aesthetic.",
+		description: "Glowing green digital code stream and cybernetic wireframe."
+	},
+	{
+		id: "thermal",
+		label: "Thermal IR",
+		badge: "Heatmap",
+		prompt: "Change the style of the video to a high-contrast thermal vision camera: glowing heat signatures, indigo, yellow, red, and electric blue infrared color spectrum.",
+		description: "Infrared heat signature spectrum rendering with vibrant thermal gradients."
+	},
+	{
+		id: "custom",
+		label: "Custom Prompt",
+		badge: "User ✨",
+		prompt: null,
+		description: "Write your own custom Decart Lucy 2.5 realtime prompt."
+	}
+];
+function MSPLiveFrameCanvas() {
+	const videoRef = (0, import_react.useRef)(null);
+	const lucyVidRef = (0, import_react.useRef)(null);
+	const canvasRef = (0, import_react.useRef)(null);
+	const containerRef = (0, import_react.useRef)(null);
+	const [activeEffect, setActiveEffect] = (0, import_react.useState)("movie3d");
+	const [customPrompt, setCustomPrompt] = (0, import_react.useState)("");
+	const [apiKey, setApiKey] = (0, import_react.useState)("");
+	const [showKeyPanel, setShowKeyPanel] = (0, import_react.useState)(false);
+	const [showShortcuts, setShowShortcuts] = (0, import_react.useState)(false);
+	const [cameraActive, setCameraActive] = (0, import_react.useState)(false);
+	const [cameraError, setCameraError] = (0, import_react.useState)(null);
+	const [statusState, setStatusState] = (0, import_react.useState)("loading");
+	const [statusText, setStatusText] = (0, import_react.useState)("Initializing MediaPipe Hand Landmarker...");
+	const [liveMode, setLiveMode] = (0, import_react.useState)("canvas");
+	const [isFullscreen, setIsFullscreen] = (0, import_react.useState)(false);
+	const [handDetected, setHandDetected] = (0, import_react.useState)(false);
+	const landmarkerRef = (0, import_react.useRef)(null);
+	const realtimeClientRef = (0, import_react.useRef)(null);
+	const animFrameId = (0, import_react.useRef)(null);
+	const cornersRef = (0, import_react.useRef)(null);
+	const presenceRef = (0, import_react.useRef)(0);
+	const lostFramesRef = (0, import_react.useRef)(0);
+	(0, import_react.useEffect)(() => {
+		if (typeof window !== "undefined") {
+			const savedKey = localStorage.getItem("msp-decart-key") || sessionStorage.getItem("msp-decart-key") || "";
+			const savedPrompt = localStorage.getItem("msp-lucy-custom") || "";
+			setApiKey(savedKey);
+			setCustomPrompt(savedPrompt);
+			if (savedKey) setLiveMode("ai");
+		}
+	}, []);
+	(0, import_react.useEffect)(() => {
+		let active = true;
+		async function initMediaPipe() {
+			try {
+				setStatusState("loading");
+				const { HandLandmarker, FilesetResolver } = await new Function("u", "return import(u)")("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm");
+				const vision = await FilesetResolver.forVisionTasks(WASM_URL);
+				if (!active) return;
+				setStatusText("Loading Hand Landmarker AI Model...");
+				const landmarker = await HandLandmarker.createFromOptions(vision, {
+					baseOptions: {
+						modelAssetPath: MODEL_URL,
+						delegate: "GPU"
+					},
+					runningMode: "VIDEO",
+					numHands: 2,
+					minHandDetectionConfidence: .4,
+					minHandPresenceConfidence: .4,
+					minTrackingConfidence: .4
+				});
+				if (!active) return;
+				landmarkerRef.current = landmarker;
+				setStatusState("ready");
+				setStatusText("Camera Ready — Frame your hands!");
+			} catch (err) {
+				console.error("MediaPipe initialization error:", err);
+				if (active) {
+					setStatusState("error");
+					setStatusText(`Initialization Notice: Using Canvas FX Fallback Engine (${err.message || "WASM load fallback"})`);
+				}
+			}
+		}
+		initMediaPipe();
+		return () => {
+			active = false;
+			if (landmarkerRef.current) try {
+				landmarkerRef.current.close();
+			} catch {}
+		};
+	}, []);
+	const startCamera = (0, import_react.useCallback)(async () => {
+		setCameraError(null);
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: {
+					width: { ideal: 1280 },
+					height: { ideal: 720 },
+					facingMode: "user"
+				},
+				audio: false
+			});
+			if (videoRef.current) {
+				videoRef.current.srcObject = stream;
+				await videoRef.current.play();
+				setCameraActive(true);
+				setStatusState(apiKey ? "connecting" : "ready");
+				setStatusText(apiKey ? "Connecting to Decart Lucy 2.5 AI..." : "Camera Active — Make a finger box frame!");
+			}
+		} catch (err) {
+			console.error("Camera access failed:", err);
+			setCameraError(err.message || "Failed to access webcam. Please check browser permissions.");
+		}
+	}, [apiKey]);
+	const stopCamera = (0, import_react.useCallback)(() => {
+		if (videoRef.current && videoRef.current.srcObject) {
+			videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+			videoRef.current.srcObject = null;
+		}
+		setCameraActive(false);
+		setStatusState("ready");
+		setStatusText("Camera Stopped");
+	}, []);
+	const toggleCamera = () => {
+		if (cameraActive) stopCamera();
+		else startCamera();
+	};
+	const connectLucyAI = (0, import_react.useCallback)(async () => {
+		if (!apiKey.trim() || !videoRef.current || !videoRef.current.srcObject) return;
+		try {
+			setStatusState("connecting");
+			setStatusText("Connecting to Decart Lucy 2.5 WebRTC...");
+			const { createDecartClient, models } = await import(
+				/* webpackIgnore: true */
+				DECART_SDK_URL
+);
+			const model = models.realtime("lucy-2.5");
+			const client = createDecartClient({ apiKey: apiKey.trim() });
+			const promptText = MSP_EFFECTS.find((e) => e.id === activeEffect)?.prompt || customPrompt || "Transform the video style inside the hand frame.";
+			realtimeClientRef.current = await client.realtime.connect(videoRef.current.srcObject, {
+				model,
+				initialState: { prompt: {
+					text: promptText,
+					enhance: true
+				} },
+				onRemoteStream: (remoteStream) => {
+					if (lucyVidRef.current) {
+						lucyVidRef.current.srcObject = remoteStream;
+						lucyVidRef.current.play().catch(() => {});
+						setStatusState("live");
+						setStatusText("MSP Live Frame AI — 30fps Realtime WebRTC Connected!");
+						setLiveMode("ai");
+					}
+				}
+			});
+		} catch (err) {
+			console.error("Decart connection error:", err);
+			setStatusState("error");
+			setStatusText(`Decart AI connection failed (${err.message || "Invalid API key"}). Active in Canvas FX mode.`);
+			setLiveMode("canvas");
+		}
+	}, [
+		apiKey,
+		activeEffect,
+		customPrompt
+	]);
+	const pushPromptToLucy = (0, import_react.useCallback)(async () => {
+		if (!realtimeClientRef.current) return;
+		const promptText = MSP_EFFECTS.find((e) => e.id === activeEffect)?.prompt || customPrompt || "Transform style inside frame.";
+		try {
+			await realtimeClientRef.current.set({
+				prompt: { text: promptText },
+				enhance: true
+			});
+		} catch {
+			try {
+				await realtimeClientRef.current.set({
+					prompt: promptText,
+					enhance: true
+				});
+			} catch (err) {
+				console.warn("Prompt update attempt failed:", err);
+			}
+		}
+	}, [activeEffect, customPrompt]);
+	(0, import_react.useEffect)(() => {
+		pushPromptToLucy();
+	}, [
+		activeEffect,
+		customPrompt,
+		pushPromptToLucy
+	]);
+	(0, import_react.useEffect)(() => {
+		let lastTime = -1;
+		const renderLoop = () => {
+			animFrameId.current = requestAnimationFrame(renderLoop);
+			const video = videoRef.current;
+			const canvas = canvasRef.current;
+			if (!video || !canvas || video.readyState < 2) return;
+			const ctx = canvas.getContext("2d");
+			if (!ctx) return;
+			if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+				canvas.width = video.videoWidth || 1280;
+				canvas.height = video.videoHeight || 720;
+			}
+			const w = canvas.width;
+			const h = canvas.height;
+			ctx.clearRect(0, 0, w, h);
+			ctx.save();
+			ctx.scale(-1, 1);
+			ctx.translate(-w, 0);
+			ctx.drawImage(video, 0, 0, w, h);
+			ctx.restore();
+			let detectedQuad = null;
+			if (landmarkerRef.current && video.currentTime !== lastTime) {
+				lastTime = video.currentTime;
+				try {
+					const results = landmarkerRef.current.detectForVideo(video, performance.now());
+					if (results && results.landmarks && results.landmarks.length >= 1) {
+						const handPoints = [];
+						results.landmarks.forEach((hand) => {
+							const thumbTip = hand[4];
+							const indexTip = hand[8];
+							if (thumbTip && indexTip) {
+								handPoints.push({
+									x: (1 - thumbTip.x) * w,
+									y: thumbTip.y * h
+								});
+								handPoints.push({
+									x: (1 - indexTip.x) * w,
+									y: indexTip.y * h
+								});
+							}
+						});
+						if (handPoints.length >= 4) {
+							const sortedByY = [...handPoints].sort((a, b) => a.y - b.y);
+							const topTwo = sortedByY.slice(0, 2).sort((a, b) => a.x - b.x);
+							const bottomTwo = sortedByY.slice(2, 4).sort((a, b) => b.x - a.x);
+							const topLeft = topTwo[0];
+							const topRight = topTwo[1];
+							const bottomRight = bottomTwo[0];
+							const bottomLeft = bottomTwo[1];
+							const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
+							const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
+							if (quadWidth > 50 && quadHeight > 50) detectedQuad = [
+								topLeft,
+								topRight,
+								bottomRight,
+								bottomLeft
+							];
+						}
+					}
+				} catch (err) {}
+			}
+			if (detectedQuad) {
+				lostFramesRef.current = 0;
+				setHandDetected(true);
+				if (!cornersRef.current) cornersRef.current = detectedQuad;
+				else {
+					const alpha = .35;
+					cornersRef.current = [
+						{
+							x: cornersRef.current[0].x + (detectedQuad[0].x - cornersRef.current[0].x) * alpha,
+							y: cornersRef.current[0].y + (detectedQuad[0].y - cornersRef.current[0].y) * alpha
+						},
+						{
+							x: cornersRef.current[1].x + (detectedQuad[1].x - cornersRef.current[1].x) * alpha,
+							y: cornersRef.current[1].y + (detectedQuad[1].y - cornersRef.current[1].y) * alpha
+						},
+						{
+							x: cornersRef.current[2].x + (detectedQuad[2].x - cornersRef.current[2].x) * alpha,
+							y: cornersRef.current[2].y + (detectedQuad[2].y - cornersRef.current[2].y) * alpha
+						},
+						{
+							x: cornersRef.current[3].x + (detectedQuad[3].x - cornersRef.current[3].x) * alpha,
+							y: cornersRef.current[3].y + (detectedQuad[3].y - cornersRef.current[3].y) * alpha
+						}
+					];
+				}
+				presenceRef.current = Math.min(1, presenceRef.current + .1);
+			} else {
+				lostFramesRef.current += 1;
+				if (lostFramesRef.current > 25) {
+					presenceRef.current = Math.max(0, presenceRef.current - .08);
+					if (presenceRef.current === 0) {
+						cornersRef.current = null;
+						setHandDetected(false);
+					}
+				}
+			}
+			const quad = cornersRef.current;
+			if (quad && presenceRef.current > .05) {
+				ctx.save();
+				ctx.globalAlpha = presenceRef.current;
+				ctx.beginPath();
+				ctx.moveTo(quad[0].x, quad[0].y);
+				ctx.lineTo(quad[1].x, quad[1].y);
+				ctx.lineTo(quad[2].x, quad[2].y);
+				ctx.lineTo(quad[3].x, quad[3].y);
+				ctx.closePath();
+				ctx.clip();
+				const lucyVid = lucyVidRef.current;
+				if (liveMode === "ai" && lucyVid && lucyVid.readyState >= 2) ctx.drawImage(lucyVid, 0, 0, w, h);
+				else drawCanvasEffect(ctx, video, w, h, activeEffect);
+				ctx.restore();
+				ctx.save();
+				ctx.globalAlpha = presenceRef.current;
+				ctx.beginPath();
+				ctx.moveTo(quad[0].x, quad[0].y);
+				ctx.lineTo(quad[1].x, quad[1].y);
+				ctx.lineTo(quad[2].x, quad[2].y);
+				ctx.lineTo(quad[3].x, quad[3].y);
+				ctx.closePath();
+				ctx.lineWidth = 3;
+				ctx.strokeStyle = "#10b981";
+				ctx.shadowColor = "#10b981";
+				ctx.shadowBlur = 15;
+				ctx.stroke();
+				const cornerColors = [
+					"#ec4899",
+					"#3b82f6",
+					"#8b5cf6",
+					"#10b981"
+				];
+				quad.forEach((pt, i) => {
+					ctx.beginPath();
+					ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+					ctx.fillStyle = cornerColors[i];
+					ctx.fill();
+					ctx.lineWidth = 2;
+					ctx.strokeStyle = "#ffffff";
+					ctx.stroke();
+				});
+				ctx.restore();
+			}
+		};
+		renderLoop();
+		return () => {
+			if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
+		};
+	}, [liveMode, activeEffect]);
+	const drawCanvasEffect = (ctx, video, w, h, effectId) => {
+		ctx.save();
+		ctx.scale(-1, 1);
+		ctx.translate(-w, 0);
+		switch (effectId) {
+			case "anime":
+				ctx.filter = "contrast(180%) saturate(200%) brightness(110%) hue-rotate(-10deg)";
+				ctx.drawImage(video, 0, 0, w, h);
+				break;
+			case "cyberpunk":
+				ctx.filter = "contrast(160%) hue-rotate(180deg) saturate(280%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				ctx.restore();
+				ctx.save();
+				ctx.globalCompositeOperation = "color-dodge";
+				ctx.fillStyle = "rgba(236, 72, 153, 0.25)";
+				ctx.fillRect(0, 0, w, h);
+				break;
+			case "watercolor":
+				ctx.filter = "blur(2px) contrast(140%) saturate(160%) brightness(105%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				break;
+			case "matrix":
+				ctx.filter = "grayscale(100%) brightness(120%) contrast(200%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				ctx.restore();
+				ctx.save();
+				ctx.globalCompositeOperation = "source-atop";
+				ctx.fillStyle = "rgba(16, 185, 129, 0.4)";
+				ctx.fillRect(0, 0, w, h);
+				break;
+			case "thermal":
+				ctx.filter = "invert(100%) hue-rotate(240deg) contrast(200%) saturate(300%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				break;
+			default:
+				ctx.filter = "contrast(130%) saturate(150%) brightness(108%)";
+				ctx.drawImage(video, 0, 0, w, h);
+				ctx.restore();
+				ctx.save();
+				const grad = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .2, w / 2, h / 2, Math.max(w, h) * .7);
+				grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+				grad.addColorStop(1, "rgba(15, 23, 42, 0.4)");
+				ctx.fillStyle = grad;
+				ctx.fillRect(0, 0, w, h);
+				break;
+		}
+		ctx.restore();
+	};
+	(0, import_react.useEffect)(() => {
+		const handleKeyDown = (e) => {
+			if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+			const num = parseInt(e.key, 10);
+			if (!isNaN(num) && num >= 1 && num <= MSP_EFFECTS.length) setActiveEffect(MSP_EFFECTS[num - 1].id);
+			else if (e.key.toLowerCase() === "f") toggleFullscreen();
+			else if (e.key.toLowerCase() === "k") setShowKeyPanel((prev) => !prev);
+			else if (e.key.toLowerCase() === "c") toggleCamera();
+			else if (e.key === "?") setShowShortcuts((prev) => !prev);
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
+	const saveKey = () => {
+		if (typeof window !== "undefined") {
+			localStorage.setItem("msp-decart-key", apiKey.trim());
+			sessionStorage.setItem("msp-decart-key", apiKey.trim());
+			localStorage.setItem("msp-lucy-custom", customPrompt.trim());
+		}
+		setShowKeyPanel(false);
+		if (apiKey.trim() && cameraActive) connectLucyAI();
+	};
+	const captureSnapshot = () => {
+		if (!canvasRef.current) return;
+		const link = document.createElement("a");
+		link.download = `MSP-Live-Frame-${Date.now()}.png`;
+		link.href = canvasRef.current.toDataURL("image/png");
+		link.click();
+	};
+	const toggleFullscreen = () => {
+		if (!containerRef.current) return;
+		if (!document.fullscreenElement) containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+		else document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		ref: containerRef,
+		className: `msp-frame-container ${isFullscreen ? "fullscreen-canvas" : ""}`,
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("video", {
+				ref: videoRef,
+				playsInline: true,
+				muted: true,
+				style: { display: "none" }
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("video", {
+				ref: lucyVidRef,
+				playsInline: true,
+				muted: true,
+				style: { display: "none" }
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("canvas", {
+				ref: canvasRef,
+				className: "msp-frame-canvas"
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: `msp-live-pill ${statusState}`,
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "live-dot" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "live-pill-text",
+						children: statusState === "live" ? "MSP LIVE FRAME AI (30 FPS)" : statusText
+					}),
+					handDetected && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "hand-badge",
+						children: "✋ Hands Detected"
+					})
+				]
+			}),
+			!cameraActive && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "msp-camera-starter-overlay",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "starter-card",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "starter-icon-wrap",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Camera, {
+								size: 36,
+								color: "#10b981"
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: "MSP Live Frame AI" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							style: {
+								color: "var(--muted)",
+								fontSize: "0.92rem",
+								maxWidth: "420px",
+								margin: "8px auto 20px"
+							},
+							children: [
+								"Experience real-time AI world transformations right inside your hands gesture box! Created by ",
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Dr. Mritunjay Shall Peelam" }),
+								"."
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: "btn-sort-primary",
+							onClick: startCamera,
+							style: {
+								fontSize: "1rem",
+								padding: "12px 28px"
+							},
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { size: 18 }), " Launch Camera & Hand Frame"]
+						})
+					]
+				})
+			}),
+			cameraError && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "msp-alert-banner",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { size: 18 }),
+					" ",
+					cameraError
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "msp-toolbar-glass",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "effect-pills-row",
+					children: MSP_EFFECTS.map((eff, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+						className: `effect-pill-btn ${activeEffect === eff.id ? "active" : ""}`,
+						onClick: () => {
+							setActiveEffect(eff.id);
+							if (eff.id === "custom" && !apiKey) setShowKeyPanel(true);
+						},
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "key-number",
+								children: index + 1
+							}),
+							eff.label,
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "effect-badge",
+								children: eff.badge
+							})
+						]
+					}, eff.id))
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "msp-utility-row",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: `btn-util ${cameraActive ? "active" : ""}`,
+							onClick: toggleCamera,
+							title: "Toggle Camera (C)",
+							children: [cameraActive ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Video, { size: 16 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VideoOff, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: cameraActive ? "Stop Camera" : "Start Camera" })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: `btn-util ${apiKey ? "configured" : ""}`,
+							onClick: () => setShowKeyPanel(true),
+							title: "Decart AI API Key (K)",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: apiKey ? "Decart AI Active" : "Decart AI Key" })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: "btn-util",
+							onClick: captureSnapshot,
+							title: "Download Frame Snapshot",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Snapshot" })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: "btn-util",
+							onClick: () => setShowShortcuts(true),
+							title: "Shortcuts (?)",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { size: 16 }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Shortcuts" })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "btn-util",
+							onClick: toggleFullscreen,
+							title: "Fullscreen (F)",
+							children: isFullscreen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Minimize2, { size: 16 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Maximize2, { size: 16 })
+						})
+					]
+				})]
+			}),
+			showKeyPanel && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "msp-modal-backdrop",
+				onClick: () => setShowKeyPanel(false),
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "msp-modal-card",
+					onClick: (e) => e.stopPropagation(),
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "msp-modal-header",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, {
+								size: 18,
+								color: "#10b981"
+							}), " Decart Lucy 2.5 Realtime AI Key"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "close-btn",
+								onClick: () => setShowKeyPanel(false),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { size: 18 })
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "msp-modal-body",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+									style: {
+										fontSize: "0.88rem",
+										color: "var(--muted)",
+										marginBottom: "12px"
+									},
+									children: [
+										"Enter your ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Decart AI API Key" }),
+										" to enable 30fps Realtime WebRTC video-to-video AI generation inside your hand frame."
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "input-group",
+									style: { marginBottom: "16px" },
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+										style: {
+											fontSize: "0.8rem",
+											fontWeight: 700,
+											display: "block",
+											marginBottom: "6px"
+										},
+										children: "DECART API KEY"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+										type: "password",
+										value: apiKey,
+										onChange: (e) => setApiKey(e.target.value),
+										placeholder: "decart_sec_...",
+										className: "msp-text-input"
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "input-group",
+									style: { marginBottom: "20px" },
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+										style: {
+											fontSize: "0.8rem",
+											fontWeight: 700,
+											display: "block",
+											marginBottom: "6px"
+										},
+										children: "CUSTOM STYLE PROMPT (OPTIONAL)"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+										rows: 3,
+										value: customPrompt,
+										onChange: (e) => setCustomPrompt(e.target.value),
+										placeholder: "Change the style of the video to...",
+										className: "msp-text-input"
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "msp-modal-footer",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "btn-sort-secondary",
+								onClick: () => setShowKeyPanel(false),
+								children: "Cancel"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "btn-sort-primary",
+								onClick: saveKey,
+								children: "Save & Connect AI"
+							})]
+						})
+					]
+				})
+			}),
+			showShortcuts && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "msp-modal-backdrop",
+				onClick: () => setShowShortcuts(false),
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "msp-modal-card",
+					onClick: (e) => e.stopPropagation(),
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "msp-modal-header",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, {
+								size: 18,
+								color: "#10b981"
+							}), " MSP Live Frame — Keyboard Shortcuts"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "close-btn",
+								onClick: () => setShowShortcuts(false),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { size: 18 })
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "msp-modal-body",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "shortcut-list",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "shortcut-item",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "1" }),
+											" - ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "7" }),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Switch Style Effects" })
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "shortcut-item",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "C" }),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Webcam On / Off" })
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "shortcut-item",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "K" }),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Open Decart AI API Key Drawer" })
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "shortcut-item",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "F" }),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Fullscreen Mode" })
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "shortcut-item",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("kbd", { children: "?" }),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Toggle Keyboard Shortcuts" })
+										]
+									})
+								]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "msp-modal-footer",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "btn-sort-primary",
+								onClick: () => setShowShortcuts(false),
+								children: "Got It"
+							})
+						})
+					]
+				})
+			})
+		]
+	});
+}
+//#endregion
+//#region app/msp-live-frame/MSPLiveFrameApp.tsx
+function MSPLiveFrameApp() {
+	const subdomainUrl = "https://dr-mritunjaysp.com/msp-live-frame";
+	const [copiedBadge, setCopiedBadge] = (0, import_react.useState)(false);
+	const handleCopyBadge = () => {
+		navigator.clipboard.writeText(subdomainUrl);
+		setCopiedBadge(true);
+		setTimeout(() => setCopiedBadge(false), 2e3);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+		className: "sorting-page msp-frame-page",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "sorting-header-box",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "sorting-badge-pill",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, {
+							size: 14,
+							color: "#10b981"
+						}), " Subdomain Application · AI Vision & Gesture"]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+						className: "sorting-title",
+						children: "MSP Live Frame — Realtime Hand-Gesture AI Vision Studio"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						className: "sorting-subtitle",
+						children: [
+							"Hold up both hands and frame a box with your fingers — experience a live, real-time AI transformed world inside your hand frame at 30fps. Created by ",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Dr. Mritunjay Shall Peelam" }),
+							"."
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "subdomain-badge-banner",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "subdomain-badge-link",
+							children: subdomainUrl
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "subdomain-copy-btn",
+							onClick: handleCopyBadge,
+							children: copiedBadge ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { size: 14 }) : "Copy Link"
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "pub-attributes-row",
+						style: {
+							marginTop: "16px",
+							justifyContent: "center"
+						},
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "attribute-pill",
+								children: "MediaPipe Hand Tracking"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "attribute-pill",
+								children: "Decart Lucy 2.5 Realtime WebRTC"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "attribute-pill",
+								children: "Zero-Latency Canvas Fallback"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "attribute-pill",
+								children: "Perspective Hysteresis lerp"
+							})
+						]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "sorting-app-card",
+				style: {
+					padding: "16px",
+					marginBottom: "40px"
+				},
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MSPLiveFrameCanvas, {})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				style: {
+					maxWidth: "1100px",
+					margin: "0 auto 40px"
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h2", {
+					style: {
+						fontSize: "1.5rem",
+						fontWeight: 800,
+						marginBottom: "20px",
+						display: "flex",
+						alignItems: "center",
+						gap: "10px"
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Layers, {
+						size: 22,
+						color: "#10b981"
+					}), " How MSP Live Frame Operates"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "sorting-features-grid",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "sorting-feature-card",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "feature-icon",
+									style: {
+										background: "rgba(16, 185, 129, 0.12)",
+										color: "#10b981"
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Camera, { size: 22 })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "1. Dual Hand Tracking" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Uses MediaPipe Hand Landmarker GPU model to detect both left and right hand landmarks in real time, tracking your index and thumb tips." })
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "sorting-feature-card",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "feature-icon",
+									style: {
+										background: "rgba(59, 130, 246, 0.12)",
+										color: "#3b82f6"
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { size: 22 })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "2. Dynamic Quad Warp" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Calculates smoothed 4-corner perspective quadrilaterals with exponential lerp motion and hysteresis filtering to eliminate video flicker." })
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "sorting-feature-card",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "feature-icon",
+									style: {
+										background: "rgba(236, 72, 153, 0.12)",
+										color: "#ec4899"
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, { size: 22 })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "3. Decart Lucy 2.5 AI" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Streams live WebRTC video-to-video style transformations using Decart Lucy 2.5 AI with tens of milliseconds latency at 30 frames per second." })
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "sorting-feature-card",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "feature-icon",
+									style: {
+										background: "rgba(139, 92, 246, 0.12)",
+										color: "#8b5cf6"
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { size: 22 })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "4. Zero-Latency Fallback" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Includes 6 built-in GPU canvas artistic filters (3D CGI, Anime Cel, Cyberpunk Neon, Watercolor, Thermal IR, Matrix Code) working offline instantly." })
+							]
+						})
+					]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "sorting-algorithm-details-card",
+				style: { marginTop: "30px" },
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+						style: {
+							fontSize: "1.2rem",
+							fontWeight: 800,
+							marginBottom: "12px",
+							display: "flex",
+							alignItems: "center",
+							gap: "8px"
+						},
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Award, {
+							size: 20,
+							color: "#10b981"
+						}), " Academic & Open-Source Foundation"]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						style: {
+							fontSize: "0.95rem",
+							color: "var(--muted)",
+							lineHeight: "1.7"
+						},
+						children: [
+							"MSP Live Frame is built by ",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Dr. Mritunjay Shall Peelam" }),
+							", synthesizing vision landmarker pose estimation algorithms and sub-100ms generative WebRTC streams. Inspired by open-source research on finger-frame gestures."
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						style: {
+							marginTop: "16px",
+							display: "flex",
+							gap: "12px",
+							flexWrap: "wrap"
+						},
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+							href: "https://github.com/sophiamyang/finger-frame-effect-lucy",
+							target: "_blank",
+							rel: "noopener noreferrer",
+							className: "btn-sort-secondary",
+							style: {
+								textDecoration: "none",
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "6px"
+							},
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SiGithub, { size: 16 }),
+								" Reference GitHub Repo ",
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { size: 14 })
+							]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							href: "/projects",
+							className: "btn-sort-primary",
+							style: {
+								textDecoration: "none",
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "6px"
+							},
+							children: ["Explore All Projects ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { size: 16 })]
+						})]
+					})
+				]
+			})
+		]
+	});
+}
 //#endregion
 //#region app/PortfolioApp.tsx
 var primaryNav = [
@@ -8099,6 +9215,11 @@ var moreNav = [
 		label: "Inkora PenApp",
 		href: "/inkora",
 		key: "inkora"
+	},
+	{
+		label: "MSP Live Frame",
+		href: "/msp-live-frame",
+		key: "msp-live-frame"
 	},
 	{
 		label: "Awards & FDP",
@@ -10876,6 +11997,88 @@ function ProjectsPage() {
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "project-badge-tag",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, {
+								size: 13,
+								strokeWidth: 2.5,
+								color: "#10b981"
+							}), " Hand Gesture AI Vision Studio"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+							style: {
+								fontSize: "1.25rem",
+								fontWeight: 800,
+								marginBottom: "8px"
+							},
+							children: "MSP Live Frame AI Studio"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "subdomain-badge-banner",
+							style: {
+								fontSize: "0.78rem",
+								padding: "4px 10px",
+								marginBottom: "12px"
+							},
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "subdomain-badge-link",
+								children: "https://dr-mritunjaysp.com/msp-live-frame"
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							style: {
+								color: "var(--muted)",
+								fontSize: "0.9rem",
+								lineHeight: "1.6",
+								marginBottom: "16px"
+							},
+							children: "Real-time AI video-to-video hand-gesture framing system powered by MediaPipe Hand Landmarker, Decart Lucy 2.5 WebRTC, and zero-latency GPU canvas artistic filters. Created by Dr. Mritunjay Shall Peelam."
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "pub-attributes-row",
+							style: { marginBottom: "20px" },
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "attribute-pill",
+									children: "MediaPipe Vision"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "attribute-pill",
+									children: "Decart Lucy 2.5 WebRTC"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "attribute-pill",
+									children: "Hand Box Hysteresis"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "attribute-pill",
+									children: "Subdomain App"
+								})
+							]
+						})
+					] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						style: {
+							display: "flex",
+							gap: "10px",
+							flexWrap: "wrap"
+						},
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							className: "btn-sort-primary",
+							href: "/msp-live-frame",
+							style: {
+								flex: "1",
+								textDecoration: "none",
+								textAlign: "center",
+								justifyContent: "center",
+								background: "linear-gradient(135deg, #10b981, #059669)"
+							},
+							children: ["Launch MSP Live Frame ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { size: 16 })]
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "project-feature-card",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "project-badge-tag",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CodeXml, { size: 13 }), " Research System"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
@@ -11526,6 +12729,12 @@ function PortfolioApp({ section = "home" }) {
 		case "pen-app":
 		case "penapp":
 			content = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(InkoraApp, {});
+			break;
+		case "msp-live-frame":
+		case "mspliveframe":
+		case "mriframe":
+		case "finger-frame":
+			content = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MSPLiveFrameApp, {});
 			break;
 		case "people":
 			content = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ComingSoonPage, { kind: "People" });
