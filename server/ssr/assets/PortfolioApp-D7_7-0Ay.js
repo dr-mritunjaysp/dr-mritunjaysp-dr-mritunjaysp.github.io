@@ -12680,15 +12680,44 @@ function Footer() {
 	});
 }
 function PortfolioApp({ section = "home" }) {
-	const safeSection = [
+	const validSections = [
 		"home",
 		...primaryNav.map((item) => item.key),
 		...moreNav.map((item) => item.key),
+		"msp-live-frame",
+		"mspliveframe",
+		"mriframe",
+		"finger-frame",
+		"pen-app",
+		"penapp",
 		"news",
 		"repositories",
 		"books",
 		"profiles"
-	].includes(section) ? section : "home";
+	];
+	const getEffectiveSection = () => {
+		let target = section;
+		if (typeof window !== "undefined" && (section === "home" || !section)) {
+			const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
+			if (pathSeg && validSections.includes(pathSeg)) target = pathSeg;
+		}
+		return validSections.includes(target) ? target : "home";
+	};
+	const [currentSection, setCurrentSection] = (0, import_react.useState)(getEffectiveSection);
+	(0, import_react.useEffect)(() => {
+		setCurrentSection(getEffectiveSection());
+	}, [section]);
+	(0, import_react.useEffect)(() => {
+		if (typeof window === "undefined") return;
+		const handleLocationChange = () => {
+			const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
+			if (pathSeg && validSections.includes(pathSeg)) setCurrentSection(pathSeg);
+			else if (!pathSeg) setCurrentSection("home");
+		};
+		window.addEventListener("popstate", handleLocationChange);
+		return () => window.removeEventListener("popstate", handleLocationChange);
+	}, []);
+	const safeSection = currentSection;
 	const [theme, setTheme] = (0, import_react.useState)("light");
 	const [searchOpen, setSearchOpen] = (0, import_react.useState)(false);
 	(0, import_react.useEffect)(() => {

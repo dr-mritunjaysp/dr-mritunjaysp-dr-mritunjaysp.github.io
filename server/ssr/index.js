@@ -11669,7 +11669,7 @@ var client_references_default = {
 		};
 	},
 	"ab59f52a2ee1": async () => {
-		const m = await import("./assets/PortfolioApp-CDQ87k7g.js");
+		const m = await import("./assets/PortfolioApp-D7_7-0Ay.js");
 		return { get "PortfolioApp"() {
 			return m["PortfolioApp"];
 		} };
