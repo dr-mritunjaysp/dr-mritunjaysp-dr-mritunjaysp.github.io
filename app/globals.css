@@ -6533,25 +6533,23 @@ body::before {
 .msp-stage-page {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 90px);
+  min-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #060911;
-  padding: 0;
-  margin: 0;
+  padding: 24px 16px;
 }
 
 .msp-pro-stage {
   position: relative;
   width: 100%;
-  height: calc(100vh - 100px);
-  min-height: 560px;
+  max-width: 1280px;
+  height: clamp(520px, 76vh, 750px);
   background: #060911;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
@@ -6577,6 +6575,7 @@ body::before {
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 24px;
 }
 
 /* Pro Telemetry Floating Dock (Top Left) */
@@ -6847,18 +6846,18 @@ body::before {
   box-shadow: 0 10px 28px rgba(16, 185, 129, 0.55);
 }
 
-/* Pro Floating Style Dock (Compact Pill Row) */
+/* Pro Floating Style Dock (Single Inline Straight Row) */
 .msp-pro-dock {
   position: absolute;
-  bottom: 16px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
   max-width: calc(100% - 32px);
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(20px);
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
   display: flex;
@@ -6868,9 +6867,11 @@ body::before {
 .dock-effects-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 8px;
+  flex-wrap: nowrap !important;
   justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .pro-dock-card {
@@ -6879,22 +6880,23 @@ body::before {
   justify-content: center;
   padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #cbd5e1;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .pro-dock-card:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   color: #ffffff;
   transform: translateY(-1px);
 }
 
 .pro-dock-card.active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.35), rgba(59, 130, 246, 0.25));
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.38), rgba(59, 130, 246, 0.28));
   border-color: #10b981;
   color: #ffffff;
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
