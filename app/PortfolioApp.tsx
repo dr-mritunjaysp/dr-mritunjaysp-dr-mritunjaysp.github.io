@@ -90,15 +90,16 @@ const primaryNav = [
   { label: "Blog", href: "/blog", key: "blog" },
   { label: "Publications", href: "/publications", key: "publications" },
   { label: "Projects", href: "/projects", key: "projects" },
+  { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "CV", href: "/cv", key: "cv" },
   { label: "Teaching", href: "/teaching", key: "teaching" },
   { label: "People", href: "/people", key: "people" },
 ] as const;
 
 const moreNav = [
-  { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
-  { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
-  { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
+  { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame", badge: "AI Vision" },
+  { label: "Inkora PenApp", href: "/inkora", key: "inkora", badge: "App" },
+  { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer", badge: "Interactive" },
   { label: "Awards & FDP", href: "/award-fdp", key: "award-fdp" },
   { label: "Game", href: "/game", key: "game" },
   { label: "Daily Mantra", href: "/daily-mantra", key: "daily-mantra" },
@@ -651,6 +652,9 @@ function Header({
                     }}
                   >
                     {item.label}
+                    {"badge" in item && (item as any).badge && (
+                      <span className="subdomain-mini-pill">{(item as any).badge}</span>
+                    )}
                   </Link>
                 ))}
               </div>

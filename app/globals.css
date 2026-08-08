@@ -6485,6 +6485,17 @@ body::before {
 }
 
 /* ──────────────── MSP Live Frame Subdomain & Gesture Canvas Styles ──────────────── */
+.subdomain-mini-pill {
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.18);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
 .msp-frame-page {
   padding-bottom: 60px;
 }
