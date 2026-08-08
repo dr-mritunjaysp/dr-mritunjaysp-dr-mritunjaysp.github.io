@@ -625,9 +625,6 @@ export function MSPLiveFrameCanvas() {
         <button className="pro-action-btn" onClick={captureSnapshot} title="Capture Snapshot">
           <Download size={16} />
         </button>
-        <button className="pro-action-btn" onClick={() => setShowShortcuts(true)} title="Shortcuts (?)">
-          <HelpCircle size={16} />
-        </button>
         <button className="pro-action-btn" onClick={toggleFullscreen} title="Fullscreen (F)">
           {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
         </button>
@@ -739,30 +736,6 @@ export function MSPLiveFrameCanvas() {
             <div className="msp-modal-footer">
               <button className="btn-sort-secondary" onClick={() => setShowKeyPanel(false)}>Cancel</button>
               <button className="btn-sort-primary" onClick={saveKey}>Save & Connect AI</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Shortcuts Modal */}
-      {showShortcuts && (
-        <div className="msp-modal-backdrop" onClick={() => setShowShortcuts(false)}>
-          <div className="msp-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="msp-modal-header">
-              <h3><Sparkles size={18} color="#10b981" /> Pro Keyboard Shortcuts</h3>
-              <button className="close-btn" onClick={() => setShowShortcuts(false)}><X size={18} /></button>
-            </div>
-            <div className="msp-modal-body">
-              <div className="shortcut-list">
-                <div className="shortcut-item"><kbd>1</kbd> - <kbd>6</kbd> <span>Switch AI & GPU Style Effects</span></div>
-                <div className="shortcut-item"><kbd>C</kbd> <span>Toggle Live Webcam On / Off</span></div>
-                <div className="shortcut-item"><kbd>K</kbd> <span>Open Decart AI API Key Drawer</span></div>
-                <div className="shortcut-item"><kbd>F</kbd> <span>Toggle Pro Fullscreen Studio</span></div>
-                <div className="shortcut-item"><kbd>?</kbd> <span>Toggle Keyboard Shortcuts</span></div>
-              </div>
-            </div>
-            <div className="msp-modal-footer">
-              <button className="btn-sort-primary" onClick={() => setShowShortcuts(false)}>Got It</button>
             </div>
           </div>
         </div>
