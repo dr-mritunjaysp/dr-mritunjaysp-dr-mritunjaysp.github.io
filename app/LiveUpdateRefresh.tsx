@@ -37,6 +37,15 @@ function createFreshUrl() {
 
 export function LiveUpdateRefresh() {
   useEffect(() => {
+    // Disable auto-refresh in development mode or localhost to prevent reload loops
+    if (
+      process.env.NODE_ENV === "development" ||
+      (typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
+    ) {
+      return;
+    }
+
     const currentSignature = getAssetSignature(document);
     const abortController = new AbortController();
     let checking = false;
