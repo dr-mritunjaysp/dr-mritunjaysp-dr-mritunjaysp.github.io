@@ -8849,25 +8849,16 @@ function MSPLiveFrameCanvas() {
 				className: "msp-pro-dock",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "dock-effects-row",
-					children: MSP_EFFECTS.map((eff, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					children: MSP_EFFECTS.map((eff) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 						className: `pro-dock-card ${effect === eff.id ? "active" : ""}`,
 						onClick: () => {
 							setEffect(eff.id);
 							if (eff.id === "custom" && !apiKey) setShowKeyPanel(true);
 						},
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "dock-card-top",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "hotkey-badge",
-								children: index + 1
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "effect-badge-pill",
-								children: eff.badge
-							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "dock-card-label",
 							children: eff.label
-						})]
+						})
 					}, eff.id))
 				})
 			}),
