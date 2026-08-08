@@ -405,25 +405,24 @@ export function MSPLiveFrameCanvas() {
       ctx.drawImage(video, 0, 0, w, h);
       ctx.restore();
 
-      // Hand Landmarker Detection
+      // Throttled Hand Landmarker Detection (25ms interval for ultra-fast 60 FPS performance)
       let detectedQuad: [Point, Point, Point, Point] | null = null;
 
-      if (landmarkerRef.current && video.currentTime !== lastTime) {
-        lastTime = video.currentTime;
+      if (landmarkerRef.current && (now - lastTime >= 25)) {
+        lastTime = now;
         try {
-          const results = landmarkerRef.current.detectForVideo(video, performance.now());
-          if (results && results.landmarks && results.landmarks.length >= 1) {
+          const results = landmarkerRef.current.detectForVideo(video, now);
+          if (results && results.landmarks && results.landmarks.length > 0) {
             const handPoints: Point[] = [];
             results.landmarks.forEach((hand: any) => {
               const thumbTip = hand[4];
               const indexTip = hand[8];
-              if (thumbTip && indexTip) {
-                handPoints.push({ x: (1 - thumbTip.x) * w, y: thumbTip.y * h });
-                handPoints.push({ x: (1 - indexTip.x) * w, y: indexTip.y * h });
-              }
+              if (thumbTip) handPoints.push({ x: (1 - thumbTip.x) * w, y: thumbTip.y * h });
+              if (indexTip) handPoints.push({ x: (1 - indexTip.x) * w, y: indexTip.y * h });
             });
 
             if (handPoints.length >= 4) {
+              // 2-Hand Framing: Sort 4 corners (top-left, top-right, bottom-right, bottom-left)
               const sortedByY = [...handPoints].sort((a, b) => a.y - b.y);
               const topTwo = sortedByY.slice(0, 2).sort((a, b) => a.x - b.x);
               const bottomTwo = sortedByY.slice(2, 4).sort((a, b) => b.x - a.x);
@@ -436,8 +435,33 @@ export function MSPLiveFrameCanvas() {
               const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
               const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
 
-              if (quadWidth > 50 && quadHeight > 50) {
+              if (quadWidth > 40 && quadHeight > 40) {
                 detectedQuad = [topLeft, topRight, bottomRight, bottomLeft];
+              }
+            } else if (handPoints.length >= 2) {
+              // 1-Hand Framing (Index + Thumb L-Shape bounding quad)
+              const xs = handPoints.map((p) => p.x);
+              const ys = handPoints.map((p) => p.y);
+              const minX = Math.min(...xs);
+              const maxX = Math.max(...xs);
+              const minY = Math.min(...ys);
+              const maxY = Math.max(...ys);
+
+              const padX = Math.max(30, (maxX - minX) * 0.4);
+              const padY = Math.max(30, (maxY - minY) * 0.4);
+
+              const left = Math.max(10, minX - padX);
+              const right = Math.min(w - 10, maxX + padX);
+              const top = Math.max(10, minY - padY);
+              const bottom = Math.min(h - 10, maxY + padY);
+
+              if (right - left > 60 && bottom - top > 60) {
+                detectedQuad = [
+                  { x: left, y: top },
+                  { x: right, y: top },
+                  { x: right, y: bottom },
+                  { x: left, y: bottom },
+                ];
               }
             }
           }
@@ -446,14 +470,14 @@ export function MSPLiveFrameCanvas() {
         }
       }
 
-      // Lerp Quad smoothing with extended memory hold time
+      // Responsive Lerp Quad smoothing (alpha 0.65 for instant 60fps tracking)
       if (detectedQuad) {
         lostFramesRef.current = 0;
         setHandDetected(true);
         if (!cornersRef.current) {
           cornersRef.current = detectedQuad;
         } else {
-          const alpha = 0.35;
+          const alpha = 0.65;
           cornersRef.current = [
             { x: cornersRef.current[0].x + (detectedQuad[0].x - cornersRef.current[0].x) * alpha, y: cornersRef.current[0].y + (detectedQuad[0].y - cornersRef.current[0].y) * alpha },
             { x: cornersRef.current[1].x + (detectedQuad[1].x - cornersRef.current[1].x) * alpha, y: cornersRef.current[1].y + (detectedQuad[1].y - cornersRef.current[1].y) * alpha },
@@ -461,12 +485,12 @@ export function MSPLiveFrameCanvas() {
             { x: cornersRef.current[3].x + (detectedQuad[3].x - cornersRef.current[3].x) * alpha, y: cornersRef.current[3].y + (detectedQuad[3].y - cornersRef.current[3].y) * alpha },
           ];
         }
-        presenceRef.current = Math.min(1, presenceRef.current + 0.12);
+        presenceRef.current = Math.min(1, presenceRef.current + 0.2);
       } else {
         lostFramesRef.current += 1;
-        // Hold hand frame for ~3 seconds (90 frames at 30fps) before graceful disappearance
+        // Hold hand frame lock for ~3 seconds (90 frames at 30fps) before graceful disappearance
         if (lostFramesRef.current > 90) {
-          presenceRef.current = Math.max(0, presenceRef.current - 0.03);
+          presenceRef.current = Math.max(0, presenceRef.current - 0.04);
           if (presenceRef.current === 0) {
             cornersRef.current = null;
             setHandDetected(false);
@@ -540,65 +564,47 @@ export function MSPLiveFrameCanvas() {
   // Built-in Zero-Latency Offline GPU Canvas FX Engine
   const drawCanvasEffect = (ctx: CanvasRenderingContext2D, video: HTMLVideoElement, w: number, h: number, effectId: string) => {
     ctx.save();
-    ctx.scale(-1, 1);
-    ctx.translate(-w, 0);
-
     switch (effectId) {
       case "anime":
         ctx.filter = "contrast(180%) saturate(200%) brightness(110%) hue-rotate(-10deg)";
-        ctx.drawImage(video, 0, 0, w, h);
         break;
 
       case "cyberpunk":
         ctx.filter = "contrast(160%) hue-rotate(180deg) saturate(280%)";
-        ctx.drawImage(video, 0, 0, w, h);
-        ctx.fillStyle = "rgba(236, 72, 153, 0.25)";
-        ctx.fillRect(0, 0, w, h);
         break;
 
       case "watercolor":
         ctx.filter = "blur(2px) contrast(140%) saturate(160%) brightness(105%)";
-        ctx.drawImage(video, 0, 0, w, h);
         break;
 
       case "lego":
         ctx.filter = "contrast(150%) saturate(180%)";
-        ctx.drawImage(video, 0, 0, w, h);
         break;
 
       case "matrix":
         ctx.filter = "contrast(220%) hue-rotate(90deg) saturate(320%) brightness(90%)";
-        ctx.drawImage(video, 0, 0, w, h);
-        ctx.fillStyle = "rgba(16, 185, 129, 0.35)";
-        ctx.fillRect(0, 0, w, h);
         break;
 
       case "thermal":
         ctx.filter = "invert(100%) hue-rotate(180deg) saturate(450%) contrast(160%)";
-        ctx.drawImage(video, 0, 0, w, h);
         break;
 
       case "comic":
         ctx.filter = "contrast(260%) saturate(220%) brightness(105%)";
-        ctx.drawImage(video, 0, 0, w, h);
         break;
 
       case "oil":
         ctx.filter = "sepia(35%) contrast(145%) saturate(180%) brightness(105%)";
-        ctx.drawImage(video, 0, 0, w, h);
         break;
 
       case "movie3d":
       default:
         ctx.filter = "contrast(130%) saturate(150%) brightness(108%)";
-        ctx.drawImage(video, 0, 0, w, h);
-        const grad = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.2, w / 2, h / 2, Math.max(w, h) * 0.7);
-        grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
-        grad.addColorStop(1, "rgba(15, 23, 42, 0.4)");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
         break;
     }
+    ctx.scale(-1, 1);
+    ctx.translate(-w, 0);
+    ctx.drawImage(video, 0, 0, w, h);
     ctx.filter = "none";
     ctx.restore();
   };
