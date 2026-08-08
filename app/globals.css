@@ -3713,8 +3713,10 @@ body::before {
 }
 
 .more-menu {
-  max-height: min(70vh, 510px);
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   border: 1.5px solid transparent;
   border-radius: 0.85rem;
   background:
@@ -3724,6 +3726,10 @@ body::before {
     auto,
     220% 220%;
   animation: border-flow 6s linear infinite;
+}
+
+.more-menu::-webkit-scrollbar {
+  display: none;
 }
 
 .more-menu a {
