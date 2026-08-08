@@ -8326,6 +8326,8 @@ function MSPLiveFrameCanvas() {
 	const [apiKey, setApiKey] = (0, import_react.useState)("");
 	const [showKeyPanel, setShowKeyPanel] = (0, import_react.useState)(false);
 	const [showHelpModal, setShowHelpModal] = (0, import_react.useState)(false);
+	const [aiConnectionState, setAiConnectionState] = (0, import_react.useState)("disconnected");
+	const [aiDiagnosticMsg, setAiDiagnosticMsg] = (0, import_react.useState)(null);
 	const [cameraActive, setCameraActive] = (0, import_react.useState)(false);
 	const [cameraError, setCameraError] = (0, import_react.useState)(null);
 	const [statusState, setStatusState] = (0, import_react.useState)("loading");
@@ -8427,18 +8429,24 @@ function MSPLiveFrameCanvas() {
 		else startCamera();
 	};
 	const connectLucyAI = (0, import_react.useCallback)(async () => {
-		if (!apiKey.trim() || !videoRef.current || !videoRef.current.srcObject) return;
+		if (!apiKey.trim()) {
+			setAiConnectionState("disconnected");
+			setAiDiagnosticMsg("No Decart API Key provided. Operating in zero-latency GPU canvas mode.");
+			setLiveMode("canvas");
+			return;
+		}
 		try {
+			setAiConnectionState("connecting");
+			setAiDiagnosticMsg("Exchanging WebRTC SDP handshake with Decart Lucy 2.5 servers...");
 			setStatusState("connecting");
 			setStatusText("CONNECTING TO DECART LUCY 2.5…");
-			const { createDecartClient, models } = await import(
-				/* webpackIgnore: true */
-				DECART_SDK_URL
-);
+			const { createDecartClient, models } = await new Function("u", "return import(u)")(DECART_SDK_URL);
 			const model = models.realtime("lucy-2.5");
 			const client = createDecartClient({ apiKey: apiKey.trim() });
 			const promptText = MSP_EFFECTS.find((e) => e.id === effect)?.prompt || customPrompt || "Transform the video style inside the hand frame.";
-			realtimeClientRef.current = await client.realtime.connect(videoRef.current.srcObject, {
+			const mediaStream = videoRef.current && videoRef.current.srcObject ? videoRef.current.srcObject : null;
+			if (!mediaStream) throw new Error("Camera stream not active. Please launch camera first.");
+			realtimeClientRef.current = await client.realtime.connect(mediaStream, {
 				model,
 				initialState: { prompt: {
 					text: promptText,
@@ -8448,6 +8456,8 @@ function MSPLiveFrameCanvas() {
 					if (lucyVidRef.current) {
 						lucyVidRef.current.srcObject = remoteStream;
 						lucyVidRef.current.play().catch(() => {});
+						setAiConnectionState("connected");
+						setAiDiagnosticMsg("30fps WebRTC video-to-video AI stream connected.");
 						setStatusState("live");
 						setStatusText("LIVE AI — 30 FPS");
 						setLiveMode("ai");
@@ -8456,8 +8466,11 @@ function MSPLiveFrameCanvas() {
 			});
 		} catch (err) {
 			console.error("Decart connection error:", err);
+			const errTxt = err.message || "Invalid API key, network error, or WebRTC blocked.";
+			setAiConnectionState("error");
+			setAiDiagnosticMsg(`Connection Failed: ${errTxt}`);
 			setStatusState("error");
-			setStatusText(`AI OFFLINE — ${err.message || "connect failed"}`);
+			setStatusText(`AI DISCONNECTED — ${errTxt}`);
 			setLiveMode("canvas");
 		}
 	}, [
@@ -8784,7 +8797,7 @@ function MSPLiveFrameCanvas() {
 					className: "telemetry-badge",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "live-pulse-dot" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 						className: "telemetry-text",
-						children: statusState === "live" ? "LIVE AI STUDIO" : statusText
+						children: aiConnectionState === "connected" ? "🟢 DECART LUCY AI CONNECTED" : aiConnectionState === "connecting" ? "🟡 CONNECTING DECART AI…" : aiConnectionState === "error" ? "🔴 AI DISCONNECTED — GPU FX MODE" : cameraActive ? "⚡ GPU FX ENGINE (Offline)" : statusText
 					})]
 				}), cameraActive && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "telemetry-sub",
@@ -8956,6 +8969,115 @@ function MSPLiveFrameCanvas() {
 									]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									style: {
+										marginBottom: "18px",
+										padding: "12px 14px",
+										borderRadius: "12px",
+										background: "rgba(255, 255, 255, 0.04)",
+										border: "1px solid rgba(255, 255, 255, 0.08)"
+									},
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										style: {
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "space-between",
+											marginBottom: "6px"
+										},
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												style: {
+													fontSize: "0.78rem",
+													fontWeight: 800,
+													color: "#cbd5e1",
+													letterSpacing: "0.02em"
+												},
+												children: "AI CONNECTION STATUS"
+											}),
+											aiConnectionState === "connected" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												style: {
+													background: "rgba(16, 185, 129, 0.2)",
+													color: "#10b981",
+													border: "1px solid #10b981",
+													padding: "2px 10px",
+													borderRadius: "999px",
+													fontSize: "0.72rem",
+													fontWeight: 800,
+													display: "inline-flex",
+													alignItems: "center",
+													gap: "5px"
+												},
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: {
+													width: 6,
+													height: 6,
+													borderRadius: "50%",
+													background: "#10b981",
+													boxShadow: "0 0 8px #10b981"
+												} }), "CONNECTED (30 FPS)"]
+											}),
+											aiConnectionState === "connecting" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												style: {
+													background: "rgba(234, 179, 8, 0.2)",
+													color: "#eab308",
+													border: "1px solid #eab308",
+													padding: "2px 10px",
+													borderRadius: "999px",
+													fontSize: "0.72rem",
+													fontWeight: 800,
+													display: "inline-flex",
+													alignItems: "center",
+													gap: "5px"
+												},
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: {
+													width: 6,
+													height: 6,
+													borderRadius: "50%",
+													background: "#eab308"
+												} }), "CONNECTING..."]
+											}),
+											aiConnectionState === "error" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												style: {
+													background: "rgba(239, 68, 68, 0.2)",
+													color: "#ef4444",
+													border: "1px solid #ef4444",
+													padding: "2px 10px",
+													borderRadius: "999px",
+													fontSize: "0.72rem",
+													fontWeight: 800,
+													display: "inline-flex",
+													alignItems: "center",
+													gap: "5px"
+												},
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: {
+													width: 6,
+													height: 6,
+													borderRadius: "50%",
+													background: "#ef4444"
+												} }), "DISCONNECTED / ERROR"]
+											}),
+											aiConnectionState === "disconnected" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												style: {
+													background: "rgba(148, 163, 184, 0.15)",
+													color: "#94a3b8",
+													border: "1px solid rgba(255, 255, 255, 0.12)",
+													padding: "2px 10px",
+													borderRadius: "999px",
+													fontSize: "0.72rem",
+													fontWeight: 700
+												},
+												children: "OFFLINE (GPU Canvas Mode)"
+											})
+										]
+									}), aiDiagnosticMsg && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										style: {
+											margin: 0,
+											fontSize: "0.78rem",
+											color: aiConnectionState === "error" ? "#fca5a5" : aiConnectionState === "connected" ? "#a7f3d0" : "#94a3b8",
+											lineHeight: "1.4"
+										},
+										children: aiDiagnosticMsg
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "input-group",
 									style: { marginBottom: "16px" },
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
@@ -8963,7 +9085,8 @@ function MSPLiveFrameCanvas() {
 											fontSize: "0.78rem",
 											fontWeight: 700,
 											display: "block",
-											marginBottom: "6px"
+											marginBottom: "6px",
+											color: "#e2e8f0"
 										},
 										children: "DECART API KEY"
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
@@ -8982,7 +9105,8 @@ function MSPLiveFrameCanvas() {
 											fontSize: "0.78rem",
 											fontWeight: 700,
 											display: "block",
-											marginBottom: "6px"
+											marginBottom: "6px",
+											color: "#e2e8f0"
 										},
 										children: "CUSTOM STYLE PROMPT (OPTIONAL)"
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
