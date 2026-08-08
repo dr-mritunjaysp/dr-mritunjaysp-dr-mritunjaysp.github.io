@@ -6952,12 +6952,12 @@ body::before {
 
 .msp-modal-card {
   width: min(480px, 100%);
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 20px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
-  overflow: hidden;
-  color: #f8fafc;
+  background: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75) !important;
+  overflow: hidden !important;
+  color: #f8fafc !important;
   animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -6971,8 +6971,8 @@ body::before {
   align-items: center;
   justify-content: space-between;
   padding: 18px 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: #0f172a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: #0f172a !important;
 }
 
 .msp-modal-header h3 {
@@ -6982,7 +6982,7 @@ body::before {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .msp-modal-header .close-btn {
@@ -7006,17 +7006,17 @@ body::before {
 
 .msp-modal-body {
   padding: 22px;
-  background: #0f172a;
-  color: #cbd5e1;
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
 }
 
 .msp-text-input {
   width: 100%;
-  background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  background: #1e293b !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
   padding: 12px 14px;
-  color: #ffffff;
+  color: #ffffff !important;
   font-size: 0.9rem;
   font-family: inherit;
   transition: all 0.2s ease;
@@ -7025,9 +7025,9 @@ body::before {
 
 .msp-text-input:focus {
   outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.2);
-  background: #1e293b;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  background: #1e293b !important;
 }
 
 .msp-modal-footer {
@@ -7036,8 +7036,43 @@ body::before {
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: #0f172a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: #0f172a !important;
+}
+
+.msp-modal-footer .btn-sort-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+  padding: 9px 18px !important;
+  border-radius: 10px !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.msp-modal-footer .btn-sort-secondary:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+}
+
+.msp-modal-footer .btn-sort-primary {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border: none !important;
+  color: #ffffff !important;
+  padding: 10px 22px !important;
+  border-radius: 10px !important;
+  font-size: 0.88rem !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+.msp-modal-footer .btn-sort-primary:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.55) !important;
 }
 
 @media (max-width: 900px) {
@@ -7285,21 +7320,6 @@ body::before {
   background: rgba(59, 130, 246, 0.2);
   border-color: #3b82f6;
   color: #60a5fa;
-}
-
-.msp-text-input:focus {
-  outline: none;
-  border-color: #10b981;
-}
-
-.msp-modal-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 14px 20px;
-  border-top: 1px solid var(--border);
-  background: var(--bg);
 }
 
 .shortcut-list {
