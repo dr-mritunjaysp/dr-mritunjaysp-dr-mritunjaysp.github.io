@@ -8535,25 +8535,23 @@ function MSPLiveFrameCanvas() {
 			ctx.drawImage(video, 0, 0, w, h);
 			ctx.restore();
 			let detectedQuad = null;
-			if (landmarkerRef.current && video.currentTime !== lastTime) {
-				lastTime = video.currentTime;
+			if (landmarkerRef.current && now - lastTime >= 25) {
+				lastTime = now;
 				try {
-					const results = landmarkerRef.current.detectForVideo(video, performance.now());
-					if (results && results.landmarks && results.landmarks.length >= 1) {
+					const results = landmarkerRef.current.detectForVideo(video, now);
+					if (results && results.landmarks && results.landmarks.length > 0) {
 						const handPoints = [];
 						results.landmarks.forEach((hand) => {
 							const thumbTip = hand[4];
 							const indexTip = hand[8];
-							if (thumbTip && indexTip) {
-								handPoints.push({
-									x: (1 - thumbTip.x) * w,
-									y: thumbTip.y * h
-								});
-								handPoints.push({
-									x: (1 - indexTip.x) * w,
-									y: indexTip.y * h
-								});
-							}
+							if (thumbTip) handPoints.push({
+								x: (1 - thumbTip.x) * w,
+								y: thumbTip.y * h
+							});
+							if (indexTip) handPoints.push({
+								x: (1 - indexTip.x) * w,
+								y: indexTip.y * h
+							});
 						});
 						if (handPoints.length >= 4) {
 							const sortedByY = [...handPoints].sort((a, b) => a.y - b.y);
@@ -8565,11 +8563,42 @@ function MSPLiveFrameCanvas() {
 							const bottomLeft = bottomTwo[1];
 							const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
 							const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
-							if (quadWidth > 50 && quadHeight > 50) detectedQuad = [
+							if (quadWidth > 40 && quadHeight > 40) detectedQuad = [
 								topLeft,
 								topRight,
 								bottomRight,
 								bottomLeft
+							];
+						} else if (handPoints.length >= 2) {
+							const xs = handPoints.map((p) => p.x);
+							const ys = handPoints.map((p) => p.y);
+							const minX = Math.min(...xs);
+							const maxX = Math.max(...xs);
+							const minY = Math.min(...ys);
+							const maxY = Math.max(...ys);
+							const padX = Math.max(30, (maxX - minX) * .4);
+							const padY = Math.max(30, (maxY - minY) * .4);
+							const left = Math.max(10, minX - padX);
+							const right = Math.min(w - 10, maxX + padX);
+							const top = Math.max(10, minY - padY);
+							const bottom = Math.min(h - 10, maxY + padY);
+							if (right - left > 60 && bottom - top > 60) detectedQuad = [
+								{
+									x: left,
+									y: top
+								},
+								{
+									x: right,
+									y: top
+								},
+								{
+									x: right,
+									y: bottom
+								},
+								{
+									x: left,
+									y: bottom
+								}
 							];
 						}
 					}
@@ -8580,7 +8609,7 @@ function MSPLiveFrameCanvas() {
 				setHandDetected(true);
 				if (!cornersRef.current) cornersRef.current = detectedQuad;
 				else {
-					const alpha = .35;
+					const alpha = .65;
 					cornersRef.current = [
 						{
 							x: cornersRef.current[0].x + (detectedQuad[0].x - cornersRef.current[0].x) * alpha,
@@ -8600,11 +8629,11 @@ function MSPLiveFrameCanvas() {
 						}
 					];
 				}
-				presenceRef.current = Math.min(1, presenceRef.current + .12);
+				presenceRef.current = Math.min(1, presenceRef.current + .2);
 			} else {
 				lostFramesRef.current += 1;
 				if (lostFramesRef.current > 90) {
-					presenceRef.current = Math.max(0, presenceRef.current - .03);
+					presenceRef.current = Math.max(0, presenceRef.current - .04);
 					if (presenceRef.current === 0) {
 						cornersRef.current = null;
 						setHandDetected(false);
@@ -8664,55 +8693,38 @@ function MSPLiveFrameCanvas() {
 	}, [liveMode, effect]);
 	const drawCanvasEffect = (ctx, video, w, h, effectId) => {
 		ctx.save();
-		ctx.scale(-1, 1);
-		ctx.translate(-w, 0);
 		switch (effectId) {
 			case "anime":
 				ctx.filter = "contrast(180%) saturate(200%) brightness(110%) hue-rotate(-10deg)";
-				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			case "cyberpunk":
 				ctx.filter = "contrast(160%) hue-rotate(180deg) saturate(280%)";
-				ctx.drawImage(video, 0, 0, w, h);
-				ctx.fillStyle = "rgba(236, 72, 153, 0.25)";
-				ctx.fillRect(0, 0, w, h);
 				break;
 			case "watercolor":
 				ctx.filter = "blur(2px) contrast(140%) saturate(160%) brightness(105%)";
-				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			case "lego":
 				ctx.filter = "contrast(150%) saturate(180%)";
-				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			case "matrix":
 				ctx.filter = "contrast(220%) hue-rotate(90deg) saturate(320%) brightness(90%)";
-				ctx.drawImage(video, 0, 0, w, h);
-				ctx.fillStyle = "rgba(16, 185, 129, 0.35)";
-				ctx.fillRect(0, 0, w, h);
 				break;
 			case "thermal":
 				ctx.filter = "invert(100%) hue-rotate(180deg) saturate(450%) contrast(160%)";
-				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			case "comic":
 				ctx.filter = "contrast(260%) saturate(220%) brightness(105%)";
-				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			case "oil":
 				ctx.filter = "sepia(35%) contrast(145%) saturate(180%) brightness(105%)";
-				ctx.drawImage(video, 0, 0, w, h);
 				break;
 			default:
 				ctx.filter = "contrast(130%) saturate(150%) brightness(108%)";
-				ctx.drawImage(video, 0, 0, w, h);
-				const grad = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .2, w / 2, h / 2, Math.max(w, h) * .7);
-				grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
-				grad.addColorStop(1, "rgba(15, 23, 42, 0.4)");
-				ctx.fillStyle = grad;
-				ctx.fillRect(0, 0, w, h);
 				break;
 		}
+		ctx.scale(-1, 1);
+		ctx.translate(-w, 0);
+		ctx.drawImage(video, 0, 0, w, h);
 		ctx.filter = "none";
 		ctx.restore();
 	};
