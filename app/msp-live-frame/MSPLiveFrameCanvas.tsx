@@ -405,41 +405,39 @@ export function MSPLiveFrameCanvas() {
       ctx.drawImage(video, 0, 0, w, h);
       ctx.restore();
 
-      // Throttled Hand Landmarker Detection (25ms interval for ultra-fast 60 FPS performance)
+      // Hand Landmarker Detection (Instant real-time 60 FPS detection)
       let detectedQuad: [Point, Point, Point, Point] | null = null;
 
-      if (landmarkerRef.current && (now - lastTime >= 25)) {
-        lastTime = now;
+      if (landmarkerRef.current) {
         try {
           const results = landmarkerRef.current.detectForVideo(video, now);
           if (results && results.landmarks && results.landmarks.length >= 2) {
-            const handPoints: Point[] = [];
-            results.landmarks.forEach((hand: any) => {
-              const thumbTip = hand[4];
-              const indexTip = hand[8];
-              if (thumbTip && indexTip) {
-                handPoints.push({ x: (1 - thumbTip.x) * w, y: thumbTip.y * h });
-                handPoints.push({ x: (1 - indexTip.x) * w, y: indexTip.y * h });
-              }
-            });
+            // Sort 2 hands by screen-space X coordinate (Left Hand vs Right Hand)
+            const handsWithPoints = results.landmarks.slice(0, 2).map((hand: any) => {
+              const thumb = { x: (1 - hand[4].x) * w, y: hand[4].y * h };
+              const index = { x: (1 - hand[8].x) * w, y: hand[8].y * h };
+              const avgX = (thumb.x + index.x) / 2;
+              return { hand, thumb, index, avgX };
+            }).sort((a: any, b: any) => a.avgX - b.avgX);
 
-            if (handPoints.length >= 4) {
-              // 2-Hand Framing: Sort 4 corners (top-left, top-right, bottom-right, bottom-left)
-              const sortedByY = [...handPoints].sort((a, b) => a.y - b.y);
-              const topTwo = sortedByY.slice(0, 2).sort((a, b) => a.x - b.x);
-              const bottomTwo = sortedByY.slice(2, 4).sort((a, b) => b.x - a.x);
+            const leftHand = handsWithPoints[0];
+            const rightHand = handsWithPoints[1];
 
-              const topLeft = topTwo[0];
-              const topRight = topTwo[1];
-              const bottomRight = bottomTwo[0];
-              const bottomLeft = bottomTwo[1];
+            // Left Hand: top is index, bottom is thumb
+            const leftPts = [leftHand.index, leftHand.thumb].sort((a, b) => a.y - b.y);
+            const topLeft = leftPts[0];
+            const bottomLeft = leftPts[1];
 
-              const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
-              const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
+            // Right Hand: top is index, bottom is thumb
+            const rightPts = [rightHand.index, rightHand.thumb].sort((a, b) => a.y - b.y);
+            const topRight = rightPts[0];
+            const bottomRight = rightPts[1];
 
-              if (quadWidth > 40 && quadHeight > 40) {
-                detectedQuad = [topLeft, topRight, bottomRight, bottomLeft];
-              }
+            const quadWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
+            const quadHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
+
+            if (quadWidth > 35 && quadHeight > 35) {
+              detectedQuad = [topLeft, topRight, bottomRight, bottomLeft];
             }
           }
         } catch (err) {
@@ -447,14 +445,14 @@ export function MSPLiveFrameCanvas() {
         }
       }
 
-      // Responsive Lerp Quad smoothing (alpha 0.65 for instant 60fps tracking)
+      // Responsive Lerp Quad smoothing (alpha 0.85 for instant 0-lag tracking)
       if (detectedQuad) {
         lostFramesRef.current = 0;
         setHandDetected(true);
         if (!cornersRef.current) {
           cornersRef.current = detectedQuad;
         } else {
-          const alpha = 0.65;
+          const alpha = 0.85;
           cornersRef.current = [
             { x: cornersRef.current[0].x + (detectedQuad[0].x - cornersRef.current[0].x) * alpha, y: cornersRef.current[0].y + (detectedQuad[0].y - cornersRef.current[0].y) * alpha },
             { x: cornersRef.current[1].x + (detectedQuad[1].x - cornersRef.current[1].x) * alpha, y: cornersRef.current[1].y + (detectedQuad[1].y - cornersRef.current[1].y) * alpha },
@@ -462,7 +460,7 @@ export function MSPLiveFrameCanvas() {
             { x: cornersRef.current[3].x + (detectedQuad[3].x - cornersRef.current[3].x) * alpha, y: cornersRef.current[3].y + (detectedQuad[3].y - cornersRef.current[3].y) * alpha },
           ];
         }
-        presenceRef.current = Math.min(1, presenceRef.current + 0.2);
+        presenceRef.current = Math.min(1, presenceRef.current + 0.25);
       } else {
         lostFramesRef.current += 1;
         // Hold hand frame lock for ~3 seconds (90 frames at 30fps) before graceful disappearance
@@ -505,28 +503,27 @@ export function MSPLiveFrameCanvas() {
         ctx.save();
         ctx.globalAlpha = presenceRef.current;
 
-        // Glowing Quad Border
+        // White Dashed Quad Border (Matching reference Lucy Finger Frame style)
         ctx.beginPath();
         ctx.moveTo(quad[0].x, quad[0].y);
         ctx.lineTo(quad[1].x, quad[1].y);
         ctx.lineTo(quad[2].x, quad[2].y);
         ctx.lineTo(quad[3].x, quad[3].y);
         ctx.closePath();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "#10b981";
-        ctx.shadowColor = "#10b981";
-        ctx.shadowBlur = 18;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
         ctx.stroke();
+        ctx.setLineDash([]);
 
-        // Corner target markers
-        const cornerColors = ["#ec4899", "#3b82f6", "#8b5cf6", "#10b981"];
-        quad.forEach((pt, i) => {
+        // White Corner Target Handles
+        quad.forEach((pt) => {
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
-          ctx.fillStyle = cornerColors[i];
+          ctx.fillStyle = "#ffffff";
           ctx.fill();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
           ctx.stroke();
         });
 
