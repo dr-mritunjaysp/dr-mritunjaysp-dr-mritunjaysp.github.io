@@ -105,7 +105,24 @@ npm run dev
 # Run production build & test suite
 npm run build
 npm test
+
+# Deploy to Firebase Hosting
+npm run deploy:firebase
 ```
+
+---
+
+### 🔥 3. Firebase Hosting Deployment
+
+```bash
+# Login to Firebase CLI (one-time setup)
+npx firebase login
+
+# Deploy pre-rendered static site to Firebase Hosting CDN
+npm run deploy:firebase
+```
+
+Automated GitHub deployment is configured in `.github/workflows/deploy-firebase.yml`. Add `FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_6A1B9` to your GitHub repository secrets for continuous integration on `git push`.
 
 ---
 
