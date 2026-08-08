@@ -4,7 +4,13 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/*.exe",
+      "**/*.bat",
+      "**/*.cmd",
+      "**/*.sh",
+      "**/*.bin",
+      "**/*.msi"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
