@@ -412,13 +412,15 @@ export function MSPLiveFrameCanvas() {
         lastTime = now;
         try {
           const results = landmarkerRef.current.detectForVideo(video, now);
-          if (results && results.landmarks && results.landmarks.length > 0) {
+          if (results && results.landmarks && results.landmarks.length >= 2) {
             const handPoints: Point[] = [];
             results.landmarks.forEach((hand: any) => {
               const thumbTip = hand[4];
               const indexTip = hand[8];
-              if (thumbTip) handPoints.push({ x: (1 - thumbTip.x) * w, y: thumbTip.y * h });
-              if (indexTip) handPoints.push({ x: (1 - indexTip.x) * w, y: indexTip.y * h });
+              if (thumbTip && indexTip) {
+                handPoints.push({ x: (1 - thumbTip.x) * w, y: thumbTip.y * h });
+                handPoints.push({ x: (1 - indexTip.x) * w, y: indexTip.y * h });
+              }
             });
 
             if (handPoints.length >= 4) {
@@ -437,31 +439,6 @@ export function MSPLiveFrameCanvas() {
 
               if (quadWidth > 40 && quadHeight > 40) {
                 detectedQuad = [topLeft, topRight, bottomRight, bottomLeft];
-              }
-            } else if (handPoints.length >= 2) {
-              // 1-Hand Framing (Index + Thumb L-Shape bounding quad)
-              const xs = handPoints.map((p) => p.x);
-              const ys = handPoints.map((p) => p.y);
-              const minX = Math.min(...xs);
-              const maxX = Math.max(...xs);
-              const minY = Math.min(...ys);
-              const maxY = Math.max(...ys);
-
-              const padX = Math.max(30, (maxX - minX) * 0.4);
-              const padY = Math.max(30, (maxY - minY) * 0.4);
-
-              const left = Math.max(10, minX - padX);
-              const right = Math.min(w - 10, maxX + padX);
-              const top = Math.max(10, minY - padY);
-              const bottom = Math.min(h - 10, maxY + padY);
-
-              if (right - left > 60 && bottom - top > 60) {
-                detectedQuad = [
-                  { x: left, y: top },
-                  { x: right, y: top },
-                  { x: right, y: bottom },
-                  { x: left, y: bottom },
-                ];
               }
             }
           }
