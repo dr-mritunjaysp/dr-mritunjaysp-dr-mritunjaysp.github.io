@@ -12,15 +12,19 @@ import {
   Download,
   ExternalLink,
   FileText,
+  GraduationCap,
   Layers,
   Mail,
+  Medal,
   Menu,
   Pause,
   Play,
   RotateCcw,
   Search,
+  ShieldCheck,
   Sparkles,
   StepForward,
+  Trophy,
   UsersRound,
   Volume2,
   VolumeX,
@@ -2049,59 +2053,100 @@ function NewsPage() {
 }
 
 function AwardsPage() {
+  const [activeTab, setActiveTab] = useState<"all" | "award" | "fdp" | "honor">("all");
+
   const achievements = [
     {
       year: "2026",
+      category: "award" as const,
+      badge: "International Award",
+      icon: Trophy,
       title: "Best Researcher Award",
+      organization: "International Research Excellence Forum",
       detail:
         "International recognition for research excellence in blockchain, post-quantum security & intelligent transportation systems.",
     },
     {
       year: "2026",
+      category: "award" as const,
+      badge: "Top Publication Honor",
+      icon: Medal,
       title: "Wiley Top Viewed Article 2025",
+      organization: "Wiley & Sons Journal Publishing",
       detail:
         "Recognized for DemocracyGuard: Blockchain-based secure voting framework for digital democracy.",
     },
     {
       year: "2026",
-      title: "E&ICT Academy, IIT Guwahati FDP",
+      category: "fdp" as const,
+      badge: "Faculty Development",
+      icon: GraduationCap,
+      title: "Advanced Embedded Systems FDP",
+      organization: "E&ICT Academy, IIT Guwahati",
       detail:
         "Advanced Architectures and Real-Time Systems for Intelligent Embedded Applications.",
     },
     {
       year: "2025",
+      category: "award" as const,
+      badge: "Doctoral Award",
+      icon: Award,
       title: "Outstanding Research Article Award",
+      organization: "BITS Pilani EEE Department",
       detail:
         "BITS Pilani Doctoral Colloquium recognition for work on emergency vehicle management.",
     },
     {
       year: "2025",
-      title: "Top 10 Most-Cited Paper",
+      category: "award" as const,
+      badge: "Most Cited Honor",
+      icon: Sparkles,
+      title: "Top 10 Most-Cited Paper Award",
+      organization: "IET Quantum Communication",
       detail:
         "Recognition from IET Quantum Communication for Quantum Computing Applications for IoT.",
     },
     {
       year: "2022",
-      title: "Quantum Computing – Building Concepts Advanced FDP",
-      detail: "Faculty development programme at Amity University.",
+      category: "fdp" as const,
+      badge: "Quantum FDP",
+      icon: BookOpen,
+      title: "Quantum Computing Advanced FDP",
+      organization: "Amity University",
+      detail: "Faculty development programme on Quantum Computing - Building Concepts Advanced.",
     },
     {
       year: "2022",
+      category: "fdp" as const,
+      badge: "Management FDP",
+      icon: ShieldCheck,
       title: "Project Management FDP",
-      detail: "Faculty development programme from E&ICT Academy, IIT Kanpur.",
+      organization: "E&ICT Academy, IIT Kanpur",
+      detail: "Faculty development programme focused on agile research project execution and management.",
     },
     {
       year: "2020",
+      category: "fdp" as const,
+      badge: "Professional Program",
+      icon: GraduationCap,
       title: "Quantum Computing PDP",
+      organization: "MNIT Jaipur",
       detail:
-        "Professional development programme at Malaviya National Institute of Technology (MNIT) Jaipur.",
+        "Professional development programme at Malaviya National Institute of Technology Jaipur.",
     },
     {
       year: "Honor",
+      category: "honor" as const,
+      badge: "Academic Honor",
+      icon: Trophy,
       title: "Mr. Talented of the Year",
+      organization: "Post-Graduate Academic Recognition",
       detail: "Academic & extracurricular excellence recognition during M.Tech post-graduation.",
     },
   ];
+
+  const filtered = activeTab === "all" ? achievements : achievements.filter((a) => a.category === activeTab);
+
   return (
     <section className="page-section">
       <PageIntro
@@ -2109,15 +2154,54 @@ function AwardsPage() {
         title="Awards & FDP"
         description="Research recognition, academic awards, faculty development programmes, and continuing education."
       />
-      <div className="achievement-grid">
-        {achievements.map((item) => (
-          <article key={item.title}>
-            <span>{item.year}</span>
-            <Award />
-            <h2>{item.title}</h2>
-            <p>{item.detail}</p>
-          </article>
+      <div className="filter-strip" style={{ marginBottom: "2rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        {[
+          { key: "all", label: "All Recognitions" },
+          { key: "award", label: "Research Awards" },
+          { key: "fdp", label: "FDP & Training" },
+          { key: "honor", label: "Academic Honors" },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key as any)}
+            className={`filter-btn ${activeTab === tab.key ? "active" : ""}`}
+            style={{
+              padding: "0.5rem 1.2rem",
+              borderRadius: "9999px",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+          >
+            {tab.label}
+          </button>
         ))}
+      </div>
+      <div className="achievement-grid">
+        {filtered.map((item) => {
+          const IconComp = item.icon;
+          return (
+            <article key={item.title} className="achievement-card">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <span className="year-tag">{item.year}</span>
+                <span className="badge-pill" style={{ fontSize: "0.75rem", padding: "0.2rem 0.6rem", borderRadius: "9999px", opacity: 0.85 }}>
+                  {item.badge}
+                </span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
+                <div style={{ padding: "0.5rem", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <IconComp size={22} />
+                </div>
+                <h2 style={{ fontSize: "1.15rem", margin: 0, fontWeight: 600 }}>{item.title}</h2>
+              </div>
+              <div style={{ fontSize: "0.825rem", fontWeight: 500, opacity: 0.7, marginBottom: "0.5rem" }}>
+                📍 {item.organization}
+              </div>
+              <p style={{ margin: 0, fontSize: "0.9rem", lineHeight: 1.5 }}>{item.detail}</p>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
