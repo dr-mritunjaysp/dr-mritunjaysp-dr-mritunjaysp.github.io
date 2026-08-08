@@ -307,6 +307,26 @@ var ExternalLink = createLucideIcon("external-link", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var GraduationCap = createLucideIcon("graduation-cap", [
+	["path", {
+		d: "M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z",
+		key: "j76jl0"
+	}],
+	["path", {
+		d: "M22 10v6",
+		key: "1lu8f3"
+	}],
+	["path", {
+		d: "M6 12.5V16a6 3 0 0 0 12 0v-3.5",
+		key: "1r8lef"
+	}]
+]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var Layers = createLucideIcon("layers", [
 	["path", {
 		d: "M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z",
@@ -338,6 +358,40 @@ var Mail = createLucideIcon("mail", [["path", {
 	rx: "2",
 	key: "izxlao"
 }]]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Medal = createLucideIcon("medal", [
+	["path", {
+		d: "M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15",
+		key: "143lza"
+	}],
+	["path", {
+		d: "M11 12 5.12 2.2",
+		key: "qhuxz6"
+	}],
+	["path", {
+		d: "m13 12 5.88-9.8",
+		key: "hbye0f"
+	}],
+	["path", {
+		d: "M8 7h8",
+		key: "i86dvs"
+	}],
+	["circle", {
+		cx: "12",
+		cy: "17",
+		r: "5",
+		key: "qbz8iq"
+	}],
+	["path", {
+		d: "M12 18v-2h-.5",
+		key: "fawc4q"
+	}]
+]);
 /**
 * @license lucide-react v1.28.0 - ISC
 *
@@ -423,6 +477,19 @@ var Search = createLucideIcon("search", [["path", {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var ShieldCheck = createLucideIcon("shield-check", [["path", {
+	d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+	key: "oel41y"
+}], ["path", {
+	d: "m9 12 2 2 4-4",
+	key: "dzmm74"
+}]]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var Sparkles = createLucideIcon("sparkles", [
 	["path", {
 		d: "M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z",
@@ -441,6 +508,38 @@ var Sparkles = createLucideIcon("sparkles", [
 		cy: "20",
 		r: "2",
 		key: "6kqj1y"
+	}]
+]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Trophy = createLucideIcon("trophy", [
+	["path", {
+		d: "M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2",
+		key: "pwuv1l"
+	}],
+	["path", {
+		d: "M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2",
+		key: "1y54w1"
+	}],
+	["path", {
+		d: "M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3",
+		key: "e30mpu"
+	}],
+	["path", {
+		d: "M4 22h16",
+		key: "57wxv0"
+	}],
+	["path", {
+		d: "M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z",
+		key: "1mhfuq"
+	}],
+	["path", {
+		d: "M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3",
+		key: "i0yafy"
 	}]
 ]);
 /**
@@ -11685,67 +11784,213 @@ function NewsPage() {
 	});
 }
 function AwardsPage() {
+	const [activeTab, setActiveTab] = (0, import_react.useState)("all");
+	const achievements = [
+		{
+			year: "2026",
+			category: "award",
+			badge: "International Award",
+			icon: Trophy,
+			title: "Best Researcher Award",
+			organization: "International Research Excellence Forum",
+			detail: "International recognition for research excellence in blockchain, post-quantum security & intelligent transportation systems."
+		},
+		{
+			year: "2026",
+			category: "award",
+			badge: "Top Publication Honor",
+			icon: Medal,
+			title: "Wiley Top Viewed Article 2025",
+			organization: "Wiley & Sons Journal Publishing",
+			detail: "Recognized for DemocracyGuard: Blockchain-based secure voting framework for digital democracy."
+		},
+		{
+			year: "2026",
+			category: "fdp",
+			badge: "Faculty Development",
+			icon: GraduationCap,
+			title: "Advanced Embedded Systems FDP",
+			organization: "E&ICT Academy, IIT Guwahati",
+			detail: "Advanced Architectures and Real-Time Systems for Intelligent Embedded Applications."
+		},
+		{
+			year: "2025",
+			category: "award",
+			badge: "Doctoral Award",
+			icon: Award,
+			title: "Outstanding Research Article Award",
+			organization: "BITS Pilani EEE Department",
+			detail: "BITS Pilani Doctoral Colloquium recognition for work on emergency vehicle management."
+		},
+		{
+			year: "2025",
+			category: "award",
+			badge: "Most Cited Honor",
+			icon: Sparkles,
+			title: "Top 10 Most-Cited Paper Award",
+			organization: "IET Quantum Communication",
+			detail: "Recognition from IET Quantum Communication for Quantum Computing Applications for IoT."
+		},
+		{
+			year: "2022",
+			category: "fdp",
+			badge: "Quantum FDP",
+			icon: BookOpen,
+			title: "Quantum Computing Advanced FDP",
+			organization: "Amity University",
+			detail: "Faculty development programme on Quantum Computing - Building Concepts Advanced."
+		},
+		{
+			year: "2022",
+			category: "fdp",
+			badge: "Management FDP",
+			icon: ShieldCheck,
+			title: "Project Management FDP",
+			organization: "E&ICT Academy, IIT Kanpur",
+			detail: "Faculty development programme focused on agile research project execution and management."
+		},
+		{
+			year: "2020",
+			category: "fdp",
+			badge: "Professional Program",
+			icon: GraduationCap,
+			title: "Quantum Computing PDP",
+			organization: "MNIT Jaipur",
+			detail: "Professional development programme at Malaviya National Institute of Technology Jaipur."
+		},
+		{
+			year: "Honor",
+			category: "honor",
+			badge: "Academic Honor",
+			icon: Trophy,
+			title: "Mr. Talented of the Year",
+			organization: "Post-Graduate Academic Recognition",
+			detail: "Academic & extracurricular excellence recognition during M.Tech post-graduation."
+		}
+	];
+	const filtered = activeTab === "all" ? achievements : achievements.filter((a) => a.category === activeTab);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
 		className: "page-section",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageIntro, {
-			eyebrow: "Recognition & development",
-			title: "Awards & FDP",
-			description: "Research recognition, academic awards, faculty development programmes, and continuing education."
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "achievement-grid",
-			children: [
-				{
-					year: "2026",
-					title: "Best Researcher Award",
-					detail: "International recognition for research excellence in blockchain, post-quantum security & intelligent transportation systems."
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageIntro, {
+				eyebrow: "Recognition & development",
+				title: "Awards & FDP",
+				description: "Research recognition, academic awards, faculty development programmes, and continuing education."
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "filter-strip",
+				style: {
+					marginBottom: "2rem",
+					display: "flex",
+					gap: "0.5rem",
+					flexWrap: "wrap"
 				},
-				{
-					year: "2026",
-					title: "Wiley Top Viewed Article 2025",
-					detail: "Recognized for DemocracyGuard: Blockchain-based secure voting framework for digital democracy."
-				},
-				{
-					year: "2026",
-					title: "E&ICT Academy, IIT Guwahati FDP",
-					detail: "Advanced Architectures and Real-Time Systems for Intelligent Embedded Applications."
-				},
-				{
-					year: "2025",
-					title: "Outstanding Research Article Award",
-					detail: "BITS Pilani Doctoral Colloquium recognition for work on emergency vehicle management."
-				},
-				{
-					year: "2025",
-					title: "Top 10 Most-Cited Paper",
-					detail: "Recognition from IET Quantum Communication for Quantum Computing Applications for IoT."
-				},
-				{
-					year: "2022",
-					title: "Quantum Computing – Building Concepts Advanced FDP",
-					detail: "Faculty development programme at Amity University."
-				},
-				{
-					year: "2022",
-					title: "Project Management FDP",
-					detail: "Faculty development programme from E&ICT Academy, IIT Kanpur."
-				},
-				{
-					year: "2020",
-					title: "Quantum Computing PDP",
-					detail: "Professional development programme at Malaviya National Institute of Technology (MNIT) Jaipur."
-				},
-				{
-					year: "Honor",
-					title: "Mr. Talented of the Year",
-					detail: "Academic & extracurricular excellence recognition during M.Tech post-graduation."
-				}
-			].map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("article", { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.year }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Award, {}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: item.title }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: item.detail })
-			] }, item.title))
-		})]
+				children: [
+					{
+						key: "all",
+						label: "All Recognitions"
+					},
+					{
+						key: "award",
+						label: "Research Awards"
+					},
+					{
+						key: "fdp",
+						label: "FDP & Training"
+					},
+					{
+						key: "honor",
+						label: "Academic Honors"
+					}
+				].map((tab) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+					onClick: () => setActiveTab(tab.key),
+					className: `filter-btn ${activeTab === tab.key ? "active" : ""}`,
+					style: {
+						padding: "0.5rem 1.2rem",
+						borderRadius: "9999px",
+						fontSize: "0.875rem",
+						fontWeight: 500,
+						cursor: "pointer",
+						transition: "all 0.2s ease"
+					},
+					children: tab.label
+				}, tab.key))
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "achievement-grid",
+				children: filtered.map((item) => {
+					const IconComp = item.icon;
+					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("article", {
+						className: "achievement-card",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								style: {
+									display: "flex",
+									justifyContent: "space-between",
+									alignItems: "center",
+									marginBottom: "0.75rem"
+								},
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "year-tag",
+									children: item.year
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "badge-pill",
+									style: {
+										fontSize: "0.75rem",
+										padding: "0.2rem 0.6rem",
+										borderRadius: "9999px",
+										opacity: .85
+									},
+									children: item.badge
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								style: {
+									display: "flex",
+									alignItems: "center",
+									gap: "0.75rem",
+									marginBottom: "0.5rem"
+								},
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									style: {
+										padding: "0.5rem",
+										borderRadius: "8px",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center"
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(IconComp, { size: 22 })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+									style: {
+										fontSize: "1.15rem",
+										margin: 0,
+										fontWeight: 600
+									},
+									children: item.title
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								style: {
+									fontSize: "0.825rem",
+									fontWeight: 500,
+									opacity: .7,
+									marginBottom: "0.5rem"
+								},
+								children: ["📍 ", item.organization]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								style: {
+									margin: 0,
+									fontSize: "0.9rem",
+									lineHeight: 1.5
+								},
+								children: item.detail
+							})
+						]
+					}, item.title);
+				})
+			})
+		]
 	});
 }
 function ProfilesPage() {
