@@ -3742,19 +3742,55 @@ function Footer() {
 }
 
 export function PortfolioApp({ section = "home" }: { section?: string }) {
-  const safeSection = (
-    [
-      "home",
-      ...primaryNav.map((item) => item.key),
-      ...moreNav.map((item) => item.key),
-      "news",
-      "repositories",
-      "books",
-      "profiles",
-    ].includes(section)
-      ? section
-      : "home"
-  ) as SectionKey;
+  const validSections = [
+    "home",
+    ...primaryNav.map((item) => item.key),
+    ...moreNav.map((item) => item.key),
+    "msp-live-frame",
+    "mspliveframe",
+    "mriframe",
+    "finger-frame",
+    "pen-app",
+    "penapp",
+    "news",
+    "repositories",
+    "books",
+    "profiles",
+  ];
+
+  const getEffectiveSection = (): SectionKey => {
+    let target = section;
+    if (typeof window !== "undefined" && (section === "home" || !section)) {
+      const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
+      if (pathSeg && validSections.includes(pathSeg)) {
+        target = pathSeg;
+      }
+    }
+    return (validSections.includes(target) ? target : "home") as SectionKey;
+  };
+
+  const [currentSection, setCurrentSection] = useState<SectionKey>(getEffectiveSection);
+
+  useEffect(() => {
+    setCurrentSection(getEffectiveSection());
+  }, [section]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleLocationChange = () => {
+      const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
+      if (pathSeg && validSections.includes(pathSeg)) {
+        setCurrentSection(pathSeg as SectionKey);
+      } else if (!pathSeg) {
+        setCurrentSection("home");
+      }
+    };
+
+    window.addEventListener("popstate", handleLocationChange);
+    return () => window.removeEventListener("popstate", handleLocationChange);
+  }, []);
+
+  const safeSection = currentSection;
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [searchOpen, setSearchOpen] = useState(false);
 
