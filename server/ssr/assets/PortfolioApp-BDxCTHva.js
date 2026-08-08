@@ -14398,6 +14398,9 @@ function PortfolioApp({ section = "home" }) {
 		"home",
 		...primaryNav.map((item) => item.key),
 		...moreNav.map((item) => item.key),
+		"resumebuilder",
+		"ResumeBuilder",
+		"resume-builder",
 		"msp-live-frame",
 		"mspliveframe",
 		"mriframe",
@@ -14411,10 +14414,16 @@ function PortfolioApp({ section = "home" }) {
 	];
 	const getEffectiveSection = () => {
 		let target = section;
-		if (typeof window !== "undefined" && (section === "home" || !section)) {
+		if (typeof window !== "undefined") {
 			const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
-			if (pathSeg && validSections.includes(pathSeg)) target = pathSeg;
+			if (pathSeg) {
+				const lower = pathSeg.toLowerCase();
+				if (lower === "resumebuilder" || lower === "resume-builder") return "resumebuilder";
+				if (validSections.includes(pathSeg)) target = pathSeg;
+			}
 		}
+		const lowerTarget = target ? target.toLowerCase() : "home";
+		if (lowerTarget === "resumebuilder" || lowerTarget === "resume-builder") return "resumebuilder";
 		return validSections.includes(target) ? target : "home";
 	};
 	const [currentSection, setCurrentSection] = (0, import_react.useState)(getEffectiveSection);
