@@ -9190,6 +9190,11 @@ var primaryNav = [
 		key: "projects"
 	},
 	{
+		label: "MSP Live Frame",
+		href: "/msp-live-frame",
+		key: "msp-live-frame"
+	},
+	{
 		label: "CV",
 		href: "/cv",
 		key: "cv"
@@ -9207,19 +9212,22 @@ var primaryNav = [
 ];
 var moreNav = [
 	{
-		label: "Sorting Visualizer",
-		href: "/sorting-visualizer",
-		key: "sorting-visualizer"
+		label: "MSP Live Frame",
+		href: "/msp-live-frame",
+		key: "msp-live-frame",
+		badge: "AI Vision"
 	},
 	{
 		label: "Inkora PenApp",
 		href: "/inkora",
-		key: "inkora"
+		key: "inkora",
+		badge: "App"
 	},
 	{
-		label: "MSP Live Frame",
-		href: "/msp-live-frame",
-		key: "msp-live-frame"
+		label: "Sorting Visualizer",
+		href: "/sorting-visualizer",
+		key: "sorting-visualizer",
+		badge: "Interactive"
 	},
 	{
 		label: "Awards & FDP",
@@ -9792,7 +9800,7 @@ function Header({ section, theme, onTheme, onSearch }) {
 								}), moreOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "more-menu",
 									role: "menu",
-									children: moreNav.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+									children: moreNav.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 										href: item.href,
 										role: "menuitem",
 										className: section === item.key ? "active" : "",
@@ -9801,7 +9809,10 @@ function Header({ section, theme, onTheme, onSearch }) {
 											setMoreOpen(false);
 											setMobileOpen(false);
 										},
-										children: item.label
+										children: [item.label, "badge" in item && item.badge && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "subdomain-mini-pill",
+											children: item.badge
+										})]
 									}, item.key))
 								})]
 							})
