@@ -63,6 +63,9 @@ type SectionKey =
   | "mspliveframe"
   | "mriframe"
   | "finger-frame"
+  | "resumebuilder"
+  | "ResumeBuilder"
+  | "resume-builder"
   | "cv"
   | "teaching"
   | "people"
@@ -3848,6 +3851,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     "home",
     ...primaryNav.map((item) => item.key),
     ...moreNav.map((item) => item.key),
+    "resumebuilder",
+    "ResumeBuilder",
+    "resume-builder",
     "msp-live-frame",
     "mspliveframe",
     "mriframe",
@@ -3862,11 +3868,21 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
 
   const getEffectiveSection = (): SectionKey => {
     let target = section;
-    if (typeof window !== "undefined" && (section === "home" || !section)) {
+    if (typeof window !== "undefined") {
       const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
-      if (pathSeg && validSections.includes(pathSeg)) {
-        target = pathSeg;
+      if (pathSeg) {
+        const lower = pathSeg.toLowerCase();
+        if (lower === "resumebuilder" || lower === "resume-builder") {
+          return "resumebuilder" as SectionKey;
+        }
+        if (validSections.includes(pathSeg)) {
+          target = pathSeg;
+        }
       }
+    }
+    const lowerTarget = target ? target.toLowerCase() : "home";
+    if (lowerTarget === "resumebuilder" || lowerTarget === "resume-builder") {
+      return "resumebuilder" as SectionKey;
     }
     return (validSections.includes(target) ? target : "home") as SectionKey;
   };
