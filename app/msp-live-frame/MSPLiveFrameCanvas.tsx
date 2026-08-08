@@ -687,7 +687,7 @@ export function MSPLiveFrameCanvas() {
       {/* Pro Floating Style Dock (Bottom Centered) */}
       <div className="msp-pro-dock">
         <div className="dock-effects-row">
-          {MSP_EFFECTS.map((eff, index) => (
+          {MSP_EFFECTS.map((eff) => (
             <button
               key={eff.id}
               className={`pro-dock-card ${effect === eff.id ? "active" : ""}`}
@@ -698,11 +698,7 @@ export function MSPLiveFrameCanvas() {
                 }
               }}
             >
-              <div className="dock-card-top">
-                <span className="hotkey-badge">{index + 1}</span>
-                <span className="effect-badge-pill">{eff.badge}</span>
-              </div>
-              <div className="dock-card-label">{eff.label}</div>
+              <span className="dock-card-label">{eff.label}</span>
             </button>
           ))}
         </div>
