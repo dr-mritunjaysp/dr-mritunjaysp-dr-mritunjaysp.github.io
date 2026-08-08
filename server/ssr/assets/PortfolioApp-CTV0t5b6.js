@@ -1453,6 +1453,1178 @@ function LottieIcon({ path, className = "", speed = 1, ariaHidden = true, style 
 		style
 	});
 }
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var FileText = createLucideIcon("file-text", [
+	["path", {
+		d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
+		key: "1oefj6"
+	}],
+	["path", {
+		d: "M14 2v5a1 1 0 0 0 1 1h5",
+		key: "wfsgrz"
+	}],
+	["path", {
+		d: "M10 9H8",
+		key: "b1mrlr"
+	}],
+	["path", {
+		d: "M16 13H8",
+		key: "t4e002"
+	}],
+	["path", {
+		d: "M16 17H8",
+		key: "z1uh3a"
+	}]
+]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Plus = createLucideIcon("plus", [["path", {
+	d: "M5 12h14",
+	key: "1ays0h"
+}], ["path", {
+	d: "M12 5v14",
+	key: "s699le"
+}]]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Printer = createLucideIcon("printer", [
+	["path", {
+		d: "M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2",
+		key: "143wyd"
+	}],
+	["path", {
+		d: "M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6",
+		key: "1itne7"
+	}],
+	["rect", {
+		x: "6",
+		y: "14",
+		width: "12",
+		height: "8",
+		rx: "1",
+		key: "1ue0tg"
+	}]
+]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Trash2 = createLucideIcon("trash-2", [
+	["path", {
+		d: "M10 11v6",
+		key: "nco0om"
+	}],
+	["path", {
+		d: "M14 11v6",
+		key: "outv1u"
+	}],
+	["path", {
+		d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6",
+		key: "miytrc"
+	}],
+	["path", {
+		d: "M3 6h18",
+		key: "d0wm0j"
+	}],
+	["path", {
+		d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
+		key: "e791ji"
+	}]
+]);
+/**
+* @license lucide-react v1.28.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var ArrowLeft = createLucideIcon("arrow-left", [["path", {
+	d: "m12 19-7-7 7-7",
+	key: "1l729n"
+}], ["path", {
+	d: "M19 12H5",
+	key: "x3x0zl"
+}]]);
+//#endregion
+//#region app/resumebuilder/ResumeBuilderApp.tsx
+var defaultResumeData = {
+	personal: {
+		fullName: "Dr. Mritunjay Shall Peelam",
+		headline: "Assistant Professor (Selection Grade) & Research Faculty | Ph.D. BITS Pilani",
+		email: "mritunjay.iete@gmail.com",
+		phone: "+91-8745080986",
+		website: "https://dr-mritunjaysp.com",
+		location: "Dehradun, Uttarakhand & Mirzapur, UP, India"
+	},
+	summary: "Ph.D. scholar from BITS Pilani specializing in Blockchain Interoperability, Quantum IoT Security, Post-Quantum Cryptography, and Intelligent Transportation Systems. Author of multiple Q1 IEEE/Elsevier journal articles with high citation impact.",
+	skills: [
+		"Blockchain Protocols (PoA, IBC, Cosmos)",
+		"Post-Quantum Cryptography (FALCON)",
+		"Quantum Key Distribution (QKD)",
+		"Edge AI & Federated Learning",
+		"Intelligent Transportation Systems (ITS)",
+		"Python",
+		"C / C++",
+		"Solidty",
+		"Linux Kernel & OS",
+		"Vite / Next.js / TypeScript"
+	],
+	education: [{
+		institution: "Birla Institute of Technology and Science (BITS), Pilani",
+		degree: "Ph.D. in Electrical & Electronics Engineering",
+		specialization: "Blockchain & Intelligent Transportation Systems",
+		start: "2020",
+		end: "2025",
+		score: "Ph.D. Awarded",
+		thesisTitle: "Blockchain-Based Secure Frameworks for Intelligent Transportation Systems"
+	}, {
+		institution: "M.Tech in Electronics & Communication Engineering",
+		degree: "Master of Technology (M.Tech)",
+		specialization: "Embedded Systems & Signal Processing",
+		start: "2016",
+		end: "2018",
+		score: "9.2 CGPA (Gold Medalist)"
+	}],
+	experience: [{
+		organization: "UPES Dehradun",
+		role: "Assistant Professor (Selection Grade) & Research Faculty",
+		start: "2024",
+		end: "Present",
+		details: "Teaching Software Engineering, OS, and Data Structures. Supervising undergraduate and doctoral research projects in Blockchain & Quantum Security."
+	}, {
+		organization: "BITS Pilani",
+		role: "Graduate Research & Teaching Assistant",
+		start: "2020",
+		end: "2024",
+		details: "Conducted high-impact research published in Q1 IEEE/Elsevier journals. Assisted in curriculum labs and research colloquiums."
+	}],
+	publications: [
+		{
+			title: "Quantum computing applications for Internet of Things",
+			journal: "IET Quantum Communication",
+			year: "2024",
+			impactFactor: "3.8",
+			quartile: "Q1",
+			doi: "10.1049/qtc2.12089"
+		},
+		{
+			title: "QIoTChain: Quantum IoT-blockchain fusion for advanced data protection in Industry 4.0",
+			journal: "Elsevier Computers & Electrical Engineering",
+			year: "2025",
+			impactFactor: "4.3",
+			quartile: "Q1",
+			doi: "10.1016/j.compeleceng.2024.109201"
+		},
+		{
+			title: "DemocracyGuard: Blockchain-based secure voting framework for digital democracy",
+			journal: "Wiley Security and Privacy",
+			year: "2025",
+			impactFactor: "3.2",
+			quartile: "Q1",
+			doi: "10.1002/spy2.392"
+		}
+	],
+	awards: [{
+		title: "Best Researcher Award",
+		organization: "International Research Excellence Forum",
+		year: "2026",
+		detail: "Recognized for high-impact research contributions in Blockchain & Post-Quantum IoT Security."
+	}, {
+		title: "Wiley Top Viewed Article 2025",
+		organization: "Wiley & Sons",
+		year: "2026",
+		detail: "DemocracyGuard research paper awarded top readership distinction."
+	}]
+};
+function ResumeBuilderApp() {
+	const [data, setData] = (0, import_react.useState)(() => {
+		if (typeof window !== "undefined") {
+			const saved = localStorage.getItem("scholar-resume:data");
+			if (saved) try {
+				return JSON.parse(saved);
+			} catch {}
+		}
+		return defaultResumeData;
+	});
+	const [activeTab, setActiveTab] = (0, import_react.useState)("personal");
+	const [newSkill, setNewSkill] = (0, import_react.useState)("");
+	const previewRef = (0, import_react.useRef)(null);
+	(0, import_react.useEffect)(() => {
+		if (typeof window !== "undefined") localStorage.setItem("scholar-resume:data", JSON.stringify(data));
+	}, [data]);
+	const handlePrint = () => {
+		if (typeof window !== "undefined") window.print();
+	};
+	const handleReset = () => {
+		if (confirm("Reset resume content back to default template?")) setData(defaultResumeData);
+	};
+	const addSkill = () => {
+		if (newSkill.trim()) {
+			setData((prev) => ({
+				...prev,
+				skills: [...prev.skills, newSkill.trim()]
+			}));
+			setNewSkill("");
+		}
+	};
+	const removeSkill = (index) => {
+		setData((prev) => ({
+			...prev,
+			skills: prev.skills.filter((_, i) => i !== index)
+		}));
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "resume-builder-root",
+		style: {
+			minHeight: "100vh",
+			padding: "1.5rem 1rem",
+			background: "var(--site-bg, #090d16)",
+			color: "#f8fafc"
+		},
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
+			style: {
+				maxWidth: "1200px",
+				margin: "0 auto 1.5rem",
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "center",
+				flexWrap: "wrap",
+				gap: "1rem",
+				borderBottom: "1px solid rgba(255,255,255,0.1)",
+				paddingBottom: "1rem"
+			},
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				style: {
+					display: "flex",
+					alignItems: "center",
+					gap: "0.75rem"
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+					href: "/",
+					style: {
+						display: "inline-flex",
+						alignItems: "center",
+						gap: "0.4rem",
+						color: "#38bdf8",
+						textDecoration: "none",
+						fontSize: "0.875rem",
+						fontWeight: 600
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { size: 16 }), " Back to Portfolio"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
+					style: {
+						fontSize: "1.5rem",
+						fontWeight: 800,
+						margin: 0,
+						display: "flex",
+						alignItems: "center",
+						gap: "0.5rem"
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, {
+						className: "text-blue-400",
+						size: 24
+					}), " ScholarResume Builder"]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				style: {
+					display: "flex",
+					gap: "0.5rem",
+					flexWrap: "wrap"
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					onClick: handleReset,
+					style: {
+						padding: "0.5rem 1rem",
+						borderRadius: "8px",
+						border: "1px solid rgba(255,255,255,0.2)",
+						background: "transparent",
+						color: "#cbd5e1",
+						fontSize: "0.85rem",
+						cursor: "pointer",
+						display: "flex",
+						alignItems: "center",
+						gap: "0.4rem"
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RotateCcw, { size: 15 }), " Reset Template"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					onClick: handlePrint,
+					style: {
+						padding: "0.5rem 1.25rem",
+						borderRadius: "8px",
+						background: "linear-gradient(135deg, #0284c7, #2563eb)",
+						color: "#ffffff",
+						fontWeight: 700,
+						fontSize: "0.875rem",
+						border: "none",
+						cursor: "pointer",
+						display: "flex",
+						alignItems: "center",
+						gap: "0.4rem",
+						boxShadow: "0 4px 12px rgba(2, 132, 199, 0.3)"
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Printer, { size: 16 }), " Print / Save as PDF"]
+				})]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			style: {
+				maxWidth: "1200px",
+				margin: "0 auto",
+				display: "grid",
+				gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+				gap: "1.5rem"
+			},
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				style: {
+					background: "rgba(15, 23, 42, 0.8)",
+					backdropFilter: "blur(12px)",
+					border: "1px solid rgba(255,255,255,0.1)",
+					borderRadius: "16px",
+					padding: "1.25rem"
+				},
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						style: {
+							display: "flex",
+							gap: "0.4rem",
+							overflowX: "auto",
+							paddingBottom: "0.75rem",
+							marginBottom: "1rem",
+							borderBottom: "1px solid rgba(255,255,255,0.08)"
+						},
+						children: [
+							{
+								id: "personal",
+								label: "Personal"
+							},
+							{
+								id: "summary",
+								label: "Summary"
+							},
+							{
+								id: "skills",
+								label: "Skills"
+							},
+							{
+								id: "education",
+								label: "Education"
+							},
+							{
+								id: "experience",
+								label: "Experience"
+							},
+							{
+								id: "publications",
+								label: "Papers"
+							},
+							{
+								id: "awards",
+								label: "Awards"
+							}
+						].map((tab) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							onClick: () => setActiveTab(tab.id),
+							style: {
+								padding: "0.4rem 0.8rem",
+								borderRadius: "6px",
+								fontSize: "0.8rem",
+								fontWeight: 600,
+								whiteSpace: "nowrap",
+								border: "none",
+								cursor: "pointer",
+								background: activeTab === tab.id ? "#0284c7" : "rgba(255,255,255,0.05)",
+								color: activeTab === tab.id ? "#ffffff" : "#94a3b8"
+							},
+							children: tab.label
+						}, tab.id))
+					}),
+					activeTab === "personal" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						style: {
+							display: "flex",
+							flexDirection: "column",
+							gap: "0.8rem"
+						},
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+								style: {
+									fontSize: "0.8rem",
+									color: "#94a3b8"
+								},
+								children: "Full Name"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								value: data.personal.fullName,
+								onChange: (e) => setData({
+									...data,
+									personal: {
+										...data.personal,
+										fullName: e.target.value
+									}
+								}),
+								style: {
+									padding: "0.5rem",
+									borderRadius: "6px",
+									background: "#090d16",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+								style: {
+									fontSize: "0.8rem",
+									color: "#94a3b8"
+								},
+								children: "Title / Headline"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								value: data.personal.headline,
+								onChange: (e) => setData({
+									...data,
+									personal: {
+										...data.personal,
+										headline: e.target.value
+									}
+								}),
+								style: {
+									padding: "0.5rem",
+									borderRadius: "6px",
+									background: "#090d16",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+								style: {
+									fontSize: "0.8rem",
+									color: "#94a3b8"
+								},
+								children: "Email Address"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								value: data.personal.email,
+								onChange: (e) => setData({
+									...data,
+									personal: {
+										...data.personal,
+										email: e.target.value
+									}
+								}),
+								style: {
+									padding: "0.5rem",
+									borderRadius: "6px",
+									background: "#090d16",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+								style: {
+									fontSize: "0.8rem",
+									color: "#94a3b8"
+								},
+								children: "Phone Number"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								value: data.personal.phone,
+								onChange: (e) => setData({
+									...data,
+									personal: {
+										...data.personal,
+										phone: e.target.value
+									}
+								}),
+								style: {
+									padding: "0.5rem",
+									borderRadius: "6px",
+									background: "#090d16",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+								style: {
+									fontSize: "0.8rem",
+									color: "#94a3b8"
+								},
+								children: "Website URL"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								value: data.personal.website,
+								onChange: (e) => setData({
+									...data,
+									personal: {
+										...data.personal,
+										website: e.target.value
+									}
+								}),
+								style: {
+									padding: "0.5rem",
+									borderRadius: "6px",
+									background: "#090d16",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+								style: {
+									fontSize: "0.8rem",
+									color: "#94a3b8"
+								},
+								children: "Location"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								value: data.personal.location,
+								onChange: (e) => setData({
+									...data,
+									personal: {
+										...data.personal,
+										location: e.target.value
+									}
+								}),
+								style: {
+									padding: "0.5rem",
+									borderRadius: "6px",
+									background: "#090d16",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							})
+						]
+					}),
+					activeTab === "summary" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						style: {
+							display: "flex",
+							flexDirection: "column",
+							gap: "0.8rem"
+						},
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							style: {
+								fontSize: "0.8rem",
+								color: "#94a3b8"
+							},
+							children: "Research Summary"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+							rows: 6,
+							value: data.summary,
+							onChange: (e) => setData({
+								...data,
+								summary: e.target.value
+							}),
+							style: {
+								padding: "0.5rem",
+								borderRadius: "6px",
+								background: "#090d16",
+								border: "1px solid #334155",
+								color: "#fff",
+								lineHeight: 1.5
+							}
+						})]
+					}),
+					activeTab === "skills" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						style: {
+							display: "flex",
+							flexDirection: "column",
+							gap: "0.8rem"
+						},
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+								style: {
+									fontSize: "0.8rem",
+									color: "#94a3b8"
+								},
+								children: "Add Technical / Research Skill"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								style: {
+									display: "flex",
+									gap: "0.5rem"
+								},
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+									value: newSkill,
+									onChange: (e) => setNewSkill(e.target.value),
+									onKeyDown: (e) => e.key === "Enter" && addSkill(),
+									placeholder: "e.g. Quantum Cryptography",
+									style: {
+										flex: 1,
+										padding: "0.5rem",
+										borderRadius: "6px",
+										background: "#090d16",
+										border: "1px solid #334155",
+										color: "#fff"
+									}
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+									onClick: addSkill,
+									style: {
+										padding: "0.5rem 1rem",
+										background: "#0284c7",
+										color: "#fff",
+										border: "none",
+										borderRadius: "6px",
+										cursor: "pointer"
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { size: 16 })
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								style: {
+									display: "flex",
+									flexWrap: "wrap",
+									gap: "0.4rem",
+									marginTop: "0.5rem"
+								},
+								children: data.skills.map((skill, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									style: {
+										padding: "0.3rem 0.6rem",
+										background: "rgba(2,132,199,0.2)",
+										border: "1px solid rgba(2,132,199,0.4)",
+										borderRadius: "6px",
+										fontSize: "0.8rem",
+										color: "#e2e8f0",
+										display: "inline-flex",
+										alignItems: "center",
+										gap: "0.4rem"
+									},
+									children: [skill, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, {
+										size: 12,
+										style: {
+											cursor: "pointer",
+											color: "#f87171"
+										},
+										onClick: () => removeSkill(index)
+									})]
+								}, index))
+							})
+						]
+					}),
+					activeTab === "education" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						style: {
+							display: "flex",
+							flexDirection: "column",
+							gap: "1rem"
+						},
+						children: data.education.map((edu, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: {
+								border: "1px solid rgba(255,255,255,0.1)",
+								borderRadius: "8px",
+								padding: "0.75rem",
+								background: "#090d16"
+							},
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								placeholder: "Institution",
+								value: edu.institution,
+								onChange: (e) => {
+									const next = [...data.education];
+									next[index].institution = e.target.value;
+									setData({
+										...data,
+										education: next
+									});
+								},
+								style: {
+									width: "100%",
+									padding: "0.4rem",
+									marginBottom: "0.4rem",
+									borderRadius: "4px",
+									background: "#0f172a",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								placeholder: "Degree",
+								value: edu.degree,
+								onChange: (e) => {
+									const next = [...data.education];
+									next[index].degree = e.target.value;
+									setData({
+										...data,
+										education: next
+									});
+								},
+								style: {
+									width: "100%",
+									padding: "0.4rem",
+									marginBottom: "0.4rem",
+									borderRadius: "4px",
+									background: "#0f172a",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							})]
+						}, index))
+					}),
+					activeTab === "experience" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						style: {
+							display: "flex",
+							flexDirection: "column",
+							gap: "1rem"
+						},
+						children: data.experience.map((exp, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: {
+								border: "1px solid rgba(255,255,255,0.1)",
+								borderRadius: "8px",
+								padding: "0.75rem",
+								background: "#090d16"
+							},
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								placeholder: "Organization",
+								value: exp.organization,
+								onChange: (e) => {
+									const next = [...data.experience];
+									next[index].organization = e.target.value;
+									setData({
+										...data,
+										experience: next
+									});
+								},
+								style: {
+									width: "100%",
+									padding: "0.4rem",
+									marginBottom: "0.4rem",
+									borderRadius: "4px",
+									background: "#0f172a",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								placeholder: "Role",
+								value: exp.role,
+								onChange: (e) => {
+									const next = [...data.experience];
+									next[index].role = e.target.value;
+									setData({
+										...data,
+										experience: next
+									});
+								},
+								style: {
+									width: "100%",
+									padding: "0.4rem",
+									marginBottom: "0.4rem",
+									borderRadius: "4px",
+									background: "#0f172a",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							})]
+						}, index))
+					}),
+					activeTab === "publications" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						style: {
+							display: "flex",
+							flexDirection: "column",
+							gap: "1rem"
+						},
+						children: data.publications.map((pub, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: {
+								border: "1px solid rgba(255,255,255,0.1)",
+								borderRadius: "8px",
+								padding: "0.75rem",
+								background: "#090d16"
+							},
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								placeholder: "Paper Title",
+								value: pub.title,
+								onChange: (e) => {
+									const next = [...data.publications];
+									next[index].title = e.target.value;
+									setData({
+										...data,
+										publications: next
+									});
+								},
+								style: {
+									width: "100%",
+									padding: "0.4rem",
+									marginBottom: "0.4rem",
+									borderRadius: "4px",
+									background: "#0f172a",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								placeholder: "Journal / Conference",
+								value: pub.journal,
+								onChange: (e) => {
+									const next = [...data.publications];
+									next[index].journal = e.target.value;
+									setData({
+										...data,
+										publications: next
+									});
+								},
+								style: {
+									width: "100%",
+									padding: "0.4rem",
+									borderRadius: "4px",
+									background: "#0f172a",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							})]
+						}, index))
+					}),
+					activeTab === "awards" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						style: {
+							display: "flex",
+							flexDirection: "column",
+							gap: "1rem"
+						},
+						children: data.awards.map((award, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							style: {
+								border: "1px solid rgba(255,255,255,0.1)",
+								borderRadius: "8px",
+								padding: "0.75rem",
+								background: "#090d16"
+							},
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								placeholder: "Award Title",
+								value: award.title,
+								onChange: (e) => {
+									const next = [...data.awards];
+									next[index].title = e.target.value;
+									setData({
+										...data,
+										awards: next
+									});
+								},
+								style: {
+									width: "100%",
+									padding: "0.4rem",
+									marginBottom: "0.4rem",
+									borderRadius: "4px",
+									background: "#0f172a",
+									border: "1px solid #334155",
+									color: "#fff"
+								}
+							})
+						}, index))
+					})
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				ref: previewRef,
+				className: "print-area",
+				style: {
+					background: "#ffffff",
+					color: "#0f172a",
+					borderRadius: "12px",
+					padding: "2.5rem",
+					boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+					fontFamily: "serif"
+				},
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
+						style: {
+							borderBottom: "2px solid #0284c7",
+							paddingBottom: "1rem",
+							marginBottom: "1.25rem"
+						},
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+								style: {
+									fontSize: "1.85rem",
+									margin: "0 0 0.25rem",
+									color: "#0f172a",
+									fontWeight: 700
+								},
+								children: data.personal.fullName
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								style: {
+									fontSize: "0.95rem",
+									color: "#0284c7",
+									fontWeight: 600,
+									margin: "0 0 0.75rem"
+								},
+								children: data.personal.headline
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								style: {
+									display: "flex",
+									flexWrap: "wrap",
+									gap: "1rem",
+									fontSize: "0.85rem",
+									color: "#475569"
+								},
+								children: [
+									data.personal.email && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["✉ ", data.personal.email] }),
+									data.personal.phone && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["📞 ", data.personal.phone] }),
+									data.personal.website && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["🌐 ", data.personal.website] }),
+									data.personal.location && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["📍 ", data.personal.location] })
+								]
+							})
+						]
+					}),
+					data.summary && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+						style: { marginBottom: "1.25rem" },
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							style: {
+								fontSize: "1.1rem",
+								textTransform: "uppercase",
+								letterSpacing: "0.05em",
+								color: "#0284c7",
+								borderBottom: "1px solid #e2e8f0",
+								paddingBottom: "0.25rem",
+								margin: "0 0 0.5rem"
+							},
+							children: "Research Summary"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							style: {
+								fontSize: "0.9rem",
+								lineHeight: 1.6,
+								margin: 0,
+								color: "#334155"
+							},
+							children: data.summary
+						})]
+					}),
+					data.skills.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+						style: { marginBottom: "1.25rem" },
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							style: {
+								fontSize: "1.1rem",
+								textTransform: "uppercase",
+								letterSpacing: "0.05em",
+								color: "#0284c7",
+								borderBottom: "1px solid #e2e8f0",
+								paddingBottom: "0.25rem",
+								margin: "0 0 0.5rem"
+							},
+							children: "Key Technical & Research Expertise"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							style: {
+								display: "flex",
+								flexWrap: "wrap",
+								gap: "0.4rem"
+							},
+							children: data.skills.map((skill, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								style: {
+									padding: "0.2rem 0.5rem",
+									background: "#f1f5f9",
+									border: "1px solid #cbd5e1",
+									borderRadius: "4px",
+									fontSize: "0.8rem",
+									color: "#1e293b",
+									fontWeight: 600
+								},
+								children: skill
+							}, index))
+						})]
+					}),
+					data.education.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+						style: { marginBottom: "1.25rem" },
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							style: {
+								fontSize: "1.1rem",
+								textTransform: "uppercase",
+								letterSpacing: "0.05em",
+								color: "#0284c7",
+								borderBottom: "1px solid #e2e8f0",
+								paddingBottom: "0.25rem",
+								margin: "0 0 0.5rem"
+							},
+							children: "Education"
+						}), data.education.map((edu, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: { marginBottom: "0.75rem" },
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									style: {
+										display: "flex",
+										justifyContent: "space-between",
+										fontWeight: 700,
+										fontSize: "0.95rem"
+									},
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: edu.institution }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										style: {
+											color: "#64748b",
+											fontWeight: 500
+										},
+										children: [
+											edu.start,
+											" - ",
+											edu.end
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									style: {
+										fontSize: "0.875rem",
+										fontStyle: "italic",
+										color: "#0284c7"
+									},
+									children: [
+										edu.degree,
+										" — ",
+										edu.specialization
+									]
+								}),
+								edu.score && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									style: {
+										fontSize: "0.825rem",
+										color: "#475569"
+									},
+									children: ["Grade/Status: ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: edu.score })]
+								}),
+								edu.thesisTitle && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									style: {
+										fontSize: "0.825rem",
+										color: "#475569"
+									},
+									children: ["Thesis: ", edu.thesisTitle]
+								})
+							]
+						}, i))]
+					}),
+					data.experience.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+						style: { marginBottom: "1.25rem" },
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							style: {
+								fontSize: "1.1rem",
+								textTransform: "uppercase",
+								letterSpacing: "0.05em",
+								color: "#0284c7",
+								borderBottom: "1px solid #e2e8f0",
+								paddingBottom: "0.25rem",
+								margin: "0 0 0.5rem"
+							},
+							children: "Academic & Professional Experience"
+						}), data.experience.map((exp, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: { marginBottom: "0.75rem" },
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									style: {
+										display: "flex",
+										justifyContent: "space-between",
+										fontWeight: 700,
+										fontSize: "0.95rem"
+									},
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: exp.organization }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										style: {
+											color: "#64748b",
+											fontWeight: 500
+										},
+										children: [
+											exp.start,
+											" - ",
+											exp.end
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									style: {
+										fontSize: "0.875rem",
+										fontStyle: "italic",
+										color: "#0284c7",
+										marginBottom: "0.25rem"
+									},
+									children: exp.role
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									style: {
+										fontSize: "0.875rem",
+										margin: 0,
+										color: "#334155",
+										lineHeight: 1.5
+									},
+									children: exp.details
+								})
+							]
+						}, i))]
+					}),
+					data.publications.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+						style: { marginBottom: "1.25rem" },
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							style: {
+								fontSize: "1.1rem",
+								textTransform: "uppercase",
+								letterSpacing: "0.05em",
+								color: "#0284c7",
+								borderBottom: "1px solid #e2e8f0",
+								paddingBottom: "0.25rem",
+								margin: "0 0 0.5rem"
+							},
+							children: "Select Research Publications"
+						}), data.publications.map((pub, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: {
+								marginBottom: "0.6rem",
+								fontSize: "0.875rem",
+								lineHeight: 1.5,
+								color: "#334155"
+							},
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("strong", { children: [
+									"[",
+									i + 1,
+									"] ",
+									pub.title
+								] }),
+								". ",
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("em", { children: pub.journal }),
+								" (",
+								pub.year,
+								"). ",
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									style: {
+										color: "#0284c7",
+										fontWeight: 600
+									},
+									children: [
+										pub.quartile,
+										" (IF: ",
+										pub.impactFactor,
+										")"
+									]
+								}),
+								". DOI: ",
+								pub.doi
+							]
+						}, i))]
+					}),
+					data.awards.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+						style: {
+							fontSize: "1.1rem",
+							textTransform: "uppercase",
+							letterSpacing: "0.05em",
+							color: "#0284c7",
+							borderBottom: "1px solid #e2e8f0",
+							paddingBottom: "0.25rem",
+							margin: "0 0 0.5rem"
+						},
+						children: "Honors & Recognitions"
+					}), data.awards.map((award, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						style: {
+							marginBottom: "0.5rem",
+							fontSize: "0.875rem"
+						},
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: award.title }),
+							" — ",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("em", { children: award.organization }),
+							" (",
+							award.year,
+							"). ",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								style: { color: "#475569" },
+								children: award.detail
+							})
+						]
+					}, i))] })
+				]
+			})]
+		})]
+	});
+}
 //#endregion
 //#region app/ScrollJumpButton.tsx
 function getScrollMetrics() {
@@ -4613,47 +5785,6 @@ var FileSpreadsheet = createLucideIcon("file-spreadsheet", [
 		key: "10kma7"
 	}]
 ]);
-/**
-* @license lucide-react v1.28.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
-var Plus = createLucideIcon("plus", [["path", {
-	d: "M5 12h14",
-	key: "1ays0h"
-}], ["path", {
-	d: "M12 5v14",
-	key: "s699le"
-}]]);
-/**
-* @license lucide-react v1.28.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
-var Trash2 = createLucideIcon("trash-2", [
-	["path", {
-		d: "M10 11v6",
-		key: "nco0om"
-	}],
-	["path", {
-		d: "M14 11v6",
-		key: "outv1u"
-	}],
-	["path", {
-		d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6",
-		key: "miytrc"
-	}],
-	["path", {
-		d: "M3 6h18",
-		key: "d0wm0j"
-	}],
-	["path", {
-		d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
-		key: "e791ji"
-	}]
-]);
 //#endregion
 //#region app/sorting/SortingVisualizer.tsx
 function SortingVisualizer() {
@@ -6438,34 +7569,6 @@ var Paperclip = createLucideIcon("paperclip", [["path", {
 	d: "m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551",
 	key: "1miecu"
 }]]);
-/**
-* @license lucide-react v1.28.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
-var FileText = createLucideIcon("file-text", [
-	["path", {
-		d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
-		key: "1oefj6"
-	}],
-	["path", {
-		d: "M14 2v5a1 1 0 0 0 1 1h5",
-		key: "wfsgrz"
-	}],
-	["path", {
-		d: "M10 9H8",
-		key: "b1mrlr"
-	}],
-	["path", {
-		d: "M16 13H8",
-		key: "t4e002"
-	}],
-	["path", {
-		d: "M16 17H8",
-		key: "z1uh3a"
-	}]
-]);
 //#endregion
 //#region app/inkora/InkSurfaceCanvas.tsx
 function InkSurfaceCanvas() {
@@ -9651,6 +10754,11 @@ var primaryNav = [
 	}
 ];
 var moreNav = [
+	{
+		label: "Resume Builder",
+		href: "/ResumeBuilder",
+		key: "resumebuilder"
+	},
 	{
 		label: "MSP Live Frame",
 		href: "/msp-live-frame",
@@ -13412,6 +14520,11 @@ function PortfolioApp({ section = "home" }) {
 			break;
 		case "profiles":
 			content = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ProfilesPage, {});
+			break;
+		case "resumebuilder":
+		case "ResumeBuilder":
+		case "resume-builder":
+			content = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResumeBuilderApp, {});
 			break;
 		default: content = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HomePage, {});
 	}
