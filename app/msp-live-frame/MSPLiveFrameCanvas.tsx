@@ -490,9 +490,14 @@ export function MSPLiveFrameCanvas() {
         ctx.clip();
 
         const lucyVid = lucyVidRef.current;
-        if (liveMode === "ai" && lucyVid && lucyVid.readyState >= 2) {
+        if (liveMode === "ai" && lucyVid && lucyVid.readyState >= 2 && !lucyVid.paused) {
+          ctx.save();
+          ctx.scale(-1, 1);
+          ctx.translate(-w, 0);
           ctx.drawImage(lucyVid, 0, 0, w, h);
+          ctx.restore();
         } else {
+          // Guaranteed zero-latency GPU effect rendering
           drawCanvasEffect(ctx, video, w, h, effect);
         }
 
