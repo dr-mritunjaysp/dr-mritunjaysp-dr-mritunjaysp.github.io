@@ -11696,6 +11696,11 @@ function AwardsPage() {
 			children: [
 				{
 					year: "2026",
+					title: "Best Researcher Award",
+					detail: "International recognition for research excellence in blockchain, post-quantum security & intelligent transportation systems."
+				},
+				{
+					year: "2026",
 					title: "Wiley Top Viewed Article 2025",
 					detail: "Recognized for DemocracyGuard: Blockchain-based secure voting framework for digital democracy."
 				},
@@ -11716,13 +11721,23 @@ function AwardsPage() {
 				},
 				{
 					year: "2022",
-					title: "Project Management",
+					title: "Quantum Computing – Building Concepts Advanced FDP",
+					detail: "Faculty development programme at Amity University."
+				},
+				{
+					year: "2022",
+					title: "Project Management FDP",
 					detail: "Faculty development programme from E&ICT Academy, IIT Kanpur."
 				},
 				{
 					year: "2020",
-					title: "Quantum Computing",
-					detail: "Professional development programme at Malaviya National Institute of Technology Jaipur."
+					title: "Quantum Computing PDP",
+					detail: "Professional development programme at Malaviya National Institute of Technology (MNIT) Jaipur."
+				},
+				{
+					year: "Honor",
+					title: "Mr. Talented of the Year",
+					detail: "Academic & extracurricular excellence recognition during M.Tech post-graduation."
 				}
 			].map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("article", { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.year }),
