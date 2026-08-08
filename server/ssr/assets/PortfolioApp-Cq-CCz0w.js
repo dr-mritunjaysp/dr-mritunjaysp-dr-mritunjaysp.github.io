@@ -1373,6 +1373,7 @@ function createFreshUrl() {
 }
 function LiveUpdateRefresh() {
 	(0, import_react.useEffect)(() => {
+		if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) return;
 		const currentSignature = getAssetSignature(document);
 		const abortController = new AbortController();
 		let checking = false;
