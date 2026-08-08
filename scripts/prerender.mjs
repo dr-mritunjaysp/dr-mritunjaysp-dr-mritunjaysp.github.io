@@ -37,6 +37,9 @@ async function prerender() {
     "/blockchain",
     "/poems",
     "/motivations",
+    "/resumebuilder",
+    "/ResumeBuilder",
+    "/resume-builder",
   ];
 
   const distDir = path.join(projectRoot, "dist");

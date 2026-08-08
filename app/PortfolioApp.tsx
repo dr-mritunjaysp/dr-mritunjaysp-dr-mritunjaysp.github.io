@@ -42,6 +42,7 @@ import { FaLinkedinIn, FaEnvelope, FaFileLines } from "react-icons/fa6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LiveUpdateRefresh } from "./LiveUpdateRefresh";
 import { LottieIcon } from "./LottieIcon";
+import { ResumeBuilderApp } from "./resumebuilder/ResumeBuilderApp";
 import { ScrollJumpButton } from "./ScrollJumpButton";
 import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationCitations } from "./firebase";
 import type { ScholarMetrics } from "./firebase";
@@ -100,6 +101,7 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
+  { label: "Resume Builder", href: "/ResumeBuilder", key: "resumebuilder" },
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
   { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
@@ -3982,6 +3984,11 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "profiles":
       content = <ProfilesPage />;
+      break;
+    case "resumebuilder":
+    case "ResumeBuilder":
+    case "resume-builder":
+      content = <ResumeBuilderApp />;
       break;
     default:
       content = <HomePage />;

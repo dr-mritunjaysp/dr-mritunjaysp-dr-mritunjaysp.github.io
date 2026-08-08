@@ -29,6 +29,9 @@ export function generateStaticParams() {
     "repositories",
     "books",
     "profiles",
+    "resumebuilder",
+    "ResumeBuilder",
+    "resume-builder",
   ].map((section) => ({ section }));
 }
 
