@@ -988,6 +988,54 @@ export function MSPLiveFrameCanvas() {
                   </div>
                 </div>
               </div>
+
+              {/* Section 3: AI Connection Status Guide */}
+              <div style={{ marginTop: "24px" }}>
+                <h4 style={{ color: "#a855f7", fontSize: "0.92rem", fontWeight: 800, marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Zap size={16} /> Connection Status Badges & Diagnostics
+                </h4>
+                <div className="help-step-list">
+                  <div className="help-step-item">
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 10px #10b981", marginTop: "6px", flexShrink: 0 }} />
+                    <div>
+                      <strong style={{ color: "#34d399" }}>🟢 CONNECTED (30 FPS)</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Decart Lucy 2.5 WebRTC session is active! Streaming 30fps video-to-video AI rendering inside your gesture box.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="help-step-item">
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#eab308", marginTop: "6px", flexShrink: 0 }} />
+                    <div>
+                      <strong style={{ color: "#fde047" }}>🟡 CONNECTING…</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Exchanging WebRTC SDP handshake & audio/video tracks with Decart AI servers.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="help-step-item">
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#ef4444", marginTop: "6px", flexShrink: 0 }} />
+                    <div>
+                      <strong style={{ color: "#fca5a5" }}>🔴 DISCONNECTED / ERROR</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        Connection failed. Verify key starts with <code style={{ color: "#ef4444", background: "rgba(239,68,68,0.15)", padding: "1px 6px", borderRadius: "4px" }}>decart_sec_...</code>, check network, and launch camera.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="help-step-item">
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#94a3b8", marginTop: "6px", flexShrink: 0 }} />
+                    <div>
+                      <strong style={{ color: "#cbd5e1" }}>⚪ OFFLINE (GPU Canvas Mode)</strong>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.5" }}>
+                        No API key provided. Studio seamlessly uses built-in GPU canvas artistic filters working 100% offline with zero latency.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="msp-modal-footer">
               <button className="btn-sort-secondary" onClick={() => { setShowHelpModal(false); setShowKeyPanel(true); }}>
