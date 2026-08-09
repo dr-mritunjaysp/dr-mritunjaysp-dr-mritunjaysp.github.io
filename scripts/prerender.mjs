@@ -88,13 +88,7 @@ async function prerender() {
     }
   }
 
-  // Copy CNAME into dist/
-  const cnameSrc = path.join(projectRoot, "CNAME");
-  if (fs.existsSync(cnameSrc)) {
-    fs.copyFileSync(cnameSrc, path.join(distDir, "CNAME"));
-  }
-
-  // Create .nojekyll in dist/
+  // Create .nojekyll in dist/ (kept for compatibility)
   fs.writeFileSync(path.join(distDir, ".nojekyll"), "# Disable Jekyll", "utf8");
 
   // Copy Resume Builder standalone app into dist/ResumeBuilder/
