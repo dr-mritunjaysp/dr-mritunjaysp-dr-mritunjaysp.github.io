@@ -12,24 +12,14 @@
       "**/*.bin",
       "**/*.msi"
     ],
-    "cleanUrls": true,
-    "trailingSlash": false,
     "rewrites": [
-      {
-        "source": "/ResumeBuilder",
-        "destination": "/ResumeBuilder/index.html"
-      },
       {
         "source": "/ResumeBuilder/**",
         "destination": "/ResumeBuilder/index.html"
       },
       {
-        "source": "/resumebuilder",
-        "destination": "/ResumeBuilder/index.html"
-      },
-      {
         "source": "/resumebuilder/**",
-        "destination": "/ResumeBuilder/index.html"
+        "destination": "/resumebuilder/index.html"
       },
       {
         "source": "**",
