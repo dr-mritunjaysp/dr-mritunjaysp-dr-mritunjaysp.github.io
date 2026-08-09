@@ -646,7 +646,7 @@ function Header({
             {moreOpen && (
               <div className="more-menu" role="menu">
                 <a
-                  href="/ResumeBuilder/"
+                  href="/resumebuilder"
                   role="menuitem"
                   onClick={(e) => {
                     e.stopPropagation();
