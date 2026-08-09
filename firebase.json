@@ -16,8 +16,8 @@
     "trailingSlash": false,
     "rewrites": [
       {
-        "source": "/resumebuilder/**",
-        "destination": "/resumebuilder/index.html"
+        "source": "/ResumeBuilder/**",
+        "destination": "/ResumeBuilder/index.html"
       },
       {
         "source": "**",
