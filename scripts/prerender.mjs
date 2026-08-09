@@ -91,14 +91,19 @@ async function prerender() {
   // Create .nojekyll in dist/ (kept for compatibility)
   fs.writeFileSync(path.join(distDir, ".nojekyll"), "# Disable Jekyll", "utf8");
 
-  // Copy Resume Builder standalone app into dist/ResumeBuilder/
+  // Copy Resume Builder standalone app into dist/ResumeBuilder/ and dist/resumebuilder/
   const resumeBuilderDist = path.resolve(projectRoot, "..", "Resume Builder", "frontend", "dist");
-  const resumeBuilderTarget = path.join(distDir, "ResumeBuilder");
-  if (fs.existsSync(resumeBuilderDist)) {
-    fs.cpSync(resumeBuilderDist, resumeBuilderTarget, { recursive: true });
-    console.log("Copied Resume Builder app into dist/ResumeBuilder/");
+  const publicResumeBuilder = path.join(projectRoot, "public", "ResumeBuilder");
+  const sourceDir = fs.existsSync(resumeBuilderDist) ? resumeBuilderDist : publicResumeBuilder;
+
+  if (fs.existsSync(sourceDir)) {
+    const targetCamel = path.join(distDir, "ResumeBuilder");
+    const targetLower = path.join(distDir, "resumebuilder");
+    fs.cpSync(sourceDir, targetCamel, { recursive: true });
+    fs.cpSync(sourceDir, targetLower, { recursive: true });
+    console.log("Copied Resume Builder app into dist/ResumeBuilder/ and dist/resumebuilder/");
   } else {
-    console.warn("WARNING: Resume Builder build not found at", resumeBuilderDist);
+    console.warn("WARNING: Resume Builder build not found at", sourceDir);
   }
 
   console.log("Static pre-rendering completed successfully!");
