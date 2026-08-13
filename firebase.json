@@ -12,6 +12,13 @@
       "**/*.bin",
       "**/*.msi"
     ],
+    "redirects": [
+      {
+        "source": "/vision-pen/index.html",
+        "destination": "/vision-pen",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "/ResumeBuilder/**",

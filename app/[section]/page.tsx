@@ -6,6 +6,7 @@ export function generateStaticParams() {
     "publications",
     "projects",
     "sorting-visualizer",
+    "vision-pen",
     "inkora",
     "pen-app",
     "penapp",
