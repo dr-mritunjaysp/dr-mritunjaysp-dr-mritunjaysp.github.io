@@ -35,6 +35,16 @@ test("server-renders the finished academic portfolio", async () => {
   assert.match(html, /Teaching/);
   assert.equal((html.match(/class="publication-card compact"/g) ?? []).length, 21);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
+
+  // Home page has no desktop header brand, but has mobile centered brand
+  assert.doesNotMatch(html, /class="desktop-page-brand"/);
+  assert.match(html, /class="mobile-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
+
+  // Subpage header menu has desktop-page-brand and mobile-page-brand
+  const blogResponse = await render("/blog");
+  const blogHtml = await blogResponse.text();
+  assert.match(blogHtml, /class="desktop-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
+  assert.match(blogHtml, /class="mobile-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
 });
 
 test("keeps the implementation independent from the retired theme", async () => {
@@ -51,7 +61,7 @@ test("keeps the implementation independent from the retired theme", async () => 
   const combined = `${page}\n${layout}\n${portfolio}\n${scrollControls}\n${liveRefresh}\n${packageJson}`;
   assert.match(combined, /PortfolioApp/);
   assert.doesNotMatch(portfolio, /publications\.slice\(0,\s*5\)/);
-  assert.match(portfolio, /Search and filter publications/);
+  assert.doesNotMatch(portfolio, /Search and filter publications/);
   assert.match(styles, /\.bio\s*\{[^}]*text-align:\s*justify/s);
   assert.match(scrollControls, /Go to top/);
   assert.match(scrollControls, /Go to bottom/);
@@ -60,5 +70,21 @@ test("keeps the implementation independent from the retired theme", async () => 
   assert.match(liveRefresh, /setInterval/);
   assert.match(liveRefresh, /visibilitychange/);
   assert.match(layout, /og\.png/);
+  assert.match(portfolio, /href="\/vision-pen\/index\.html"[\s\S]*Vision Pen[\s\S]*href="\/resumebuilder"/);
   assert.doesNotMatch(combined, /al-folio|jekyll|liquid|react-loading-skeleton/i);
+});
+
+test("packages the responsive Vision Pen browser app", async () => {
+  const [html, appScript, handTracker, styles] = await Promise.all([
+    readFile(new URL("../dist/vision-pen/index.html", import.meta.url), "utf8"),
+    readFile(new URL("../dist/vision-pen/static/js/app.js", import.meta.url), "utf8"),
+    readFile(new URL("../dist/vision-pen/static/js/handTracker.js", import.meta.url), "utf8"),
+    readFile(new URL("../dist/vision-pen/static/css/style.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(html, /VisionPen/);
+  assert.match(html, /\.\/static\/js\/app\.js/);
+  assert.match(appScript, /yolo_enabled: false/);
+  assert.match(handTracker, /\.\/static\/vendor\/mediapipe-hands/);
+  assert.match(styles, /@media \(max-width: 768px\)/);
 });

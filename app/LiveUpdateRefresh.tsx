@@ -2,11 +2,14 @@
 
 import { useEffect } from "react";
 
-const UPDATE_CHECK_INTERVAL = 60_000;
-const CHECK_DEBOUNCE = 1_500;
+const UPDATE_CHECK_INTERVAL = 10_000;
+const CHECK_DEBOUNCE = 1_000;
 
 function getAssetSignature(root: ParentNode) {
-  return Array.from(
+  const buildId =
+    root.querySelector("meta[name='build-id']")?.getAttribute("content") ?? "";
+
+  const assets = Array.from(
     root.querySelectorAll("script[src], link[rel='stylesheet'][href]"),
   )
     .map(
@@ -14,10 +17,16 @@ function getAssetSignature(root: ParentNode) {
         element.getAttribute("src") ?? element.getAttribute("href") ?? "",
     )
     .filter(
-      (asset) => asset.includes("/assets/") || asset.includes("/_next/"),
+      (asset) =>
+        asset.includes("/assets/") ||
+        asset.includes("/_next/") ||
+        asset.includes(".js") ||
+        asset.includes(".css"),
     )
     .sort()
     .join("|");
+
+  return `${buildId}::${assets}`;
 }
 
 function createFreshUrl() {
@@ -28,6 +37,15 @@ function createFreshUrl() {
 
 export function LiveUpdateRefresh() {
   useEffect(() => {
+    // Disable auto-refresh in development mode or localhost to prevent reload loops
+    if (
+      process.env.NODE_ENV === "development" ||
+      (typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
+    ) {
+      return;
+    }
+
     const currentSignature = getAssetSignature(document);
     const abortController = new AbortController();
     let checking = false;
@@ -65,7 +83,8 @@ export function LiveUpdateRefresh() {
           nextSignature &&
           currentSignature !== nextSignature
         ) {
-          window.location.replace(freshUrl.toString());
+          console.log("New build update detected! Refreshing page...");
+          window.location.reload();
         }
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
@@ -80,23 +99,13 @@ export function LiveUpdateRefresh() {
       if (document.visibilityState === "visible") void checkForUpdate();
     };
 
-    const handlePageShow = (event: PageTransitionEvent) => {
-      if (event.persisted) {
-        window.location.replace(createFreshUrl().toString());
-        return;
-      }
-
-      void checkForUpdate();
-    };
-
-    const initialCheck = window.setTimeout(() => void checkForUpdate(), 1_000);
+    const initialCheck = window.setTimeout(() => void checkForUpdate(), 2_000);
     const periodicCheck = window.setInterval(
       () => void checkForUpdate(),
       UPDATE_CHECK_INTERVAL,
     );
 
     window.addEventListener("focus", checkForUpdate);
-    window.addEventListener("pageshow", handlePageShow);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
@@ -104,7 +113,6 @@ export function LiveUpdateRefresh() {
       window.clearTimeout(initialCheck);
       window.clearInterval(periodicCheck);
       window.removeEventListener("focus", checkForUpdate);
-      window.removeEventListener("pageshow", handlePageShow);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);

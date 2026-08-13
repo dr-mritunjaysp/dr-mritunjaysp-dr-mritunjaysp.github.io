@@ -1,0 +1,350 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const byId = (id) => document.getElementById(id);
+    const video = byId('webcam');
+    const canvas = byId('output_canvas');
+    const cameraStatus = byId('cameraStatus');
+    const fpsDisplay = byId('fpsDisplay');
+    const cameraGate = byId('cameraGate');
+    const cameraGateTitle = byId('cameraGateTitle');
+    const cameraGateMessage = byId('cameraGateMessage');
+    const cameraGateIcon = byId('cameraGateIcon');
+    const startCameraBtn = byId('startCameraBtn');
+    const cameraToggleBtn = byId('cameraToggleBtn');
+    const flipCameraBtn = byId('flipCameraBtn');
+    const yoloScanBtn = byId('yoloScanBtn');
+    const yoloResultCard = byId('yoloResultCard');
+    const yoloCardContent = byId('yoloCardContent');
+    const toastRegion = byId('toastRegion');
+    const undoBtn = byId('undoBtn');
+    const redoBtn = byId('redoBtn');
+    const gestureModal = byId('gestureModal');
+
+    let stream = null;
+    let facingMode = 'user';
+    let isRunning = false;
+    let processingFrame = false;
+    let animationFrameId = null;
+    let isDrawingActive = false;
+    let isSkeletonVisible = true;
+    let frameCount = 0;
+    let lastFpsTime = performance.now();
+    let clearTriggered = false;
+    let appConfig = { yolo_enabled: false };
+    const apiUrl = (path) => `./api/${path}`;
+
+    const canvasEngine = new CanvasEngine(canvas, ({ canUndo, canRedo }) => {
+        undoBtn.disabled = !canUndo;
+        redoBtn.disabled = !canRedo;
+    });
+
+    const handTracker = new HandTracker(handleHandResults, (error) => {
+        showToast(error.message || 'Hand tracking stopped unexpectedly.', 'error');
+        updateCameraStatus('error', 'Tracking error');
+    });
+    document.documentElement.dataset.handTracker = handTracker.isInitialized ? 'ready' : 'error';
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastRegion.appendChild(toast);
+        window.setTimeout(() => toast.remove(), 3200);
+    }
+
+    function updateCameraStatus(state, text) {
+        cameraStatus.querySelector('.status-dot').className = `status-dot ${state}`;
+        cameraStatus.querySelector('.status-text').textContent = text;
+    }
+
+    function setGate(state, title, message) {
+        cameraGate.dataset.state = state;
+        cameraGateTitle.textContent = title;
+        cameraGateMessage.textContent = message;
+        cameraGateIcon.innerHTML = state === 'error'
+            ? '<i class="fa-solid fa-triangle-exclamation"></i>'
+            : '<i class="fa-solid fa-video"></i><span class="preview-pulse"></span>';
+        startCameraBtn.querySelector('span').textContent = state === 'error' ? 'Try again' : 'Start camera';
+        cameraGate.classList.remove('hidden');
+    }
+
+    function cameraErrorMessage(error) {
+        if (!window.isSecureContext) {
+            return 'Camera access requires localhost or HTTPS. Open this page on http://localhost:5000.';
+        }
+        if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {
+            return 'Camera permission was blocked. Allow camera access in your browser settings, then try again.';
+        }
+        if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+            return 'No camera was found on this device.';
+        }
+        if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+            return 'The camera is being used by another app. Close it there and try again.';
+        }
+        return 'The camera could not be started. Check the permission and try again.';
+    }
+
+    function stopCamera({ showGate = true } = {}) {
+        isRunning = false;
+        processingFrame = false;
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+        if (isDrawingActive) canvasEngine.endStroke();
+        isDrawingActive = false;
+        handTracker.reset();
+        stream?.getTracks().forEach((track) => track.stop());
+        stream = null;
+        video.srcObject = null;
+        cameraToggleBtn.disabled = true;
+        flipCameraBtn.disabled = true;
+        yoloScanBtn.disabled = true;
+        fpsDisplay.querySelector('span').textContent = '0 FPS';
+        updateCameraStatus('idle', 'Camera off');
+        if (showGate) setGate('idle', 'Camera paused', 'Your camera is off. Your drawing is still here.');
+    }
+
+    async function startCamera() {
+        if (!navigator.mediaDevices?.getUserMedia) {
+            setGate('error', 'Camera access is unavailable', 'Use a current version of Chrome, Edge, Safari, or Firefox on localhost or HTTPS.');
+            updateCameraStatus('error', 'Unavailable');
+            return;
+        }
+
+        startCameraBtn.disabled = true;
+        updateCameraStatus('warning', 'Connecting…');
+        try {
+            stopCamera({ showGate: false });
+            const constraints = {
+                audio: false,
+                video: {
+                    facingMode: { ideal: facingMode },
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    frameRate: { ideal: 30, max: 60 }
+                }
+            };
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
+            video.srcObject = stream;
+            await video.play();
+            if (!video.videoWidth) {
+                await new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, { once: true }));
+            }
+            canvasEngine.setVideoDimensions(video.videoWidth, video.videoHeight);
+            isRunning = true;
+            cameraGate.classList.add('hidden');
+            updateCameraStatus('active', 'Camera live');
+            cameraToggleBtn.disabled = false;
+            flipCameraBtn.disabled = false;
+            yoloScanBtn.disabled = !appConfig.yolo_enabled;
+            cameraToggleBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            cameraToggleBtn.title = 'Pause camera';
+            frameCount = 0;
+            lastFpsTime = performance.now();
+            animationFrameId = requestAnimationFrame(processingLoop);
+        } catch (error) {
+            console.error('Camera access error:', error);
+            updateCameraStatus('error', 'Camera blocked');
+            setGate('error', 'We could not open the camera', cameraErrorMessage(error));
+        } finally {
+            startCameraBtn.disabled = false;
+        }
+    }
+
+    async function processingLoop() {
+        if (!isRunning) return;
+        if (!processingFrame) {
+            processingFrame = true;
+            const processed = await handTracker.sendFrame(video);
+            if (processed) frameCount += 1;
+            processingFrame = false;
+        }
+
+        const now = performance.now();
+        if (now - lastFpsTime >= 1000) {
+            fpsDisplay.querySelector('span').textContent = `${Math.round(frameCount * 1000 / (now - lastFpsTime))} FPS`;
+            frameCount = 0;
+            lastFpsTime = now;
+        }
+        animationFrameId = requestAnimationFrame(processingLoop);
+    }
+
+    function finishStroke() {
+        if (!isDrawingActive) return;
+        canvasEngine.endStroke();
+        isDrawingActive = false;
+    }
+
+    function handleHandResults({ landmarks, gesture, cursorPt, clearProgress }) {
+        const cursor = cursorPt ? canvasEngine.transformPoint(cursorPt) : null;
+        const tool = canvasEngine.activeTool;
+
+        if (gesture === 'DRAW' && cursor) {
+            if (!isDrawingActive) {
+                canvasEngine.startStroke(cursor.x, cursor.y);
+                isDrawingActive = true;
+            } else {
+                canvasEngine.continueStroke(cursor.x, cursor.y);
+            }
+            updateGestureHUD(tool === 'eraser' ? '🧽' : '☝️', tool === 'eraser' ? 'ERASING' : 'WRITING', 'Index finger active', tool === 'eraser' ? '#ff2f67' : canvasEngine.activeColor);
+        } else if (gesture === 'ERASER' && cursor) {
+            if (!isDrawingActive) {
+                canvasEngine.startStroke(cursor.x, cursor.y, 'eraser');
+                isDrawingActive = true;
+            } else {
+                canvasEngine.continueStroke(cursor.x, cursor.y);
+            }
+            updateGestureHUD('🤏', 'ERASING', 'Pinch or fist active', '#ff2f67');
+        } else if (gesture === 'HOVER' && cursor) {
+            finishStroke();
+            updateGestureHUD('✌️', 'HOVER', 'Move without drawing', '#b026ff');
+        } else if (gesture === 'OPEN_PALM' || gesture === 'CLEAR_CANVAS') {
+            finishStroke();
+            updateGestureHUD('🖐️', 'HOLD TO CLEAR', `${Math.round(clearProgress * 100)}%`, '#39ff14');
+            if (gesture === 'CLEAR_CANVAS' && !clearTriggered) {
+                clearTriggered = true;
+                canvasEngine.clear();
+                showToast('Canvas cleared', 'success');
+                navigator.vibrate?.(80);
+            }
+        } else {
+            finishStroke();
+            clearTriggered = false;
+            updateGestureHUD('🖐️', 'READY', landmarks ? 'Choose a gesture' : 'Show your hand to the camera', '#8e9bb0');
+        }
+
+        if (gesture !== 'CLEAR_CANVAS') clearTriggered = false;
+        canvasEngine.renderFrame(video, landmarks, isSkeletonVisible, gesture, cursor);
+    }
+
+    function updateGestureHUD(icon, label, sub, color) {
+        byId('gestureIcon').innerHTML = `<span>${icon}</span>`;
+        byId('gestureIcon').style.color = color;
+        byId('gestureLabel').textContent = label;
+        byId('gestureSub').textContent = sub;
+    }
+
+    async function runYoloScan() {
+        yoloResultCard.classList.add('active');
+        yoloCardContent.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning the current view…';
+        yoloScanBtn.disabled = true;
+        try {
+            const response = await fetch(apiUrl('yolo-detect'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: canvas.toDataURL('image/jpeg', 0.82) })
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.message || data.error || 'Scan failed');
+            if (!data.count) {
+                yoloCardContent.textContent = 'No known objects were found in this frame.';
+                return;
+            }
+            const items = data.detections
+                .sort((a, b) => b.confidence - a.confidence)
+                .slice(0, 12)
+                .map((item) => `<div class="yolo-item"><span class="yolo-item-name">${escapeHtml(item.class_name)}</span><span class="yolo-item-conf">${Math.round(item.confidence * 100)}%</span></div>`)
+                .join('');
+            yoloCardContent.innerHTML = `<p class="scan-summary">Found ${data.count} object${data.count === 1 ? '' : 's'}</p>${items}`;
+        } catch (error) {
+            yoloCardContent.innerHTML = `<span class="scan-error">${escapeHtml(error.message)}</span>`;
+        } finally {
+            yoloScanBtn.disabled = !isRunning || !appConfig.yolo_enabled;
+        }
+    }
+
+    function escapeHtml(value) {
+        const element = document.createElement('span');
+        element.textContent = value;
+        return element.innerHTML;
+    }
+
+    async function downloadDrawing() {
+        const image = canvasEngine.getExportImageBase64();
+        const link = document.createElement('a');
+        link.download = `VisionPen-${new Date().toISOString().replace(/[:.]/g, '-')}.png`;
+        link.href = image;
+        link.click();
+        showToast('Drawing downloaded', 'success');
+        try {
+            const response = await fetch(apiUrl('save-drawing'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image })
+            });
+            if (!response.ok) throw new Error('Server copy was not saved');
+        } catch (error) {
+            console.warn(error);
+        }
+    }
+
+    document.querySelectorAll('.tool-btn').forEach((button) => button.addEventListener('click', () => {
+        finishStroke();
+        document.querySelectorAll('.tool-btn').forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        canvasEngine.setTool(button.dataset.tool);
+    }));
+
+    document.querySelectorAll('.color-swatch').forEach((swatch) => swatch.addEventListener('click', () => {
+        document.querySelectorAll('.color-swatch').forEach((item) => item.classList.remove('active'));
+        swatch.classList.add('active');
+        canvasEngine.setColor(swatch.dataset.color);
+    }));
+
+    byId('customColorPicker').addEventListener('input', (event) => {
+        document.querySelectorAll('.color-swatch').forEach((item) => item.classList.remove('active'));
+        canvasEngine.setColor(event.target.value);
+    });
+    byId('strokeSizeSlider').addEventListener('input', (event) => {
+        byId('strokeSizeValue').textContent = `${event.target.value}px`;
+        canvasEngine.setSize(event.target.value);
+    });
+    byId('toggleSkeleton').addEventListener('change', (event) => { isSkeletonVisible = event.target.checked; });
+    byId('toggleMirror').addEventListener('change', (event) => canvasEngine.setMirror(event.target.checked));
+    byId('clearCanvasBtn').addEventListener('click', () => { canvasEngine.clear(); showToast('Canvas cleared', 'success'); });
+    undoBtn.addEventListener('click', () => canvasEngine.undo());
+    redoBtn.addEventListener('click', () => canvasEngine.redo());
+    byId('saveDrawingBtn').addEventListener('click', downloadDrawing);
+    startCameraBtn.addEventListener('click', startCamera);
+    cameraToggleBtn.addEventListener('click', () => stopCamera());
+    flipCameraBtn.addEventListener('click', async () => {
+        facingMode = facingMode === 'user' ? 'environment' : 'user';
+        byId('toggleMirror').checked = facingMode === 'user';
+        canvasEngine.setMirror(facingMode === 'user');
+        await startCamera();
+    });
+    yoloScanBtn.addEventListener('click', runYoloScan);
+    byId('closeYoloCardBtn').addEventListener('click', () => yoloResultCard.classList.remove('active'));
+    byId('gestureGuideBtn').addEventListener('click', () => gestureModal.classList.add('open'));
+    byId('closeModalBtn').addEventListener('click', () => gestureModal.classList.remove('open'));
+    byId('gotItBtn').addEventListener('click', () => gestureModal.classList.remove('open'));
+    gestureModal.addEventListener('click', (event) => { if (event.target === gestureModal) gestureModal.classList.remove('open'); });
+    byId('fullscreenBtn').addEventListener('click', async () => {
+        try {
+            if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+            else await document.exitFullscreen();
+        } catch (error) {
+            showToast('Fullscreen is not available in this browser.', 'error');
+        }
+    });
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && isDrawingActive) finishStroke();
+    });
+    window.addEventListener('beforeunload', () => stopCamera({ showGate: false }));
+
+    fetch(apiUrl('config'))
+        .then((response) => {
+            if (!response.ok) throw new Error('Backend unavailable');
+            return response.json();
+        })
+        .then((config) => {
+            appConfig = config;
+            if (!config.yolo_enabled) yoloScanBtn.title = 'Object scanning is disabled on this server';
+        })
+        .catch(() => {
+            appConfig = { yolo_enabled: false };
+            yoloScanBtn.disabled = true;
+            yoloScanBtn.title = 'Object scanning is available in the local Vision Pen app';
+        });
+
+    canvasEngine.renderFrame(null);
+    updateCameraStatus('idle', 'Camera off');
+});
