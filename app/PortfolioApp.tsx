@@ -49,6 +49,7 @@ import type { ScholarMetrics } from "./firebase";
 import { SortingVisualizer } from "./sorting/SortingVisualizer";
 import { InkoraApp } from "./inkora/InkoraApp";
 import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
+import { VisionPenPage } from "./vision-pen/VisionPenPage";
 
 type SectionKey =
   | "home"
@@ -56,6 +57,7 @@ type SectionKey =
   | "publications"
   | "projects"
   | "sorting-visualizer"
+  | "vision-pen"
   | "inkora"
   | "pen-app"
   | "penapp"
@@ -102,7 +104,7 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
-
+  { label: "Vision Pen", href: "/vision-pen", key: "vision-pen" },
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
   { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
@@ -645,9 +647,10 @@ function Header({
             </button>
             {moreOpen && (
               <div className="more-menu" role="menu">
-                <a
-                  href="/vision-pen/index.html"
+                <Link
+                  href="/vision-pen"
                   role="menuitem"
+                  className={section === "vision-pen" ? "active" : ""}
                   onClick={(e) => {
                     e.stopPropagation();
                     setMoreOpen(false);
@@ -655,7 +658,7 @@ function Header({
                   }}
                 >
                   Vision Pen
-                </a>
+                </Link>
                 <a
                   href="/resumebuilder"
                   role="menuitem"
@@ -667,7 +670,7 @@ function Header({
                 >
                   Resume Builder
                 </a>
-                {moreNav.map((item) => (
+                {moreNav.slice(1).map((item) => (
                   <Link
                     href={item.href}
                     key={item.key}
@@ -3954,6 +3957,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "sorting-visualizer":
       content = <SortingVisualizer />;
+      break;
+    case "vision-pen":
+      content = <VisionPenPage />;
       break;
     case "inkora":
     case "pen-app":

@@ -344,6 +344,50 @@ img {
   padding: 94px 0 16px;
 }
 
+.vision-pen-page {
+  width: 100%;
+  padding: 8px 0 18px;
+}
+
+.vision-pen-frame-shell {
+  width: 100%;
+  height: clamp(680px, calc(100dvh - 116px), 900px);
+  min-height: 680px;
+  overflow: hidden;
+  border: 1px solid rgba(24, 119, 153, 0.2);
+  border-radius: 18px;
+  background: #08111f;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.24);
+}
+
+.vision-pen-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #08111f;
+}
+
+@media (max-width: 720px) {
+  .site-main:has(.vision-pen-page) {
+    width: 100%;
+  }
+
+  .vision-pen-page {
+    width: 100%;
+    padding: 0 0 12px;
+  }
+
+  .vision-pen-frame-shell {
+    height: calc(100dvh - 82px);
+    min-height: 620px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.2);
+  }
+}
+
 .hero {
   display: grid;
   justify-items: center;
