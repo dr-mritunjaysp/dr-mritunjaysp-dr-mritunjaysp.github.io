@@ -70,16 +70,27 @@ test("keeps the implementation independent from the retired theme", async () => 
   assert.match(liveRefresh, /setInterval/);
   assert.match(liveRefresh, /visibilitychange/);
   assert.match(layout, /og\.png/);
-  assert.match(portfolio, /href="\/vision-pen\/index\.html"[\s\S]*Vision Pen[\s\S]*href="\/resumebuilder"/);
+  assert.match(portfolio, /href="\/vision-pen"[\s\S]*Vision Pen[\s\S]*href="\/resumebuilder"/);
   assert.doesNotMatch(combined, /al-folio|jekyll|liquid|react-loading-skeleton/i);
+});
+
+test("renders Vision Pen inside the portfolio header and footer", async () => {
+  const response = await render("/vision-pen");
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(html, /class="site-header"/);
+  assert.match(html, /title="Vision Pen air-writing studio"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html"/);
+  assert.match(html, /class="site-footer"/);
 });
 
 test("packages the responsive Vision Pen browser app", async () => {
   const [html, appScript, handTracker, styles] = await Promise.all([
-    readFile(new URL("../dist/vision-pen/index.html", import.meta.url), "utf8"),
-    readFile(new URL("../dist/vision-pen/static/js/app.js", import.meta.url), "utf8"),
-    readFile(new URL("../dist/vision-pen/static/js/handTracker.js", import.meta.url), "utf8"),
-    readFile(new URL("../dist/vision-pen/static/css/style.css", import.meta.url), "utf8"),
+    readFile(new URL("../dist/vision-pen-studio/index.html", import.meta.url), "utf8"),
+    readFile(new URL("../dist/vision-pen-studio/static/js/app.js", import.meta.url), "utf8"),
+    readFile(new URL("../dist/vision-pen-studio/static/js/handTracker.js", import.meta.url), "utf8"),
+    readFile(new URL("../dist/vision-pen-studio/static/css/style.css", import.meta.url), "utf8"),
   ]);
 
   assert.match(html, /VisionPen/);

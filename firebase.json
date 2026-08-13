@@ -26,6 +26,10 @@
         "destination": "/vision-pen/index.html"
       },
       {
+        "source": "/vision-pen-studio/**",
+        "destination": "/vision-pen-studio/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
