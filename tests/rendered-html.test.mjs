@@ -85,6 +85,13 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.match(html, /class="site-footer"/);
 });
 
+test("redirects the previous Vision Pen URL to the integrated page", async () => {
+  const response = await render("/vision-pen/index.html");
+
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "http://localhost/vision-pen");
+});
+
 test("packages the responsive Vision Pen browser app", async () => {
   const [html, appScript, handTracker, styles] = await Promise.all([
     readFile(new URL("../dist/vision-pen-studio/index.html", import.meta.url), "utf8"),
