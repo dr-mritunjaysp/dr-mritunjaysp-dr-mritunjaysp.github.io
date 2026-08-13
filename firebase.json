@@ -15,11 +15,15 @@
     "rewrites": [
       {
         "source": "/ResumeBuilder/**",
-        "destination": "/ResumeBuilder/index.html"
+        "destination": "/resumebuilder/index.html"
       },
       {
         "source": "/resumebuilder/**",
         "destination": "/resumebuilder/index.html"
+      },
+      {
+        "source": "/vision-pen/**",
+        "destination": "/vision-pen/index.html"
       },
       {
         "source": "**",

@@ -646,7 +646,18 @@ function Header({
             {moreOpen && (
               <div className="more-menu" role="menu">
                 <a
-                  href="/ResumeBuilder/"
+                  href="/vision-pen/index.html"
+                  role="menuitem"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
+                  Vision Pen
+                </a>
+                <a
+                  href="/resumebuilder"
                   role="menuitem"
                   onClick={(e) => {
                     e.stopPropagation();
