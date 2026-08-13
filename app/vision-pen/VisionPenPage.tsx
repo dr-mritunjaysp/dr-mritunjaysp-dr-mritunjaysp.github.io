@@ -4,10 +4,11 @@ export function VisionPenPage() {
       <div className="vision-pen-frame-shell">
         <iframe
           className="vision-pen-frame"
-          src="/vision-pen-studio/index.html"
+          src="/vision-pen-studio/index.html?v=20260813-compact-dock"
           title="Vision Pen air-writing studio"
           allow="camera; fullscreen"
           allowFullScreen
+          scrolling="no"
         />
       </div>
     </section>

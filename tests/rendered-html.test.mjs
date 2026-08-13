@@ -81,7 +81,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.equal(response.status, 200);
   assert.match(html, /class="site-header"/);
   assert.match(html, /title="Vision Pen air-writing studio"/);
-  assert.match(html, /src="\/vision-pen-studio\/index\.html"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260813-compact-dock"/);
   assert.match(html, /class="site-footer"/);
 });
 
@@ -101,8 +101,12 @@ test("packages the responsive Vision Pen browser app", async () => {
   ]);
 
   assert.match(html, /VisionPen/);
+  assert.match(html, /\.\/static\/css\/style\.css\?v=20260813-compact-dock/);
   assert.match(html, /\.\/static\/js\/app\.js/);
   assert.match(appScript, /yolo_enabled: false/);
   assert.match(handTracker, /\.\/static\/vendor\/mediapipe-hands/);
   assert.match(styles, /@media \(max-width: 768px\)/);
+  assert.match(styles, /\.control-dock\s*\{[^}]*overflow:\s*hidden/s);
+  assert.match(styles, /grid-template-areas:\s*"tools colours"\s*"stroke options"/s);
+  assert.match(styles, /\.tool-btn i\s*\{[^}]*font-size:\s*0\.7rem/s);
 });
