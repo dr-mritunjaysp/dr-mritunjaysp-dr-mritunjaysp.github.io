@@ -79,6 +79,19 @@ test("keeps the implementation independent from the retired theme", async () => 
   assert.doesNotMatch(combined, /al-folio|jekyll|liquid|react-loading-skeleton/i);
 });
 
+test("serves Scholar Resume instead of the generic portfolio route", async () => {
+  for (const path of ["/resumebuilder", "/resumebuilder/signup"]) {
+    const response = await render(path);
+    const html = await response.text();
+
+    assert.equal(response.status, 200, path);
+    assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+    assert.match(html, /<title>ScholarResume<\/title>/);
+    assert.match(html, /src="\/ResumeBuilder\/assets\/index-BADIOmQT\.js"/);
+    assert.doesNotMatch(html, /Dr\. Mritunjay Shall Peelam/);
+  }
+});
+
 test("renders Vision Pen inside the portfolio header and footer", async () => {
   const response = await render("/vision-pen");
   const html = await response.text();
