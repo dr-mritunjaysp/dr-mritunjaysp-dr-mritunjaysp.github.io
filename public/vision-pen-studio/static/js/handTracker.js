@@ -13,6 +13,9 @@ class HandTracker {
         this.candidateGesture = 'NONE';
         this.candidateFrames = 0;
         this.smoothedCursor = null;
+        this.lastRawCursor = null;
+        this.cursorVelocity = 0;
+        this.lastCursorTime = 0;
         this.initialize();
     }
 
@@ -64,6 +67,9 @@ class HandTracker {
         this.candidateGesture = 'NONE';
         this.candidateFrames = 0;
         this.smoothedCursor = null;
+        this.lastRawCursor = null;
+        this.cursorVelocity = 0;
+        this.lastCursorTime = 0;
     }
 
     handleResults(results) {
@@ -91,11 +97,26 @@ class HandTracker {
         }
         if (!this.smoothedCursor) {
             this.smoothedCursor = { ...point };
-            return this.smoothedCursor;
+            this.lastRawCursor = { ...point };
+            this.lastCursorTime = performance.now();
+            return { ...this.smoothedCursor };
         }
-        const alpha = 0.45;
+
+        const now = performance.now();
+        const elapsed = Math.max(8, Math.min(50, now - this.lastCursorTime));
+        const rawDistance = Math.hypot(point.x - this.lastRawCursor.x, point.y - this.lastRawCursor.y);
+        const frameAdjustedMovement = rawDistance * (16.667 / elapsed);
+        this.cursorVelocity = this.cursorVelocity * 0.72 + frameAdjustedMovement * 0.28;
+
+        // Slow fingertip motion receives more stabilisation; fast writing stays
+        // responsive. A small dead zone removes camera landmark shimmer.
+        const alpha = frameAdjustedMovement < 0.0012
+            ? 0.08
+            : Math.min(0.64, Math.max(0.18, 0.16 + this.cursorVelocity * 18));
         this.smoothedCursor.x += (point.x - this.smoothedCursor.x) * alpha;
         this.smoothedCursor.y += (point.y - this.smoothedCursor.y) * alpha;
+        this.lastRawCursor = { ...point };
+        this.lastCursorTime = now;
         return { ...this.smoothedCursor };
     }
 

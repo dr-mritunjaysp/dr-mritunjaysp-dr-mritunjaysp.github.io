@@ -25,11 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let processingFrame = false;
     let animationFrameId = null;
     let isDrawingActive = false;
+    let activePointerId = null;
     let isSkeletonVisible = true;
     let frameCount = 0;
     let lastFpsTime = performance.now();
     let clearTriggered = false;
     let appConfig = { yolo_enabled: false };
+    let activeBoardMode = 'camera';
+    const boardColors = { camera: '#00f3ff', black: '#ffffff', white: '#111827' };
     const apiUrl = (path) => `./api/${path}`;
 
     const canvasEngine = new CanvasEngine(canvas, ({ canUndo, canRedo }) => {
@@ -99,7 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
         yoloScanBtn.disabled = true;
         fpsDisplay.querySelector('span').textContent = '0 FPS';
         updateCameraStatus('idle', 'Camera off');
-        if (showGate) setGate('idle', 'Camera paused', 'Your camera is off. Your drawing is still here.');
+        if (showGate && canvasEngine.boardMode === 'camera') {
+            setGate('idle', 'Camera paused', 'Your camera is off. Your drawing is still here.');
+        } else {
+            cameraGate.classList.add('hidden');
+            renderBoard();
+        }
     }
 
     async function startCamera() {
@@ -173,9 +181,60 @@ document.addEventListener('DOMContentLoaded', () => {
         isDrawingActive = false;
     }
 
+    function renderBoard(cursor = null, gesture = 'NONE') {
+        canvasEngine.renderFrame(video, null, false, gesture, cursor);
+    }
+
+    function updateSelectedColor(color) {
+        document.querySelectorAll('.color-swatch').forEach((item) => {
+            item.classList.toggle('active', item.dataset.color.toLowerCase() === color.toLowerCase());
+        });
+        byId('customColorPicker').value = color;
+        canvasEngine.setColor(color);
+        boardColors[activeBoardMode] = color;
+    }
+
+    function setBoardMode(mode) {
+        finishStroke();
+        if (activePointerId !== null) {
+            canvasEngine.endStroke();
+            activePointerId = null;
+        }
+        boardColors[activeBoardMode] = canvasEngine.activeColor;
+        activeBoardMode = mode;
+        canvasEngine.setBoardMode(mode);
+        document.querySelectorAll('.board-btn').forEach((button) => {
+            const selected = button.dataset.board === mode;
+            button.classList.toggle('active', selected);
+            button.setAttribute('aria-pressed', String(selected));
+        });
+        updateSelectedColor(boardColors[mode]);
+
+        if (mode === 'camera' && !isRunning) {
+            setGate('idle', 'Turn on your camera to start writing', 'VisionPen tracks your hand inside this browser. Live video is not uploaded while you draw.');
+        } else {
+            cameraGate.classList.add('hidden');
+        }
+        renderBoard();
+        showToast(`${mode === 'camera' ? 'Camera canvas' : mode === 'black' ? 'Black board' : 'White board'} selected`, 'success');
+    }
+
+    function pointerCanvasPoint(event) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: (event.clientX - rect.left) * (canvas.width / rect.width),
+            y: (event.clientY - rect.top) * (canvas.height / rect.height)
+        };
+    }
+
     function handleHandResults({ landmarks, gesture, cursorPt, clearProgress }) {
         const cursor = cursorPt ? canvasEngine.transformPoint(cursorPt) : null;
         const tool = canvasEngine.activeTool;
+
+        if (activePointerId !== null) {
+            canvasEngine.renderFrame(video, landmarks, isSkeletonVisible, 'NONE', null);
+            return;
+        }
 
         if (gesture === 'DRAW' && cursor) {
             if (!isDrawingActive) {
@@ -284,14 +343,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
 
     document.querySelectorAll('.color-swatch').forEach((swatch) => swatch.addEventListener('click', () => {
-        document.querySelectorAll('.color-swatch').forEach((item) => item.classList.remove('active'));
-        swatch.classList.add('active');
-        canvasEngine.setColor(swatch.dataset.color);
+        updateSelectedColor(swatch.dataset.color);
     }));
 
     byId('customColorPicker').addEventListener('input', (event) => {
         document.querySelectorAll('.color-swatch').forEach((item) => item.classList.remove('active'));
         canvasEngine.setColor(event.target.value);
+        boardColors[activeBoardMode] = event.target.value;
     });
     byId('strokeSizeSlider').addEventListener('input', (event) => {
         byId('strokeSizeValue').textContent = `${event.target.value}px`;
@@ -299,9 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     byId('toggleSkeleton').addEventListener('change', (event) => { isSkeletonVisible = event.target.checked; });
     byId('toggleMirror').addEventListener('change', (event) => canvasEngine.setMirror(event.target.checked));
-    byId('clearCanvasBtn').addEventListener('click', () => { canvasEngine.clear(); showToast('Canvas cleared', 'success'); });
-    undoBtn.addEventListener('click', () => canvasEngine.undo());
-    redoBtn.addEventListener('click', () => canvasEngine.redo());
+    document.querySelectorAll('.board-btn').forEach((button) => {
+        button.addEventListener('click', () => setBoardMode(button.dataset.board));
+    });
+    byId('clearCanvasBtn').addEventListener('click', () => { canvasEngine.clear(); renderBoard(); showToast('Canvas cleared', 'success'); });
+    undoBtn.addEventListener('click', () => { canvasEngine.undo(); renderBoard(); });
+    redoBtn.addEventListener('click', () => { canvasEngine.redo(); renderBoard(); });
     byId('saveDrawingBtn').addEventListener('click', downloadDrawing);
     startCameraBtn.addEventListener('click', startCamera);
     cameraToggleBtn.addEventListener('click', () => stopCamera());
@@ -325,6 +386,33 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Fullscreen is not available in this browser.', 'error');
         }
     });
+    canvas.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0 || activePointerId !== null) return;
+        finishStroke();
+        activePointerId = event.pointerId;
+        canvas.setPointerCapture?.(event.pointerId);
+        const point = pointerCanvasPoint(event);
+        canvasEngine.startStroke(point.x, point.y);
+        renderBoard(point, 'DRAW');
+        updateGestureHUD('✍️', 'BOARD WRITING', 'Mouse, touch, or stylus active', canvasEngine.activeColor);
+        event.preventDefault();
+    });
+    canvas.addEventListener('pointermove', (event) => {
+        if (event.pointerId !== activePointerId) return;
+        const point = pointerCanvasPoint(event);
+        canvasEngine.continueStroke(point.x, point.y);
+        renderBoard(point, 'DRAW');
+        event.preventDefault();
+    });
+    const finishPointerStroke = (event) => {
+        if (event.pointerId !== activePointerId) return;
+        canvasEngine.endStroke();
+        activePointerId = null;
+        renderBoard();
+        updateGestureHUD('🖐️', 'READY', isRunning ? 'Use your finger or write on the board' : 'Write with mouse, touch, or stylus', '#8e9bb0');
+    };
+    canvas.addEventListener('pointerup', finishPointerStroke);
+    canvas.addEventListener('pointercancel', finishPointerStroke);
     document.addEventListener('visibilitychange', () => {
         if (document.hidden && isDrawingActive) finishStroke();
     });

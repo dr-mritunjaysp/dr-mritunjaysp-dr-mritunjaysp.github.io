@@ -659,6 +659,50 @@ button:disabled {
     box-shadow: 0 0 12px var(--primary-glow);
 }
 
+/* BOARD MODE */
+.board-options {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.board-btn {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    font-family: var(--font-heading);
+    font-size: 0.68rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.board-btn:hover,
+.board-btn.active {
+    color: var(--primary-neon);
+    border-color: var(--primary-neon);
+    background: rgba(0, 243, 255, 0.12);
+}
+
+.board-btn[data-board="black"].active {
+    color: #fff;
+    border-color: #cbd5e1;
+    background: #101713;
+}
+
+.board-btn[data-board="white"].active {
+    color: #111827;
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
 /* COLOR PALETTE */
 .color-palette {
     display: flex;
@@ -685,6 +729,14 @@ button:disabled {
     border-color: #fff;
     box-shadow: 0 0 12px var(--swatch-color);
     transform: scale(1.15);
+}
+
+.color-swatch.dark-swatch {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.color-swatch.dark-swatch.active {
+    border-color: #fff;
 }
 
 .color-picker-wrapper {
@@ -828,6 +880,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 
     .tool-btn span {
+        display: none;
+    }
+
+    .board-btn {
+        width: 30px;
+        padding: 0;
+    }
+
+    .board-btn span {
         display: none;
     }
 
@@ -1026,6 +1087,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
         display: grid;
         grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
         grid-template-areas:
+            "board board"
             "tools colours"
             "stroke options";
         align-items: end;
@@ -1034,6 +1096,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
         overflow: hidden;
     }
 
+    .board-mode-group { grid-area: board; }
+    .board-options { width: 100%; }
+    .board-btn { flex: 1; width: auto; min-height: 27px; }
+    .board-btn span { display: inline; }
     .tools-group { grid-area: tools; }
     .colors-group { grid-area: colours; }
     .slider-group { grid-area: stroke; width: 100%; min-width: 0; }
