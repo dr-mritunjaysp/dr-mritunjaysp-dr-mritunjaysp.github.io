@@ -99,7 +99,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.equal(response.status, 200);
   assert.match(html, /class="site-header"/);
   assert.match(html, /title="Vision Pen air-writing studio"/);
-  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260813-compact-dock"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260814-smooth-board"/);
   assert.match(html, /class="site-footer"/);
 });
 
@@ -132,20 +132,27 @@ test("packages the complete Scholar Resume app on its lowercase public route", a
 });
 
 test("packages the responsive Vision Pen browser app", async () => {
-  const [html, appScript, handTracker, styles] = await Promise.all([
+  const [html, appScript, canvasEngine, handTracker, styles] = await Promise.all([
     readFile(new URL("../dist/vision-pen-studio/index.html", import.meta.url), "utf8"),
     readFile(new URL("../dist/vision-pen-studio/static/js/app.js", import.meta.url), "utf8"),
+    readFile(new URL("../dist/vision-pen-studio/static/js/canvasEngine.js", import.meta.url), "utf8"),
     readFile(new URL("../dist/vision-pen-studio/static/js/handTracker.js", import.meta.url), "utf8"),
     readFile(new URL("../dist/vision-pen-studio/static/css/style.css", import.meta.url), "utf8"),
   ]);
 
   assert.match(html, /VisionPen/);
-  assert.match(html, /\.\/static\/css\/style\.css\?v=20260813-compact-dock/);
+  assert.match(html, /\.\/static\/css\/style\.css\?v=20260814-smooth-board/);
+  assert.match(html, /data-board="black"/);
+  assert.match(html, /data-board="white"/);
   assert.match(html, /\.\/static\/js\/app\.js/);
   assert.match(appScript, /yolo_enabled: false/);
+  assert.match(appScript, /pointerdown/);
+  assert.match(canvasEngine, /drawCurve/);
+  assert.match(canvasEngine, /maxSpacing/);
+  assert.match(handTracker, /cursorVelocity/);
   assert.match(handTracker, /\.\/static\/vendor\/mediapipe-hands/);
   assert.match(styles, /@media \(max-width: 768px\)/);
   assert.match(styles, /\.control-dock\s*\{[^}]*overflow:\s*hidden/s);
-  assert.match(styles, /grid-template-areas:\s*"tools colours"\s*"stroke options"/s);
+  assert.match(styles, /grid-template-areas:\s*"board board"\s*"tools colours"\s*"stroke options"/s);
   assert.match(styles, /\.tool-btn i\s*\{[^}]*font-size:\s*0\.7rem/s);
 });
