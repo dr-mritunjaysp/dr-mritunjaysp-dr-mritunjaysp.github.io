@@ -96,12 +96,13 @@ async function prerender() {
   const resumeBuilderDist = path.resolve(projectRoot, "..", "Resume Builder", "frontend", "dist");
   const publicResumeBuilder = path.join(projectRoot, "public", "ResumeBuilder");
   const sourceDir = fs.existsSync(resumeBuilderDist) ? resumeBuilderDist : publicResumeBuilder;
+  const lowerCaseSourceDir = fs.existsSync(publicResumeBuilder) ? publicResumeBuilder : sourceDir;
 
   if (fs.existsSync(sourceDir)) {
     const targetCamel = path.join(distDir, "ResumeBuilder");
     const targetLower = path.join(distDir, "resumebuilder");
     fs.cpSync(sourceDir, targetCamel, { recursive: true });
-    fs.cpSync(sourceDir, targetLower, { recursive: true });
+    fs.cpSync(lowerCaseSourceDir, targetLower, { recursive: true });
     console.log("Copied Resume Builder app into dist/ResumeBuilder/ and dist/resumebuilder/");
   } else {
     console.warn("WARNING: Resume Builder build not found at", sourceDir);

@@ -97,6 +97,27 @@ test("redirects the previous Vision Pen URL to the integrated page", async () =>
   assert.equal(response.headers.get("location"), "http://localhost/vision-pen");
 });
 
+test("packages the complete Scholar Resume app on its lowercase public route", async () => {
+  const scholarHtml = await readFile(
+    new URL("../dist/resumebuilder/index.html", import.meta.url),
+    "utf8",
+  );
+  const scholarScript = await readFile(
+    new URL("../dist/resumebuilder/assets/index-BADIOmQT.js", import.meta.url),
+    "utf8",
+  );
+  const scholarStyles = await readFile(
+    new URL("../dist/resumebuilder/assets/index-JcPN3zOH.css", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(scholarHtml, /<title>ScholarResume<\/title>/);
+  assert.match(scholarHtml, /src="\/resumebuilder\/assets\/index-BADIOmQT\.js"/);
+  assert.match(scholarHtml, /href="\/resumebuilder\/assets\/index-JcPN3zOH\.css"/);
+  assert.match(scholarScript, /\/resumebuilder/);
+  assert.match(scholarStyles, /\.resume-preview-toolbar/);
+});
+
 test("packages the responsive Vision Pen browser app", async () => {
   const [html, appScript, handTracker, styles] = await Promise.all([
     readFile(new URL("../dist/vision-pen-studio/index.html", import.meta.url), "utf8"),
