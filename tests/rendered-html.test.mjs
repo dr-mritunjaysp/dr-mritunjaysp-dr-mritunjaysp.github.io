@@ -71,6 +71,11 @@ test("keeps the implementation independent from the retired theme", async () => 
   assert.match(liveRefresh, /visibilitychange/);
   assert.match(layout, /og\.png/);
   assert.match(portfolio, /href="\/vision-pen"[\s\S]*Vision Pen[\s\S]*href="\/resumebuilder"/);
+  assert.match(
+    portfolio,
+    /href="\/resumebuilder"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"[\s\S]*Scholar Resume/,
+  );
+  assert.doesNotMatch(portfolio, />\s*Resume Builder\s*</);
   assert.doesNotMatch(combined, /al-folio|jekyll|liquid|react-loading-skeleton/i);
 });
 
