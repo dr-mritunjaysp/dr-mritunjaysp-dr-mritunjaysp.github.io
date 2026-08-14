@@ -661,6 +661,8 @@ function Header({
                 </Link>
                 <a
                   href="/resumebuilder"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   role="menuitem"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -668,7 +670,7 @@ function Header({
                     setMobileOpen(false);
                   }}
                 >
-                  Resume Builder
+                  Scholar Resume
                 </a>
                 {moreNav.slice(1).map((item) => (
                   <Link
