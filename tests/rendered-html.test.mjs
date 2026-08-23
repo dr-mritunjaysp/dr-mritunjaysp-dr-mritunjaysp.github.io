@@ -31,6 +31,10 @@ test("server-renders the finished academic portfolio", async () => {
   const html = await response.text();
   assert.match(html, /Dr\. Mritunjay Shall Peelam/);
   assert.match(html, /Assistant Professor \(Selection Grade\)/);
+  assert.match(html, /Senior Member, IEEE/);
+  assert.match(html, /Elevated to the grade of Senior Member, IEEE/);
+  assert.match(html, /Aug 23, 2026/);
+  assert.match(html, /Last updated: August 23, 2026/);
   assert.match(html, /Publications/);
   assert.match(html, /Teaching/);
   assert.equal((html.match(/class="publication-card compact"/g) ?? []).length, 21);
@@ -45,6 +49,15 @@ test("server-renders the finished academic portfolio", async () => {
   const blogHtml = await blogResponse.text();
   assert.match(blogHtml, /class="desktop-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
   assert.match(blogHtml, /class="mobile-page-brand"[^>]*>\s*<strong>Dr\. Mritunjay<\/strong>/);
+
+  const cvResponse = await render("/cv");
+  const cvHtml = await cvResponse.text();
+  assert.equal(cvResponse.status, 200);
+  assert.match(cvHtml, /class="cv-membership">Senior Member, IEEE<\/strong>/);
+  assert.match(
+    cvHtml,
+    /href="\/documents\/Dr-Mritunjay-resume\.pdf" download="Dr-Mritunjay-Shall-Peelam-Resume\.pdf"/,
+  );
 });
 
 test("keeps the implementation independent from the retired theme", async () => {
@@ -87,7 +100,9 @@ test("serves Scholar Resume instead of the generic portfolio route", async () =>
     assert.equal(response.status, 200, path);
     assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
     assert.match(html, /<title>ScholarResume<\/title>/);
-    assert.match(html, /src="\/ResumeBuilder\/assets\/index-BADIOmQT\.js"/);
+    assert.match(html, /api-bridge\.js\?v=20260823-local-api-pdf-1/);
+    assert.match(html, /src="\/ResumeBuilder\/api-bridge\.js/);
+    assert.match(html, /__SCHOLAR_RESUME_ENTRY__ = "\/ResumeBuilder\/assets\/index-BADIOmQT\.js\?v=20260823-membership-1"/);
     assert.doesNotMatch(html, /Dr\. Mritunjay Shall Peelam/);
   }
 });
@@ -123,12 +138,33 @@ test("packages the complete Scholar Resume app on its lowercase public route", a
     new URL("../dist/resumebuilder/assets/index-JcPN3zOH.css", import.meta.url),
     "utf8",
   );
+  const apiBridge = await readFile(
+    new URL("../dist/resumebuilder/api-bridge.js", import.meta.url),
+    "utf8",
+  );
+  const mobileApi = await readFile(
+    new URL("../dist/scholarresume-api-sw.js", import.meta.url),
+    "utf8",
+  );
 
   assert.match(scholarHtml, /<title>ScholarResume<\/title>/);
-  assert.match(scholarHtml, /src="\/resumebuilder\/assets\/index-BADIOmQT\.js"/);
-  assert.match(scholarHtml, /href="\/resumebuilder\/assets\/index-JcPN3zOH\.css"/);
+  assert.match(scholarHtml, /__SCHOLAR_RESUME_ENTRY__ = "\/resumebuilder\/assets\/index-BADIOmQT\.js\?v=20260823-membership-1"/);
+  assert.match(scholarHtml, /href="\/resumebuilder\/assets\/index-JcPN3zOH\.css\?v=20260823-membership-1"/);
   assert.match(scholarScript, /\/resumebuilder/);
+  assert.match(scholarHtml, /api-bridge\.js\?v=20260823-local-api-pdf-1/);
+  assert.match(apiBridge, /window\.location\.origin/);
+  assert.match(apiBridge, /XMLHttpRequest\.prototype\.open/);
+  assert.match(mobileApi, /accounts:signInWithPassword/);
+  assert.match(mobileApi, /handleApiRequest/);
+  assert.match(mobileApi, /X-ScholarResume-PDF-Engine/);
+  assert.match(scholarScript, /x-scholarresume-pdf-engine/);
+  assert.match(scholarScript, /buildResumePdf\(s,\{\.\.\.d,pdfFont:"serif"\}\)/);
+  assert.match(scholarScript, /label:"Professional membership"/);
+  assert.match(scholarScript, /Senior Member, IEEE/);
+  assert.match(scholarScript, /className:"resume-pdf-membership"/);
+  assert.match(scholarScript, /pt\.membership&&nt\(pt\.membership/);
   assert.match(scholarStyles, /\.resume-preview-toolbar/);
+  assert.match(scholarStyles, /\.resume-pdf-membership/);
 });
 
 test("packages the responsive Vision Pen browser app", async () => {

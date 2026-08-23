@@ -834,6 +834,11 @@ img {
   color: #fff;
 }
 
+.tag-membership {
+  background: linear-gradient(135deg, #00629b, #003b5c);
+  color: #fff;
+}
+
 .tag-teaching {
   background: linear-gradient(135deg, #0d9488, #059669);
   color: #fff;
@@ -2266,6 +2271,11 @@ img {
   display: block;
   margin-top: 10px;
   color: var(--accent);
+}
+
+.cv-hero > div > strong.cv-membership {
+  margin-top: 4px;
+  color: var(--accent-2);
 }
 
 .cv-hero > div > p:not(.eyebrow) {
