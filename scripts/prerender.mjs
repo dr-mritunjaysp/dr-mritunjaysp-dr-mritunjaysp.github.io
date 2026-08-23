@@ -93,19 +93,16 @@ async function prerender() {
   fs.writeFileSync(path.join(distDir, ".nojekyll"), "# Disable Jekyll", "utf8");
 
   // Copy Resume Builder standalone app into dist/ResumeBuilder/ and dist/resumebuilder/
-  const resumeBuilderDist = path.resolve(projectRoot, "..", "Resume Builder", "frontend", "dist");
   const publicResumeBuilder = path.join(projectRoot, "public", "ResumeBuilder");
-  const sourceDir = fs.existsSync(resumeBuilderDist) ? resumeBuilderDist : publicResumeBuilder;
-  const lowerCaseSourceDir = fs.existsSync(publicResumeBuilder) ? publicResumeBuilder : sourceDir;
 
-  if (fs.existsSync(sourceDir)) {
+  if (fs.existsSync(publicResumeBuilder)) {
     const targetCamel = path.join(distDir, "ResumeBuilder");
     const targetLower = path.join(distDir, "resumebuilder");
-    fs.cpSync(sourceDir, targetCamel, { recursive: true });
-    fs.cpSync(lowerCaseSourceDir, targetLower, { recursive: true });
+    fs.cpSync(publicResumeBuilder, targetCamel, { recursive: true });
+    fs.cpSync(publicResumeBuilder, targetLower, { recursive: true });
     console.log("Copied Resume Builder app into dist/ResumeBuilder/ and dist/resumebuilder/");
   } else {
-    console.warn("WARNING: Resume Builder build not found at", sourceDir);
+    console.warn("WARNING: Resume Builder build not found at", publicResumeBuilder);
   }
 
   // Package Vision Pen as a standalone browser app. Local builds refresh from

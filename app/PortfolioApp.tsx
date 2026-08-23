@@ -373,9 +373,13 @@ const publications: Publication[] = [
 
 const news = [
   {
+    date: "Aug 23, 2026",
+    text: "Elevated to the grade of Senior Member, IEEE.",
+    badge: "New",
+  },
+  {
     date: "May 17, 2026",
     text: "Recognized by Wiley for a Top Viewed Article 2025 in Expert Systems for “DemocracyGuard.”",
-    badge: "New",
   },
   {
     date: "Mar 03, 2026",
@@ -1213,6 +1217,15 @@ function HomePage() {
               className="about-bullet-lottie"
             />
             <span>
+              <strong>Senior Member, IEEE</strong>
+            </span>
+          </p>
+          <p>
+            <LottieIcon
+              path="/lottie/tiktok-bullet-loader.json"
+              className="about-bullet-lottie"
+            />
+            <span>
               <strong>Ph.D.</strong> from{" "}
               <a href="https://www.bits-pilani.ac.in/">
                 BITS Pilani, Pilani Campus
@@ -1300,6 +1313,15 @@ function HomePage() {
       <section className="home-section">
         <SectionTitle eyebrow="Recent activity">Latest Updates</SectionTitle>
         <div className="updates-grid">
+          <Link href="/award-fdp" className="update-card">
+            <div className="update-card-header">
+              <span className="update-category-tag tag-membership">Professional Honor</span>
+              <time className="update-date">Aug 23, 2026</time>
+            </div>
+            <strong>Senior Member, IEEE</strong>
+            <p className="update-description">Elevated to IEEE Senior Member grade in recognition of significant professional experience and contributions to engineering and research.</p>
+            <span className="update-card-footer">View Achievement <ChevronRight size={14} /></span>
+          </Link>
           <Link href="/award-fdp" className="update-card">
             <div className="update-card-header">
               <span className="update-category-tag tag-award">Award</span>
@@ -1736,6 +1758,7 @@ function CvPage() {
           <p className="eyebrow">Academic curriculum vitae</p>
           <h1>Dr. Mritunjay Shall Peelam</h1>
           <strong>Assistant Professor (Selection Grade) & Research Faculty, UPES Dehradun</strong>
+          <strong className="cv-membership">Senior Member, IEEE</strong>
           <p>
             Ph.D. researcher working at the intersection of blockchain,
             intelligent transportation, IoT, Edge AI, federated learning, and
@@ -1745,7 +1768,7 @@ function CvPage() {
             <a
               className="primary-link"
               href="/documents/Dr-Mritunjay-resume.pdf"
-              target="_blank"
+              download="Dr-Mritunjay-Shall-Peelam-Resume.pdf"
             >
               <Download size={17} /> Download PDF
             </a>
@@ -2086,6 +2109,16 @@ function AwardsPage() {
   const [activeTab, setActiveTab] = useState<"all" | "award" | "fdp" | "honor">("all");
 
   const achievements = [
+    {
+      year: "2026",
+      category: "honor" as const,
+      badge: "Professional Distinction",
+      icon: Award,
+      title: "Senior Member, IEEE",
+      organization: "Institute of Electrical and Electronics Engineers (IEEE)",
+      detail:
+        "Elevated to IEEE Senior Member grade in recognition of significant professional experience and contributions to engineering and research.",
+    },
     {
       year: "2026",
       category: "award" as const,
@@ -3864,7 +3897,7 @@ function Footer() {
       </div>
       <div className="footer-wave-content">
         <div className="footer-wave-container">
-          © Copyright 2026 Dr. Mritunjay Shall Peelam. Last updated: July 31, 2026.
+          © Copyright 2026 Dr. Mritunjay Shall Peelam. Last updated: August 23, 2026.
         </div>
       </div>
     </footer>

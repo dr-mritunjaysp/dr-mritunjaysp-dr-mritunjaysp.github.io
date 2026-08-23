@@ -1,6 +1,33 @@
 name: mritunjay-portfolio
 
 services:
+  scholarresume-backend:
+    image: scholarresume-backend:local
+    build:
+      context: ../Resume Builder/backend
+    env_file:
+      - ../Resume Builder/backend/.env
+    environment:
+      DATABASE_URL: postgresql://resume_user:resume_pass@host.docker.internal:5432/resume_db
+      PORT: "4000"
+      BACKEND_URL: http://localhost:4000
+      FRONTEND_URL: http://localhost:3000/resumebuilder
+    ports:
+      - "4000:4000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:4000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 15s
+      timeout: 5s
+      start_period: 45s
+      retries: 5
+
   portfolio:
     image: mritunjay-portfolio:local
     build:
@@ -11,6 +38,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
+      SCHOLARRESUME_BACKEND_URL: http://scholarresume-backend:4000
+    depends_on:
+      scholarresume-backend:
+        condition: service_healthy
     restart: unless-stopped
 
   portfolio-dev:
@@ -24,6 +55,10 @@ services:
       - "3001:3000"
     environment:
       NODE_ENV: development
+      SCHOLARRESUME_BACKEND_URL: http://scholarresume-backend:4000
+    depends_on:
+      scholarresume-backend:
+        condition: service_healthy
     volumes:
       - .:/app
       - portfolio_node_modules:/app/node_modules

@@ -26,9 +26,10 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s · Dr. Mritunjay Shall Peelam",
     },
     description:
-      "Academic portfolio of Dr. Mritunjay Shall Peelam, Assistant Professor (Selection Grade) at UPES Dehradun, researching Blockchain, IoT, Edge AI, Federated Learning, and Multimodal Machine Learning.",
+      "Academic portfolio of Dr. Mritunjay Shall Peelam, Senior Member, IEEE and Assistant Professor (Selection Grade) at UPES Dehradun, researching Blockchain, IoT, Edge AI, Federated Learning, and Multimodal Machine Learning.",
     keywords: [
       "Mritunjay Shall Peelam",
+      "Senior Member IEEE",
       "UPES Dehradun",
       "Blockchain",
       "Internet of Things",
@@ -47,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: origin,
       title: "Dr. Mritunjay Shall Peelam",
       description:
-        "Assistant Professor (Selection Grade) · Researcher in Blockchain, IoT, Edge AI, and Multimodal ML.",
+        "Senior Member, IEEE · Assistant Professor (Selection Grade) · Researcher in Blockchain, IoT, Edge AI, and Multimodal ML.",
       siteName: "Dr. Mritunjay Shall Peelam",
       images: [
         {
@@ -62,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "Dr. Mritunjay Shall Peelam",
       description:
-        "Assistant Professor (Selection Grade) · Researcher in Blockchain, IoT, Edge AI, and Multimodal ML.",
+        "Senior Member, IEEE · Assistant Professor (Selection Grade) · Researcher in Blockchain, IoT, Edge AI, and Multimodal ML.",
       images: [`${origin}/og.png`],
     },
   };
