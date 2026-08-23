@@ -11,11 +11,9 @@ const scholarResumeHtml = `<!doctype html>
     <link rel="shortcut icon" href="/ResumeBuilder/favicon-transparent.ico?v=6" />
     <link rel="manifest" href="/ResumeBuilder/site.webmanifest" />
     <title>ScholarResume</title>
-    <script src="/ResumeBuilder/vendor/html2canvas.min.js?v=20260823-live-pdf-1"></script>
-    <script src="/ResumeBuilder/vendor/jspdf.umd.min.js?v=20260823-live-pdf-1"></script>
-    <script src="/ResumeBuilder/live-pdf-renderer.js?v=20260823-live-pdf-1"></script>
-    <script>window.__SCHOLAR_RESUME_ENTRY__ = "/ResumeBuilder/assets/index-BADIOmQT.js?v=20260823-live-pdf-1";</script>
-    <script src="/ResumeBuilder/api-bridge.js?v=20260823-live-pdf-1"></script>
+    <script src="/ResumeBuilder/live-pdf-renderer.js?v=20260823-chrome-pdf-1"></script>
+    <script>window.__SCHOLAR_RESUME_ENTRY__ = "/ResumeBuilder/assets/index-BADIOmQT.js?v=20260823-chrome-pdf-1";</script>
+    <script src="/ResumeBuilder/api-bridge.js?v=20260823-chrome-pdf-1"></script>
     <link rel="stylesheet" crossorigin href="/ResumeBuilder/assets/index-JcPN3zOH.css?v=20260823-membership-1" />
   </head>
   <body>

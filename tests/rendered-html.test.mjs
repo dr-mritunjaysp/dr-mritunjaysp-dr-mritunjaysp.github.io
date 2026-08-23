@@ -92,6 +92,21 @@ test("keeps the implementation independent from the retired theme", async () => 
   assert.doesNotMatch(combined, /al-folio|jekyll|liquid|react-loading-skeleton/i);
 });
 
+test("uses native Chrome Save as PDF for live resume PDFs", async () => {
+  const [liveRenderer, bundlePatch, mobileApi] = await Promise.all([
+    readFile(new URL("../public/ResumeBuilder/live-pdf-renderer.js", import.meta.url), "utf8"),
+    readFile(new URL("../scripts/patch-scholarresume-pdf.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../public/scholarresume-api-sw.js", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(liveRenderer, /global\.open\("about:blank", "_blank"\)/);
+  assert.match(liveRenderer, /printWindow\.print\(\)/);
+  assert.match(liveRenderer, /application\/x-scholarresume-print-dialog/);
+  assert.match(bundlePatch, /downloadWithNativePrint/);
+  assert.match(mobileApi, /Chrome's high-quality Save as PDF view/);
+  assert.doesNotMatch(liveRenderer, /html2canvas|jsPDF|appendCanvasPages/);
+});
+
 test("serves Scholar Resume instead of the generic portfolio route", async () => {
   for (const path of ["/resumebuilder", "/resumebuilder/signup"]) {
     const response = await render(path);
@@ -100,10 +115,10 @@ test("serves Scholar Resume instead of the generic portfolio route", async () =>
     assert.equal(response.status, 200, path);
     assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
     assert.match(html, /<title>ScholarResume<\/title>/);
-    assert.match(html, /live-pdf-renderer\.js\?v=20260823-live-pdf-1/);
-    assert.match(html, /api-bridge\.js\?v=20260823-live-pdf-1/);
+    assert.match(html, /live-pdf-renderer\.js\?v=20260823-chrome-pdf-1/);
+    assert.match(html, /api-bridge\.js\?v=20260823-chrome-pdf-1/);
     assert.match(html, /src="\/ResumeBuilder\/api-bridge\.js/);
-    assert.match(html, /__SCHOLAR_RESUME_ENTRY__ = "\/ResumeBuilder\/assets\/index-BADIOmQT\.js\?v=20260823-live-pdf-1"/);
+    assert.match(html, /__SCHOLAR_RESUME_ENTRY__ = "\/ResumeBuilder\/assets\/index-BADIOmQT\.js\?v=20260823-chrome-pdf-1"/);
     assert.doesNotMatch(html, /Dr\. Mritunjay Shall Peelam/);
   }
 });
@@ -153,23 +168,24 @@ test("packages the complete Scholar Resume app on its lowercase public route", a
   );
 
   assert.match(scholarHtml, /<title>ScholarResume<\/title>/);
-  assert.match(scholarHtml, /__SCHOLAR_RESUME_ENTRY__ = "\/resumebuilder\/assets\/index-BADIOmQT\.js\?v=20260823-live-pdf-1"/);
+  assert.match(scholarHtml, /__SCHOLAR_RESUME_ENTRY__ = "\/resumebuilder\/assets\/index-BADIOmQT\.js\?v=20260823-chrome-pdf-1"/);
   assert.match(scholarHtml, /href="\/resumebuilder\/assets\/index-JcPN3zOH\.css\?v=20260823-membership-1"/);
   assert.match(scholarScript, /\/resumebuilder/);
-  assert.match(scholarHtml, /vendor\/html2canvas\.min\.js\?v=20260823-live-pdf-1/);
-  assert.match(scholarHtml, /vendor\/jspdf\.umd\.min\.js\?v=20260823-live-pdf-1/);
-  assert.match(scholarHtml, /live-pdf-renderer\.js\?v=20260823-live-pdf-1/);
-  assert.match(scholarHtml, /api-bridge\.js\?v=20260823-live-pdf-1/);
+  assert.doesNotMatch(scholarHtml, /html2canvas|jspdf/i);
+  assert.match(scholarHtml, /live-pdf-renderer\.js\?v=20260823-chrome-pdf-1/);
+  assert.match(scholarHtml, /api-bridge\.js\?v=20260823-chrome-pdf-1/);
   assert.match(apiBridge, /window\.location\.origin/);
   assert.match(apiBridge, /XMLHttpRequest\.prototype\.open/);
   assert.match(mobileApi, /accounts:signInWithPassword/);
   assert.match(mobileApi, /handleApiRequest/);
-  assert.match(mobileApi, /X-ScholarResume-PDF-Engine/);
+  assert.match(mobileApi, /Chrome's high-quality Save as PDF view/);
   assert.match(scholarScript, /x-scholarresume-pdf-engine/);
   assert.match(scholarScript, /window\.ScholarResumeLivePdf/);
   assert.match(scholarScript, /buildResumePdf\(s,\{\.\.\.d,pdfFont:"serif"\}\)/);
-  assert.match(livePdfRenderer, /global\.html2canvas\(frameDocument\.body/);
-  assert.match(livePdfRenderer, /appendCanvasPages\(pdf, canvas, protectedBlocks\)/);
+  assert.match(livePdfRenderer, /printWindow\.print\(\)/);
+  assert.match(livePdfRenderer, /application\/x-scholarresume-print-dialog/);
+  assert.doesNotMatch(livePdfRenderer, /html2canvas|jsPDF|appendCanvasPages/);
+  assert.match(scholarScript, /application\/x-scholarresume-print-dialog/);
   assert.match(scholarScript, /label:"Professional membership"/);
   assert.match(scholarScript, /Senior Member, IEEE/);
   assert.match(scholarScript, /className:"resume-pdf-membership"/);

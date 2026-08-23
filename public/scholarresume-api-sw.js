@@ -382,18 +382,10 @@ function createPdf(text) {
 
 async function pdfPreview(request) {
   await authenticate(request);
-  const body = await readJson(request);
-  const safeName = String(body.fileName || "ScholarResume")
-    .replace(/[^A-Za-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  return new Response(createPdf(htmlToPlainText(body.html)), {
-    headers: {
-      "Cache-Control": "no-store",
-      "Content-Disposition": `attachment; filename="${safeName || "ScholarResume"}-Resume.pdf"`,
-      "Content-Type": "application/pdf",
-      "X-ScholarResume-PDF-Engine": "client-vector",
-    },
-  });
+  return jsonResponse(
+    { error: "Use the Download PDF button to open Chrome's high-quality Save as PDF view." },
+    503,
+  );
 }
 
 async function handleApiRequest(request, url) {
