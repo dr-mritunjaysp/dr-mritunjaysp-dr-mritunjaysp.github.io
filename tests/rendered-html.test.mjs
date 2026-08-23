@@ -100,9 +100,10 @@ test("serves Scholar Resume instead of the generic portfolio route", async () =>
     assert.equal(response.status, 200, path);
     assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
     assert.match(html, /<title>ScholarResume<\/title>/);
-    assert.match(html, /api-bridge\.js\?v=20260823-local-api-pdf-1/);
+    assert.match(html, /live-pdf-renderer\.js\?v=20260823-live-pdf-1/);
+    assert.match(html, /api-bridge\.js\?v=20260823-live-pdf-1/);
     assert.match(html, /src="\/ResumeBuilder\/api-bridge\.js/);
-    assert.match(html, /__SCHOLAR_RESUME_ENTRY__ = "\/ResumeBuilder\/assets\/index-BADIOmQT\.js\?v=20260823-membership-1"/);
+    assert.match(html, /__SCHOLAR_RESUME_ENTRY__ = "\/ResumeBuilder\/assets\/index-BADIOmQT\.js\?v=20260823-live-pdf-1"/);
     assert.doesNotMatch(html, /Dr\. Mritunjay Shall Peelam/);
   }
 });
@@ -146,19 +147,29 @@ test("packages the complete Scholar Resume app on its lowercase public route", a
     new URL("../dist/scholarresume-api-sw.js", import.meta.url),
     "utf8",
   );
+  const livePdfRenderer = await readFile(
+    new URL("../dist/resumebuilder/live-pdf-renderer.js", import.meta.url),
+    "utf8",
+  );
 
   assert.match(scholarHtml, /<title>ScholarResume<\/title>/);
-  assert.match(scholarHtml, /__SCHOLAR_RESUME_ENTRY__ = "\/resumebuilder\/assets\/index-BADIOmQT\.js\?v=20260823-membership-1"/);
+  assert.match(scholarHtml, /__SCHOLAR_RESUME_ENTRY__ = "\/resumebuilder\/assets\/index-BADIOmQT\.js\?v=20260823-live-pdf-1"/);
   assert.match(scholarHtml, /href="\/resumebuilder\/assets\/index-JcPN3zOH\.css\?v=20260823-membership-1"/);
   assert.match(scholarScript, /\/resumebuilder/);
-  assert.match(scholarHtml, /api-bridge\.js\?v=20260823-local-api-pdf-1/);
+  assert.match(scholarHtml, /vendor\/html2canvas\.min\.js\?v=20260823-live-pdf-1/);
+  assert.match(scholarHtml, /vendor\/jspdf\.umd\.min\.js\?v=20260823-live-pdf-1/);
+  assert.match(scholarHtml, /live-pdf-renderer\.js\?v=20260823-live-pdf-1/);
+  assert.match(scholarHtml, /api-bridge\.js\?v=20260823-live-pdf-1/);
   assert.match(apiBridge, /window\.location\.origin/);
   assert.match(apiBridge, /XMLHttpRequest\.prototype\.open/);
   assert.match(mobileApi, /accounts:signInWithPassword/);
   assert.match(mobileApi, /handleApiRequest/);
   assert.match(mobileApi, /X-ScholarResume-PDF-Engine/);
   assert.match(scholarScript, /x-scholarresume-pdf-engine/);
+  assert.match(scholarScript, /window\.ScholarResumeLivePdf/);
   assert.match(scholarScript, /buildResumePdf\(s,\{\.\.\.d,pdfFont:"serif"\}\)/);
+  assert.match(livePdfRenderer, /global\.html2canvas\(frameDocument\.body/);
+  assert.match(livePdfRenderer, /appendCanvasPages\(pdf, canvas, protectedBlocks\)/);
   assert.match(scholarScript, /label:"Professional membership"/);
   assert.match(scholarScript, /Senior Member, IEEE/);
   assert.match(scholarScript, /className:"resume-pdf-membership"/);

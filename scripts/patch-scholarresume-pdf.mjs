@@ -8,6 +8,8 @@ const responseToBlob =
   'const b=buildPreviewPdfHtml(_,d),k=await api.post("/api/pdf/preview",{html:b,fileName:c||s||"ScholarResume",engine:g.engine||"puppeteer"},{responseType:"blob"}),$=new Blob([k.data],{type:"application/pdf"});';
 const responseWithVectorFallback =
   'const b=buildPreviewPdfHtml(_,d),k=await api.post("/api/pdf/preview",{html:b,fileName:c||s||"ScholarResume",engine:g.engine||"puppeteer"},{responseType:"blob"}),j=String(k.headers&&typeof k.headers.get==="function"?k.headers.get("x-scholarresume-pdf-engine")||"":k.headers&&k.headers["x-scholarresume-pdf-engine"]||""),$=new Blob([j==="client-vector"&&d?buildResumePdf(s,{...d,pdfFont:"serif"}):k.data],{type:"application/pdf"});';
+const responseWithLiveRenderer =
+  'const b=buildPreviewPdfHtml(_,d),P=typeof window<"u"?window.ScholarResumeLivePdf:null;if(P&&P.shouldHandle())try{const L=await P.createPdf({target:_,html:b,fileName:c||s||"ScholarResume",settings:d});return{blob:L,fileName:previewPdfFileName(s,c),size:L.size}}catch(L){console.warn("Live PDF renderer failed; using the vector fallback.",L)}const k=await api.post("/api/pdf/preview",{html:b,fileName:c||s||"ScholarResume",engine:g.engine||"puppeteer"},{responseType:"blob"}),j=String(k.headers&&typeof k.headers.get==="function"?k.headers.get("x-scholarresume-pdf-engine")||"":k.headers&&k.headers["x-scholarresume-pdf-engine"]||""),$=new Blob([j==="client-vector"&&d?buildResumePdf(s,{...d,pdfFont:"serif"}):k.data],{type:"application/pdf"});';
 
 const membershipPatches = [
   {
@@ -61,10 +63,14 @@ for (const assetName of assetNames) {
   let source = await readFile(assetPath, "utf8");
   let changed = false;
 
-  if (source.includes('k.headers.get("x-scholarresume-pdf-engine")')) {
+  if (source.includes("window.ScholarResumeLivePdf")) {
     pdfCurrent += 1;
+  } else if (source.includes(responseWithVectorFallback)) {
+    source = source.replace(responseWithVectorFallback, responseWithLiveRenderer);
+    pdfPatched += 1;
+    changed = true;
   } else if (source.includes(responseToBlob)) {
-    source = source.replace(responseToBlob, responseWithVectorFallback);
+    source = source.replace(responseToBlob, responseWithLiveRenderer);
     pdfPatched += 1;
     changed = true;
   }
