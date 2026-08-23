@@ -49,7 +49,7 @@
   }
 
   navigator.serviceWorker
-    .register("/scholarresume-api-sw.js?v=20260823-local-api-pdf-1", { scope: "/" })
+    .register("/scholarresume-api-sw.js?v=20260823-chrome-pdf-1", { scope: "/" })
     .then(function waitUntilControlled() {
       if (navigator.serviceWorker.controller) return;
       return new Promise(function waitForController(resolve) {

@@ -8,8 +8,14 @@ const responseToBlob =
   'const b=buildPreviewPdfHtml(_,d),k=await api.post("/api/pdf/preview",{html:b,fileName:c||s||"ScholarResume",engine:g.engine||"puppeteer"},{responseType:"blob"}),$=new Blob([k.data],{type:"application/pdf"});';
 const responseWithVectorFallback =
   'const b=buildPreviewPdfHtml(_,d),k=await api.post("/api/pdf/preview",{html:b,fileName:c||s||"ScholarResume",engine:g.engine||"puppeteer"},{responseType:"blob"}),j=String(k.headers&&typeof k.headers.get==="function"?k.headers.get("x-scholarresume-pdf-engine")||"":k.headers&&k.headers["x-scholarresume-pdf-engine"]||""),$=new Blob([j==="client-vector"&&d?buildResumePdf(s,{...d,pdfFont:"serif"}):k.data],{type:"application/pdf"});';
-const responseWithLiveRenderer =
+const responseWithCanvasRenderer =
   'const b=buildPreviewPdfHtml(_,d),P=typeof window<"u"?window.ScholarResumeLivePdf:null;if(P&&P.shouldHandle())try{const L=await P.createPdf({target:_,html:b,fileName:c||s||"ScholarResume",settings:d});return{blob:L,fileName:previewPdfFileName(s,c),size:L.size}}catch(L){console.warn("Live PDF renderer failed; using the vector fallback.",L)}const k=await api.post("/api/pdf/preview",{html:b,fileName:c||s||"ScholarResume",engine:g.engine||"puppeteer"},{responseType:"blob"}),j=String(k.headers&&typeof k.headers.get==="function"?k.headers.get("x-scholarresume-pdf-engine")||"":k.headers&&k.headers["x-scholarresume-pdf-engine"]||""),$=new Blob([j==="client-vector"&&d?buildResumePdf(s,{...d,pdfFont:"serif"}):k.data],{type:"application/pdf"});';
+const responseWithServerRenderer =
+  'const b=buildPreviewPdfHtml(_,d),P=typeof window<"u"?window.ScholarResumeLivePdf:null;if(P&&P.shouldHandle()){const L=await P.createPdf({target:_,html:b,fileName:c||s||"ScholarResume",settings:d});return{blob:L,fileName:previewPdfFileName(s,c),size:L.size}}const k=await api.post("/api/pdf/preview",{html:b,fileName:c||s||"ScholarResume",engine:g.engine||"puppeteer"},{responseType:"blob"}),j=String(k.headers&&typeof k.headers.get==="function"?k.headers.get("x-scholarresume-pdf-engine")||"":k.headers&&k.headers["x-scholarresume-pdf-engine"]||""),$=new Blob([j==="client-vector"&&d?buildResumePdf(s,{...d,pdfFont:"serif"}):k.data],{type:"application/pdf"});';
+const downloadBlob =
+  'function downloadPdfBlob(o,s){const c=URL.createObjectURL(o),d=document.createElement("a");d.href=c,d.download=s,document.body.appendChild(d),d.click(),d.remove(),window.setTimeout(()=>URL.revokeObjectURL(c),1e3)}';
+const downloadWithNativePrint =
+  'function downloadPdfBlob(o,s){if(o&&o.type==="application/x-scholarresume-print-dialog")return;const c=URL.createObjectURL(o),d=document.createElement("a");d.href=c,d.download=s,document.body.appendChild(d),d.click(),d.remove(),window.setTimeout(()=>URL.revokeObjectURL(c),1e3)}';
 
 const membershipPatches = [
   {
@@ -57,21 +63,35 @@ let pdfPatched = 0;
 let pdfCurrent = 0;
 let membershipPatched = 0;
 let membershipCurrent = 0;
+let nativePrintPatched = 0;
+let nativePrintCurrent = 0;
 
 for (const assetName of assetNames) {
   const assetPath = path.join(assetsDir, assetName);
   let source = await readFile(assetPath, "utf8");
   let changed = false;
 
-  if (source.includes("window.ScholarResumeLivePdf")) {
+  if (source.includes(responseWithServerRenderer)) {
     pdfCurrent += 1;
+  } else if (source.includes(responseWithCanvasRenderer)) {
+    source = source.replace(responseWithCanvasRenderer, responseWithServerRenderer);
+    pdfPatched += 1;
+    changed = true;
   } else if (source.includes(responseWithVectorFallback)) {
-    source = source.replace(responseWithVectorFallback, responseWithLiveRenderer);
+    source = source.replace(responseWithVectorFallback, responseWithServerRenderer);
     pdfPatched += 1;
     changed = true;
   } else if (source.includes(responseToBlob)) {
-    source = source.replace(responseToBlob, responseWithLiveRenderer);
+    source = source.replace(responseToBlob, responseWithServerRenderer);
     pdfPatched += 1;
+    changed = true;
+  }
+
+  if (source.includes(downloadWithNativePrint)) {
+    nativePrintCurrent += 1;
+  } else if (source.includes(downloadBlob)) {
+    source = source.replace(downloadBlob, downloadWithNativePrint);
+    nativePrintPatched += 1;
     changed = true;
   }
 
@@ -105,6 +125,10 @@ if (membershipPatched + membershipCurrent === 0) {
   throw new Error("Scholar Resume personal-information form was not found in the bundled assets.");
 }
 
+if (nativePrintPatched + nativePrintCurrent === 0) {
+  throw new Error("Scholar Resume PDF download handler was not found in the bundled assets.");
+}
+
 const cssNames = (await readdir(assetsDir)).filter((name) => /^index-[\w-]+\.css$/.test(name));
 let membershipCssFound = false;
 for (const cssName of cssNames) {
@@ -125,8 +149,13 @@ if (!membershipCssFound) {
 
 console.log(
   pdfPatched > 0
-    ? `Patched ${pdfPatched} Scholar Resume bundle(s) with the styled PDF fallback.`
-    : "Scholar Resume styled PDF fallback is already present.",
+    ? `Patched ${pdfPatched} Scholar Resume bundle(s) with the native Chrome PDF renderer.`
+    : "Scholar Resume native Chrome PDF renderer is already present.",
+);
+console.log(
+  nativePrintPatched > 0
+    ? `Patched ${nativePrintPatched} Scholar Resume bundle(s) with native Chrome Save as PDF handling.`
+    : "Scholar Resume native Chrome Save as PDF handling is already present.",
 );
 console.log(
   membershipPatched > 0
