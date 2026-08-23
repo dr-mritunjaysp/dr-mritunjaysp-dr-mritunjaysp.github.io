@@ -99,7 +99,8 @@ test("uses native Chrome Save as PDF for live resume PDFs", async () => {
     readFile(new URL("../public/scholarresume-api-sw.js", import.meta.url), "utf8"),
   ]);
 
-  assert.match(liveRenderer, /global\.open\("about:blank", "_blank"\)/);
+  assert.match(liveRenderer, /createElement\("iframe"\)/);
+  assert.match(liveRenderer, /frame\.contentWindow/);
   assert.match(liveRenderer, /printWindow\.print\(\)/);
   assert.match(liveRenderer, /application\/x-scholarresume-print-dialog/);
   assert.match(bundlePatch, /downloadWithNativePrint/);

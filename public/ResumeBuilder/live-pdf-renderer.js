@@ -48,9 +48,22 @@
       throw new Error("The live PDF preview is empty.");
     }
 
-    var printWindow = global.open("about:blank", "_blank");
+    var frame = global.document.createElement("iframe");
+    frame.title = "ScholarResume high-quality PDF";
+    frame.setAttribute("aria-hidden", "true");
+    frame.style.position = "fixed";
+    frame.style.left = "-12000px";
+    frame.style.top = "0";
+    frame.style.width = "794px";
+    frame.style.height = "1123px";
+    frame.style.border = "0";
+    frame.style.pointerEvents = "none";
+    global.document.body.appendChild(frame);
+
+    var printWindow = frame.contentWindow;
     if (!printWindow) {
-      throw new Error("Allow pop-ups for this website, then click Download PDF again.");
+      frame.remove();
+      throw new Error("The high-quality PDF preview could not be opened.");
     }
 
     try {
@@ -58,22 +71,23 @@
       printWindow.document.write(options.html);
       printWindow.document.close();
       printWindow.document.title = safeTitle(options.fileName);
-      printWindow.opener = null;
-
       await waitForDocumentAssets(printWindow);
       printWindow.addEventListener(
         "afterprint",
         function closeAfterPrint() {
-          printWindow.close();
+          frame.remove();
         },
         { once: true },
       );
       printWindow.focus();
       printWindow.print();
+      global.setTimeout(function removePrintedFrame() {
+        frame.remove();
+      }, 1000);
 
       return new Blob([], { type: PRINT_DIALOG_TYPE });
     } catch (error) {
-      printWindow.close();
+      frame.remove();
       throw error;
     }
   }
