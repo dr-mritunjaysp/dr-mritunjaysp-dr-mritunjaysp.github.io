@@ -92,6 +92,28 @@ test("keeps the implementation independent from the retired theme", async () => 
   assert.doesNotMatch(combined, /al-folio|jekyll|liquid|react-loading-skeleton/i);
 });
 
+test("serves current aggregate and per-paper Google Scholar citations", async () => {
+  const response = await render("/api/scholar");
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
+
+  const snapshot = await response.json();
+  assert.ok(snapshot.total_citations >= 622);
+  assert.ok(snapshot.h_index >= 14);
+  assert.ok(snapshot.i10_index >= 17);
+  assert.ok(snapshot.papers.length >= 21);
+
+  const metaverse = snapshot.papers.find((paper) =>
+    paper.title.toLowerCase().startsWith("metaverse for education"),
+  );
+  const quantumIot = snapshot.papers.find(
+    (paper) => paper.title === "Quantum computing applications for Internet of Things",
+  );
+  assert.ok(metaverse.citations >= 68);
+  assert.ok(quantumIot.citations >= 81);
+  assert.match(quantumIot.scholar_url, /citation_for_view=MdGRPEIAAAAJ:zYLM7Y9cAGgC/);
+});
+
 test("uses native Chrome Save as PDF for live resume PDFs", async () => {
   const [liveRenderer, bundlePatch, mobileApi] = await Promise.all([
     readFile(new URL("../public/ResumeBuilder/live-pdf-renderer.js", import.meta.url), "utf8"),

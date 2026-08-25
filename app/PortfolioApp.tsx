@@ -46,6 +46,10 @@ import { LottieIcon } from "./LottieIcon";
 import { ScrollJumpButton } from "./ScrollJumpButton";
 import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationCitations } from "./firebase";
 import type { ScholarMetrics } from "./firebase";
+import {
+  getScholarPaperUrl,
+  normalizeScholarTitle,
+} from "./scholar-data";
 import { SortingVisualizer } from "./sorting/SortingVisualizer";
 import { InkoraApp } from "./inkora/InkoraApp";
 import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
@@ -129,7 +133,7 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam, Anjaney Asreet Rout, and Vinay Chamola",
     venue: "IET Quantum Communication",
     year: 2024,
-    citations: 79,
+    citations: 81,
     tags: ["Q2 Journal", "Scopus Indexed", "Impact Factor: 2.8"],
     doi: "https://doi.org/10.1049/qtc2.12079",
     abstract:
@@ -142,7 +146,7 @@ const publications: Publication[] = [
       "Aditya Kumar Sharma, Mritunjay Shall Peelam, Brijesh Kumar Chaurasia, and Vinay Chamola",
     venue: "IET Blockchain",
     year: 2024,
-    citations: 63,
+    citations: 65,
     tags: ["Q2 Journal", "Scopus Indexed"],
     doi: "https://doi.org/10.1049/blc2.12059",
     abstract:
@@ -155,7 +159,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Mehul Gera, Vinay Chamola, and Sherali Zeadally",
     venue: "IEEE Transactions on Intelligent Transportation Systems",
     year: 2024,
-    citations: 54,
+    citations: 58,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 8.4"],
     abstract:
       "Emergency vehicle management (EVM) is vital for minimizing response times during life-threatening medical, fire, and security crises in smart cities. Intelligent Transportation Systems (ITS) leverage real-time traffic signal preemption, dynamic route optimization, vehicle-to-everything (V2X) communications, and edge-fog computing to streamline EV transit. This paper presents an exhaustive survey of EVM frameworks, covering traffic management algorithms, priority signal preemptions, sensor fusion, and multi-agent reinforcement learning. We categorize existing implementations based on communication protocols, centralized versus decentralized control architectures, and evaluate resilience against traffic congestion, communication latency, and cybersecurity vulnerabilities.",
@@ -167,7 +171,7 @@ const publications: Publication[] = [
       "Vinay Chamola, Mritunjay Shall Peelam, Uday Mittal, and collaborators",
     venue: "Computer Applications in Engineering Education",
     year: 2025,
-    citations: 62,
+    citations: 68,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 2.2"],
     abstract:
       "The integration of the Metaverse into educational paradigms offers immersive, interactive, and spatial learning environments that transcend physical boundaries. By unifying Virtual Reality (VR), Augmented Reality (AR), Extended Reality (XR), Artificial Intelligence (AI), and Internet of Things (IoT) sensors, the educational Metaverse enables real-time experiential simulations, digital twin laboratories, and personalized learning pathways. This paper provides a structured review of technological developments in educational metaverse platforms, analyzing pedagogical frameworks, architectural components, and user interaction mechanisms. We examine technical bottlenecks including high rendering latency, privacy preservation, hardware accessibility, and cognitive overload, providing strategic directions for sustainable adoption.",
@@ -179,7 +183,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Brijesh Kumar Chaurasia, Aditya Kumar Sharma, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Access",
     year: 2024,
-    citations: 50,
+    citations: 52,
     tags: ["Q2 Journal", "SCIE Indexed", "Impact Factor: 3.6"],
     abstract:
       "Interoperability remains a fundamental bottleneck in the blockchain ecosystem, where siloed ledgers struggle to communicate, share state, or execute cross-chain transactions securely. The Cosmos network addresses this via Tendermint BFT consensus and the Inter-Blockchain Communication (IBC) protocol. This paper presents a thorough empirical and architectural study of Cosmos blockchain interoperability. We evaluate Tendermint core mechanics, IBC packet relaying, sovereign hub-and-spoke topologies, and cross-chain token transfer dynamics. Furthermore, we benchmark transaction throughput, latency, security models against double-spending and eclipse attacks, highlighting key trade-offs in building scalable multi-chain decentralized finance (DeFi) and enterprise platforms.",
@@ -190,7 +194,7 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam, Siva Sai, and Vinay Chamola",
     venue: "IEEE Transactions on Consumer Electronics",
     year: 2024,
-    citations: 38,
+    citations: 39,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 10.9"],
     abstract:
       "Consumer electronics networks, including smart home gateways, connected wearables, and personal IoT nodes, handle increasingly sensitive user data while possessing constrained memory and processing capabilities. As quantum algorithms advance, conventional public-key cryptography will become vulnerable to compromise. This paper investigates the experimental deployment of Quantum Key Distribution (QKD) protocols—such as BB84 and E91—tailored for resource-bounded consumer electronics. We evaluate key generation rates, quantum bit error rates (QBER), post-processing error reconciliation, and privacy amplification in noise-prone wireless environments, demonstrating the viability of hybrid quantum-classical key exchange mechanisms.",
@@ -202,7 +206,7 @@ const publications: Publication[] = [
       "Vinay Chamola, Mritunjay Shall Peelam, Mohsen Guizani, and Dusit Niyato",
     venue: "IEEE Open Journal of the Communications Society",
     year: 2025,
-    citations: 45,
+    citations: 47,
     tags: ["Q1 Journal", "ESCI Indexed", "Impact Factor: 6.1"],
     abstract:
       "While 5G deployment matures and 6G research takes shape, the vision of 7G smart networks emerges to address hyper-connected environments requiring sub-millisecond latency, terabit-per-second data rates, and autonomous self-evolving intelligence. 7G networks will integrate space-air-ground-sea integrated networks (SAGSIN), quantum networking, AI-native edge intelligence, holographic communications, and intelligent reflecting surfaces (IRS). This paper delivers a forward-looking survey on 7G architectural innovations, detailing key enabling technologies, spectrum management in terahertz frequencies, semantic communication paradigms, and extreme security frameworks. We discuss critical research challenges including energy consumption, cross-domain management, and protocol standardization.",
@@ -213,7 +217,7 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Transactions on Consumer Electronics",
     year: 2024,
-    citations: 36,
+    citations: 38,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 10.9"],
     abstract:
       "The rapid proliferation of consumer Internet of Things (IoT) devices has created vast attack surfaces vulnerable to cyber threats, data tampering, and impending post-quantum cryptographic breaches. Traditional blockchain networks suffer from high computational overhead and vulnerability to Shor's and Grover's quantum search algorithms. This paper introduces a quantum-resistant blockchain framework tailored for consumer IoT networks. By incorporating quantum digital signatures (QDS) and post-quantum cryptographic primitives into a lightweight consensus protocol, the framework ensures immutable data logging, quantum-safe identity verification, and efficient transaction processing without straining resource-constrained consumer devices.",
@@ -225,7 +229,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Gaurav Kumar, Kunjan Shah, and Vinay Chamola",
     venue: "Expert Systems",
     year: 2025,
-    citations: 36,
+    citations: 39,
     tags: ["Q2 Journal", "SCIE Indexed", "Impact Factor: 2.3"],
     abstract:
       "Digital voting systems face intense scrutiny regarding voter anonymity, coercion resistance, ballot verifiability, and resistance against central authority tampering. DemocracyGuard introduces a novel decentralized electronic voting system leveraging permissioned blockchain ledgers, zero-knowledge proofs (ZKP), and ring signatures. Voters execute tamper-evident transactions recorded on a distributed ledger, allowing public end-to-end auditability while strictly preserving voter identity confidentiality. We conduct security evaluations against double-voting, Sybil attacks, and man-in-the-middle exploits, demonstrating low latency and high scalability across national-scale election simulations.",
@@ -236,7 +240,7 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam and collaborators",
     venue: "International Journal of Circuit Theory and Applications",
     year: 2024,
-    citations: 26,
+    citations: 27,
     tags: ["Journal", "Scopus Indexed"],
     abstract:
       "Analog-to-Digital Converters (ADCs) and Digital-to-Analog Converters (DACs) are fundamental building blocks in Internet of Things (IoT) edge sensors, translating real-world analog signals into digital streams for processing. Designing data converters for IoT requires balancing ultra-low power consumption, high signal-to-noise-and-distortion ratios (SINAD), dynamic range, and compact silicon area. This survey provides an in-depth examination of ADC/DAC architectures—including Successive Approximation Register (SAR), Delta-Sigma (ΔΣ), and Pipelined topologies—optimized for IoT sensor interfaces. We categorize circuit design strategies, trade-offs, and identify emerging trends in neuromorphic and event-driven data conversion.",
@@ -247,7 +251,7 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam, Kunjan Shah, and Vinay Chamola",
     venue: "Digital Communications and Networks",
     year: 2024,
-    citations: 20,
+    citations: 22,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 7.5"],
     abstract:
       "Location-based services in Intelligent Transportation Systems (ITS) rely heavily on Global Positioning System (GPS) data, which is susceptible to spoofing, jamming, and malicious location falsification by rogue drivers or cyber attackers. V-Track presents a decentralized, tamper-proof location verification architecture that fuses IoT onboard diagnostics (OBD), road-side unit (RSU) multi-lateration, and blockchain immutability. Through a consensus mechanism validating spatial-temporal vehicle trajectories, V-Track detects and rejects falsified location claims in real-time, providing reliable proof-of-location for tolling, usage-based insurance, and autonomous fleet dispatching.",
@@ -294,7 +298,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Vinay Chamola, and Brijesh Kumar Chaurasia",
     venue: "Vehicular Communications",
     year: 2025,
-    citations: 12,
+    citations: 14,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 6.5"],
     abstract:
       "Connected and Autonomous Vehicles (CAVs) generate continuous streams of telemetry data via in-vehicle Controller Area Networks (CAN) and external V2X links, making them vulnerable to malware injection, distributed denial-of-service (DDoS), and spoofing attacks. This paper develops a blockchain-enabled collaborative Intrusion Detection System (IDS) for real-time vehicular networks. Edge RSUs inspect telemetry traffic using lightweight machine learning classifiers, while a permissioned blockchain ledger aggregates threat intelligence across regional transportation zones, enabling instant cross-fleet signature updates without central point-of-failure vulnerabilities.",
@@ -318,7 +322,7 @@ const publications: Publication[] = [
       "Siva Sai, Devansh Sharma, Mritunjay Shall Peelam, Vinay Chamola, Mohsen Guizani, and Dusit Niyato",
     venue: "IEEE Internet of Things Journal",
     year: 2026,
-    citations: 8,
+    citations: 12,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 8.9"],
     abstract:
       "Channel State Information (CSI) extracted from commodity Wi-Fi interfaces enables non-intrusive, device-free wireless sensing for human activity recognition, gait analysis, vital sign monitoring, and indoor positioning. By leveraging spatial-temporal amplitude and phase fluctuations, machine learning models decode complex human motions without requiring wearable hardware or cameras. This comprehensive survey systematically reviews ML and deep learning techniques for Wi-Fi CSI sensing. We analyze signal preprocessing, feature extraction, convolutional and recurrent neural network architectures, domain adaptation challenges, and identify key directions for multi-user, multi-environment industrial deployment.",
@@ -809,6 +813,7 @@ function PublicationCard({
   };
 
   const citationsCount = liveCitation ?? publication.citations;
+  const scholarPaperUrl = getScholarPaperUrl(publication.title);
   const bibtex = generateBibTex(publication);
 
   const copyBib = (e: React.MouseEvent) => {
@@ -851,10 +856,10 @@ function PublicationCard({
           ))}
           <a
             className="attribute-pill citation-pill citation-tag"
-            href="https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en"
+            href={scholarPaperUrl}
             target="_blank"
             rel="noreferrer"
-            title="View Google Scholar citations (Synced live via Firebase)"
+            title="View this paper and its citations on Google Scholar"
           >
             <span className="firebase-live-dot" aria-hidden="true" />
             Citations: {citationsCount}
@@ -991,9 +996,9 @@ function AnimatedCount({
 function SocialStrip() {
   const [visitorTotal, setVisitorTotal] = useState<number>(14850);
   const [scholar, setScholar] = useState<ScholarMetrics>({
-    total_citations: 589,
-    h_index: 13,
-    i10_index: 16,
+    total_citations: 622,
+    h_index: 14,
+    i10_index: 17,
   });
 
   useEffect(() => {
@@ -1128,8 +1133,8 @@ function SocialStrip() {
             <span className="visitor-counter-metric">
               Citations :{" "}
               <AnimatedCount
-                value={scholar.total_citations ?? 589}
-                fallback="589"
+                value={scholar.total_citations ?? 622}
+                fallback="622"
                 className="visitor-counter-metric-value"
               />
             </span>
@@ -1137,8 +1142,8 @@ function SocialStrip() {
             <span className="visitor-counter-metric">
               H-index :{" "}
               <AnimatedCount
-                value={scholar.h_index ?? 13}
-                fallback="13"
+                value={scholar.h_index ?? 14}
+                fallback="14"
                 className="visitor-counter-metric-value"
               />
             </span>
@@ -1146,8 +1151,8 @@ function SocialStrip() {
             <span className="visitor-counter-metric">
               i10-index :{" "}
               <AnimatedCount
-                value={scholar.i10_index ?? 16}
-                fallback="16"
+                value={scholar.i10_index ?? 17}
+                fallback="17"
                 className="visitor-counter-metric-value"
               />
             </span>
@@ -1167,9 +1172,9 @@ function SocialStrip() {
 
 function getCitationCount(title: string, liveMap: Record<string, number>, fallback: number): number {
   if (liveMap[title] !== undefined) return liveMap[title];
-  const norm = title.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const norm = normalizeScholarTitle(title);
   for (const [key, val] of Object.entries(liveMap)) {
-    if (key.toLowerCase().replace(/[^a-z0-9]/g, "") === norm) return val;
+    if (normalizeScholarTitle(key) === norm) return val;
   }
   return fallback;
 }

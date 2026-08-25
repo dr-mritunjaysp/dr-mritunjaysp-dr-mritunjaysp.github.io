@@ -1,3 +1,10 @@
+import {
+  CACHED_SCHOLAR_SNAPSHOT,
+  papersToCitationMap,
+  normalizeScholarTitle,
+  type ScholarSnapshot,
+} from "./scholar-data";
+
 /**
  * Firebase visitor counter — mirrors the reference site (portfolio-6a1b9)
  * Tracks combined views + clicks against Firebase Realtime Database.
@@ -86,6 +93,38 @@ export interface ScholarMetrics {
   total_citations?: number;
   h_index?: number;
   i10_index?: number;
+}
+
+let scholarApiRequest: Promise<ScholarSnapshot | null> | null = null;
+
+function fetchScholarApi(): Promise<ScholarSnapshot | null> {
+  if (scholarApiRequest) return scholarApiRequest;
+
+  scholarApiRequest = fetch("/api/scholar", {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  })
+    .then(async (response) => {
+      if (
+        !response.ok ||
+        !response.headers.get("content-type")?.includes("application/json")
+      ) {
+        return null;
+      }
+      const value = (await response.json()) as Partial<ScholarSnapshot>;
+      if (
+        !Number.isFinite(value.total_citations) ||
+        !Number.isFinite(value.h_index) ||
+        !Number.isFinite(value.i10_index) ||
+        !Array.isArray(value.papers)
+      ) {
+        return null;
+      }
+      return value as ScholarSnapshot;
+    })
+    .catch(() => null);
+
+  return scholarApiRequest;
 }
 
 let latestViews = 14280;
@@ -271,16 +310,35 @@ export function subscribeScholarMetrics(cb: (m: ScholarMetrics) => void): () => 
   let unsub: (() => void) | undefined;
   let destroyed = false;
 
-  const extractMetrics = (d: any) => {
+  const extractMetrics = (d: any, useVerifiedFloor = true) => {
     if (!d) return;
     const src = d.author_metrics || d;
-    const total_citations = parseCounterValue(src.total_citations ?? src.citations ?? src.citation_count);
-    const h_index = parseCounterValue(src.h_index ?? src.hindex);
-    const i10_index = parseCounterValue(src.i10_index ?? src.i10index);
+    const total_citations = Math.max(
+      useVerifiedFloor ? CACHED_SCHOLAR_SNAPSHOT.total_citations : 0,
+      parseCounterValue(src.total_citations ?? src.citations ?? src.citation_count),
+    );
+    const h_index = Math.max(
+      useVerifiedFloor ? CACHED_SCHOLAR_SNAPSHOT.h_index : 0,
+      parseCounterValue(src.h_index ?? src.hindex),
+    );
+    const i10_index = Math.max(
+      useVerifiedFloor ? CACHED_SCHOLAR_SNAPSHOT.i10_index : 0,
+      parseCounterValue(src.i10_index ?? src.i10index),
+    );
     if (total_citations > 0 || h_index > 0 || i10_index > 0) {
       cb({ total_citations, h_index, i10_index });
     }
   };
+
+  cb({
+    total_citations: CACHED_SCHOLAR_SNAPSHOT.total_citations,
+    h_index: CACHED_SCHOLAR_SNAPSHOT.h_index,
+    i10_index: CACHED_SCHOLAR_SNAPSHOT.i10_index,
+  });
+
+  void fetchScholarApi().then((snapshot) => {
+    if (!destroyed && snapshot) extractMetrics(snapshot, false);
+  });
 
   // Immediate REST fetch for instantaneous live rendering
   fetch("https://portfolio-6a1b9-default-rtdb.firebaseio.com/visitor-counter/scholar-metrics/current.json")
@@ -311,38 +369,34 @@ export function subscribeScholarMetrics(cb: (m: ScholarMetrics) => void): () => 
   };
 }
 
-const DEFAULT_PUBLICATION_CITATIONS: Record<string, number> = {
-  "Quantum computing applications for Internet of Things": 79,
-  "QIoTChain: Quantum IoT-blockchain fusion for advanced data protection in Industry 4.0": 63,
-  "A review on emergency vehicle management for intelligent transportation systems": 54,
-  "Metaverse for education: Developments, challenges, and future direction": 62,
-  "Unlocking the potential of interconnected blockchains: A comprehensive study of Cosmos blockchain interoperability": 50,
-  "Explorative implementation of quantum key distribution algorithms for secure consumer electronics networks": 38,
-  "Future of connectivity: A comprehensive review of innovations and challenges in 7G smart networks": 45,
-  "Enhancing security using quantum blockchain in consumer IoT networks": 36,
-  "DemocracyGuard: Blockchain-based secure voting framework for digital democracy": 36,
-  "A comprehensive survey on data converters for IoT applications: Scope, issues and future directions": 26,
-  "V-Track: Blockchain-enabled IoT system for reliable vehicle location verification": 20,
-  "Blockchain-enabled vehicle lifecycle management with predictive maintenance using federated learning": 17,
-  "Decentralized trust: NFT and blockchain-enabled evidence system using fog computing": 15,
-  "Blockchain-enabled intrusion detection systems for real-time vehicle monitoring": 12,
-  "Enhancing security using quantum computing (ESUQC)": 11,
-  "Blockchain-Based Game Theoretical Framework for V2V and V2G Energy Trading in Carbon-Intelligent Internet of Vehicles": 10,
-  "Machine Learning Techniques for Wi-Fi CSI-based Recognition and Sensing: A Comprehensive Review": 8,
-  "Blockchain-Enabled Secure V2V and V2G Energy Trading for Carbon-Aware Internet of Energy Networks": 2,
-  "Enhancing Quantum-Resistant Data Privacy in Vehicular Cloud Networks Using NIST-Qualified FALCON Algorithm": 1,
-  "Blockchain-based framework for global IMEI blacklist management and mobile device theft prevention": 1,
-  "Enhancing Vehicle Lifecycle Management Through Blockchain-Driven Predictive Maintenance and Federated Learning": 1,
-};
+const DEFAULT_PUBLICATION_CITATIONS = papersToCitationMap(
+  CACHED_SCHOLAR_SNAPSHOT.papers,
+);
+
+function mergeCitationMaps(
+  base: Record<string, number>,
+  updates: Record<string, number>,
+): Record<string, number> {
+  const merged = { ...base };
+  const baseTitles = Object.keys(base);
+
+  Object.entries(updates).forEach(([title, count]) => {
+    const safeCount = parseCounterValue(count);
+    merged[title] = Math.max(merged[title] ?? 0, safeCount);
+    const normalized = normalizeScholarTitle(title);
+    baseTitles.forEach((baseTitle) => {
+      if (normalizeScholarTitle(baseTitle) === normalized) {
+        merged[baseTitle] = Math.max(merged[baseTitle] ?? 0, safeCount);
+      }
+    });
+  });
+
+  return merged;
+}
 
 function sanitizeFirebaseKey(key: string): string {
   return key.replace(/[.#$\[\]\/]/g, "_");
 }
-
-const SANITIZED_DEFAULT_CITATIONS: Record<string, number> = {};
-Object.entries(DEFAULT_PUBLICATION_CITATIONS).forEach(([k, v]) => {
-  SANITIZED_DEFAULT_CITATIONS[sanitizeFirebaseKey(k)] = v;
-});
 
 export function subscribePublicationCitations(cb: (m: Record<string, number>) => void): () => void {
   if (typeof window === "undefined") return () => {};
@@ -381,12 +435,23 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
       });
     }
     if (Object.keys(map).length > 0) {
-      cb({ ...DEFAULT_PUBLICATION_CITATIONS, ...map });
+      cb(mergeCitationMaps(DEFAULT_PUBLICATION_CITATIONS, map));
     }
   };
 
   // Immediate initial callback with defaults
   cb(DEFAULT_PUBLICATION_CITATIONS);
+
+  void fetchScholarApi().then((snapshot) => {
+    if (!destroyed && snapshot) {
+      cb(
+        mergeCitationMaps(
+          DEFAULT_PUBLICATION_CITATIONS,
+          papersToCitationMap(snapshot.papers),
+        ),
+      );
+    }
+  });
 
   // Fetch from Firebase RTDB
   fetch("https://portfolio-6a1b9-default-rtdb.firebaseio.com/visitor-counter/publication-citations.json")
@@ -399,7 +464,7 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
   initFirebase().then(async () => {
     if (destroyed || !db) return;
     try {
-      const { ref, onValue, set } = await import("firebase/database");
+      const { ref, onValue } = await import("firebase/database");
       const pubRef = ref(db, "visitor-counter/publication-citations");
 
       unsub = onValue(
@@ -407,8 +472,6 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
         (snap) => {
           try {
             if (!snap.exists()) {
-              // Seed default citations into Firebase RTDB using sanitized keys
-              void set(pubRef, SANITIZED_DEFAULT_CITATIONS).catch(() => {});
               cb(DEFAULT_PUBLICATION_CITATIONS);
               return;
             }
