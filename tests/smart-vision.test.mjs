@@ -178,18 +178,24 @@ test('pause retains the stream; stop and hidden-page cleanup release camera trac
     await app.startCamera(); app.events.pagehide(); assert.equal(stops,2); assert.equal(app.getState(),'idle');
 });
 
-test('fullscreen toggle updates its label and exits without stopping the camera', async () => {
+test('header icon and fullscreen button stay synchronized without stopping the camera', async () => {
     let stops=0;
     const track={stop:()=>stops++,getSettings:()=>({deviceId:'camera1'})};
     const app=await controllerFixture(async()=>({getTracks:()=>[track],getVideoTracks:()=>[track]}));
     app.setReady(); await app.startCamera();
     app.document.documentElement.requestFullscreen=async()=>{app.document.fullscreenElement=app.document.documentElement;app.events.fullscreenchange();};
     app.document.exitFullscreen=async()=>{app.document.fullscreenElement=null;app.events.fullscreenchange();};
-    await app.elements.get('fullscreenButton').click();
+    await app.elements.get('brandFullscreenButton').click();
     assert.equal(app.elements.get('fullscreenLabel').textContent,'Restore');
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'true');
+    assert.equal(app.elements.get('brandFullscreenButton')['aria-label'],'Restore camera view');
+    assert.equal(app.elements.get('brandFullscreenButton')['aria-pressed'],'true');
+    assert.equal(app.elements.get('brandFullscreenIcon').className,'fa-solid fa-compress');
     await app.elements.get('fullscreenButton').click();
     assert.equal(app.elements.get('fullscreenLabel').textContent,'Maximize');
+    assert.equal(app.elements.get('brandFullscreenButton')['aria-label'],'Maximize camera view');
+    assert.equal(app.elements.get('brandFullscreenButton')['aria-pressed'],'false');
+    assert.equal(app.elements.get('brandFullscreenIcon').className,'fa-solid fa-expand');
     assert.equal(app.getState(),'running'); assert.equal(stops,0);
     // Browsers can report fullscreen exit before delivering Escape.
     app.events.keydown({key:'Escape'});
@@ -211,14 +217,27 @@ test('Escape leaves fullscreen before leaving the studio and handles external ex
 });
 test('unsupported fullscreen uses a working in-page maximize fallback', async () => {
     const app=await controllerFixture();
-    await app.elements.get('fullscreenButton').click();
+    await app.elements.get('brandFullscreenButton').click();
     assert.match(app.elements.get('notice').textContent,/Maximized inside Vision Pen/);
     assert.equal(app.elements.get('fullscreenLabel').textContent,'Restore');
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'true');
-    await app.elements.get('fullscreenButton').click();
+    await app.elements.get('brandFullscreenButton').click();
     assert.equal(app.elements.get('fullscreenLabel').textContent,'Maximize');
     assert.equal(app.elements.get('fullscreenButton').disabled,false);
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'false');
+    assert.equal(app.elements.get('brandFullscreenButton').disabled,false);
+});
+test('fullscreen controls ignore repeated requests while either button is busy', async () => {
+    const app=await controllerFixture(); let resolve,requests=0;
+    app.document.documentElement.requestFullscreen=()=>{requests++;return new Promise((done)=>{resolve=done;});};
+    const entering=app.elements.get('brandFullscreenButton').click();
+    assert.equal(app.elements.get('fullscreenButton').disabled,true);
+    assert.equal(app.elements.get('brandFullscreenButton').disabled,true);
+    await app.elements.get('fullscreenButton').click();
+    assert.equal(requests,1);
+    resolve(); await entering;
+    assert.equal(app.elements.get('fullscreenButton').disabled,false);
+    assert.equal(app.elements.get('brandFullscreenButton').disabled,false);
 });
 test('rejected browser fullscreen falls back to in-page maximize', async () => {
     const app=await controllerFixture();

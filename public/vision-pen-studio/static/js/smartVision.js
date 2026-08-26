@@ -1,6 +1,7 @@
 import { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } from './smartVisionCore.mjs';
 
 const $ = (id) => document.getElementById(id);
+const fullscreenButtons = ['fullscreenButton', 'brandFullscreenButton'].map($);
 const video = $('visionVideo'), overlay = $('visionOverlay'), ctx = overlay.getContext('2d');
 const frame = document.createElement('canvas'), frameContext = frame.getContext('2d', { willReadFrequently: true });
 const assetRoot = new URL('../vendor/smart-vision/', import.meta.url).href;
@@ -236,11 +237,16 @@ function syncFullscreen() {
     if (wasFullscreen && !native) fullscreenExitedAt = performance.now();
     wasFullscreen = native;
     const label = active ? 'Restore Smart Vision' : 'Maximize Smart Vision';
-    $('fullscreenButton').setAttribute('aria-pressed', String(active));
+    fullscreenButtons.forEach((button) => {
+        button.setAttribute('aria-pressed', String(active));
+        button.title = label;
+    });
     $('fullscreenButton').setAttribute('aria-label', label);
-    $('fullscreenButton').title = label;
+    $('brandFullscreenButton').setAttribute('aria-label', active ? 'Restore camera view' : 'Maximize camera view');
     $('fullscreenLabel').textContent = active ? 'Restore' : 'Maximize';
-    $('fullscreenIcon').className = active ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+    ['fullscreenIcon', 'brandFullscreenIcon'].forEach((id) => {
+        $(id).className = active ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+    });
     document.documentElement.classList.toggle('is-fullscreen', native);
     document.documentElement.classList.toggle('is-presentation-mode', presentationMode && !native);
     fitCamera();
@@ -252,7 +258,8 @@ async function exitFullscreen() {
     presentationMode = false;
 }
 async function toggleFullscreen() {
-    $('fullscreenButton').disabled = true;
+    if (fullscreenButtons.some((button) => button.disabled)) return;
+    fullscreenButtons.forEach((button) => { button.disabled = true; });
     try {
         bindFullscreenEvents();
         if (isFullscreen() || presentationMode) await exitFullscreen();
@@ -274,7 +281,7 @@ async function toggleFullscreen() {
         presentationMode = true;
         notify('Maximized inside Vision Pen. Browser fullscreen could not open.');
     } finally {
-        $('fullscreenButton').disabled = false;
+        fullscreenButtons.forEach((button) => { button.disabled = false; });
         syncFullscreen();
     }
 }
@@ -482,7 +489,7 @@ $('switchButton').addEventListener('click', () => {
     facingMode = facingMode === 'user' ? 'environment' : 'user';
     void startCamera(devices[(index + 1) % devices.length].deviceId);
 });
-$('fullscreenButton').addEventListener('click', toggleFullscreen);
+fullscreenButtons.forEach((button) => button.addEventListener('click', toggleFullscreen));
 $('backButton').addEventListener('click', async () => {
     stopCamera();
     try { await exitFullscreen(); } catch { /* Removing the frame also exits fullscreen. */ }

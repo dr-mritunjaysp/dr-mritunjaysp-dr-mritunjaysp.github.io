@@ -7,12 +7,12 @@
     <meta name="description" content="Private, on-device object detection, hand gestures and approximate apparent-age estimates in your camera.">
     <title>Smart Vision · AI Camera Lab</title>
     <link rel="stylesheet" href="./static/vendor/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="./static/css/smart-vision.css?v=20260826-maximize-age">
+    <link rel="stylesheet" href="./static/css/smart-vision.css?v=20260826-header-maximize">
 </head>
 <body>
 <div class="vision-app">
     <header class="lab-header">
-        <div class="lab-brand"><span class="brand-mark"><i class="fa-solid fa-expand" aria-hidden="true"></i></span><div><h1>Smart Vision <span>AI</span></h1><p>COMPUTER VISION LAB</p></div></div>
+        <div class="lab-brand"><button id="brandFullscreenButton" class="brand-mark" type="button" aria-label="Maximize camera view" aria-pressed="false" title="Maximize Smart Vision"><i id="brandFullscreenIcon" class="fa-solid fa-expand" aria-hidden="true"></i></button><div><h1>Smart Vision <span>AI</span></h1><p>COMPUTER VISION LAB</p></div></div>
         <div class="private-badge"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> On-device processing</div>
         <div class="lab-header-actions">
             <button id="fullscreenButton" class="button" type="button" aria-label="Maximize Smart Vision" aria-pressed="false" title="Maximize Smart Vision"><i id="fullscreenIcon" class="fa-solid fa-expand" aria-hidden="true"></i><span id="fullscreenLabel">Maximize</span></button>
@@ -73,6 +73,6 @@
         <footer class="lab-footer"><span><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Photos and screens can also produce detections. Automatic source labels are tentative; select the source when you know it.</span><a href="./static/vendor/smart-vision/README.md" target="_blank" rel="noopener">Models &amp; limitations <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></footer>
     </main>
 </div>
-<script type="module" src="./static/js/smartVision.js?v=20260826-maximize-age"></script>
+<script type="module" src="./static/js/smartVision.js?v=20260826-header-maximize"></script>
 </body>
 </html>
