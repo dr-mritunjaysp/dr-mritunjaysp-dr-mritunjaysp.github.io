@@ -1,0 +1,173 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import vm from 'node:vm';
+import * as core from '../public/vision-pen-studio/static/js/smartVisionCore.mjs';
+const { analyzeHand, ageRange, ObjectTracker, sceneSource, StableValue, cameraError } = core;
+
+function handFixture(raised = []) {
+    const points = Array.from({ length: 21 }, () => ({ x: .5, y: .6, z: 0 }));
+    points[0] = { x: .5, y: .85, z: 0 };
+    [[.43,.75],[.36,.67],[.43,.63],[.47,.62]].forEach(([x,y], i) => { points[i + 1] = { x,y,z:0 }; });
+    if (raised.includes(0)) [[.43,.75],[.32,.68],[.22,.61],[.12,.54]].forEach(([x,y], i) => { points[i + 1] = { x,y,z:0 }; });
+    [5,9,13,17].forEach((base, finger) => {
+        const x = .4 + finger * .1;
+        (raised.includes(finger + 1) ? [.55,.4,.28,.16] : [.55,.45,.58,.65]).forEach((y, joint) => { points[base + joint] = {x,y,z:0}; });
+    });
+    return points;
+}
+
+test('recognizes all individual raised fingers, fist, palm and victory', () => {
+    for (let finger = 0; finger < 5; finger++) {
+        const result = analyzeHand(handFixture([finger]), 'Right', .98);
+        assert.equal(result.count, 1);
+        assert.deepEqual(result.names, [core.FINGERS[finger]]);
+    }
+    assert.equal(analyzeHand(handFixture()).gesture, 'Closed Fist');
+    assert.equal(analyzeHand(handFixture([0,1,2,3,4])).gesture, 'Open Palm');
+    assert.equal(analyzeHand(handFixture([1,2])).gesture, 'Victory');
+    assert.equal(analyzeHand(handFixture([0,1,4])).gesture, 'I Love You');
+    assert.equal(analyzeHand(handFixture([0])).gesture, 'Thumbs Up');
+    assert.equal(analyzeHand(handFixture([0]).map((p) => ({ ...p, y: 1 - p.y }))).gesture, 'Thumbs Down');
+    assert.equal(analyzeHand([]), null);
+});
+test('counts rotated fingers and handles the OK pinch without counting touching tips', () => {
+    const rotated = handFixture([1,2,3]).map((p) => ({ x:p.y,y:1-p.x,z:p.z }));
+    assert.deepEqual(analyzeHand(rotated).names, ['Index','Middle','Ring']);
+    const points = handFixture([2,3,4]); points[4] = { ...points[8] };
+    assert.equal(analyzeHand(points).gesture, 'OK');
+    assert.equal(analyzeHand(points).count, 3);
+});
+test('tracks movement, reordered objects and brief gaps without reusing IDs', () => {
+    const tracker = new ObjectTracker();
+    const detection = (x, label = 'bottle') => ({ label, bbox: [x,.2,.15,.4], score:.9 });
+    const initial = tracker.update([detection(.1),detection(.65)], 0);
+    const moved = tracker.update([detection(.62),detection(.13)], 100);
+    assert.equal(moved[0].id, initial[1].id); assert.equal(moved[1].id, initial[0].id);
+    tracker.update([], 400);
+    assert.equal(tracker.update([detection(.16)], 800)[0].id, initial[0].id);
+    assert.notEqual(tracker.update([detection(.16, 'person')], 900)[0].id, initial[0].id);
+    assert.notEqual(tracker.update([detection(.16)], 2500)[0].id, initial[0].id);
+    tracker.reset(); assert.equal(tracker.update([detection(.1)], 2600)[0].id, '01');
+});
+test('smooths age estimates and handles all range boundaries without fabricated confidence', () => {
+    for (const [age, expected] of [[0,'0–5'],[5,'0–5'],[6,'6–12'],[13,'13–17'],[18,'18–24'],[25,'25–34'],[35,'35–44'],[45,'45–54'],[55,'55–64'],[65,'65+'],[NaN,'Unavailable']]) assert.equal(ageRange(age), expected);
+    const tracker = new ObjectTracker('F');
+    tracker.update([{ label:'face',bbox:[.1,.1,.2,.2],age:20 }], 0);
+    assert.equal(tracker.update([{ label:'face',bbox:[.1,.1,.2,.2],age:40 }], 10)[0].age, 25);
+});
+test('marks automatic source inference as uncertain, with explicit user overrides', () => {
+    const screen = { label:'laptop',bbox:[.1,.1,.8,.8] };
+    const inside = { label:'person',bbox:[.25,.25,.2,.4] };
+    assert.match(sceneSource(inside,[screen,inside]), /possible screen content/);
+    assert.match(sceneSource(screen,[screen,inside]), /source unverified/);
+    assert.match(sceneSource(inside,[], 'displayed'), /Printed Image Detection · user selected/);
+    assert.match(sceneSource(inside,[], 'live'), /Live Scene Detection · user selected/);
+});
+test('debounces gesture changes and does not restart the animation for a held count', () => {
+    const stable = new StableValue(180);
+    assert.equal(stable.update(1,0),false); assert.equal(stable.update(1,200),true);
+    assert.equal(stable.update(1,1500),false); assert.equal(stable.update(2,1510),false);
+    assert.equal(stable.update(1,1580),false); assert.equal(stable.update(2,1700),false);
+    assert.equal(stable.update(2,1900),true); assert.equal(stable.update(2,2500),false);
+    assert.equal(stable.update(null,3000),false); assert.equal(stable.update(null,3200),true);
+});
+test('provides actionable permission, camera and insecure-context errors', () => {
+    assert.match(cameraError({name:'NotAllowedError'}),/permission was blocked/);
+    assert.match(cameraError({name:'NotFoundError'}),/No camera/);
+    assert.match(cameraError({name:'NotReadableError'}),/camera is busy/);
+    assert.match(cameraError({},false),/HTTPS or localhost/);
+});
+test('bundled models and weight shards are complete and checksum verified', async () => {
+    const root = new URL('../public/vision-pen-studio/static/vendor/smart-vision/',import.meta.url);
+    const assets = JSON.parse(await readFile(new URL('assets.json',root),'utf8'));
+    for (const asset of assets) {
+        const bytes = await readFile(new URL(asset.path,root));
+        assert.equal(bytes.length,asset.bytes,asset.path);
+        assert.equal(createHash('sha256').update(bytes).digest('hex'),asset.sha256,asset.path);
+    }
+    const model = JSON.parse(await readFile(new URL('objects/model.json',root),'utf8'));
+    for (const group of model.weightsManifest) for (const shard of group.paths) assert.ok(assets.some((asset) => asset.path === `objects/${shard}`));
+});
+
+test('real bundled object, face and age models share a runtime and release tensors', { timeout:120000 }, async () => {
+    const root = new URL('../public/vision-pen-studio/static/vendor/smart-vision/',import.meta.url);
+    const localFetch = async (url) => {
+        const relative = new URL(url).pathname.slice(1);
+        assert.ok(!relative.includes('..'));
+        return new Response(await readFile(new URL(relative,root)),{headers:{'content-type':relative.endsWith('.json')?'application/json':'application/octet-stream'}});
+    };
+    const runtime = vm.createContext({console,fetch:localFetch,performance,TextEncoder,TextDecoder,setTimeout,clearTimeout,URL,URLSearchParams,Response,Request});
+    runtime.global=runtime;
+    vm.runInContext(await readFile(new URL('face-api.js',root),'utf8'),runtime);
+    const api=runtime.faceapi, tf=api.tf;
+    runtime.tf=tf;
+    tf.setPlatform('node',{fetch:localFetch,now:()=>performance.now(),encode:(s)=>new TextEncoder().encode(s),decode:(s)=>new TextDecoder().decode(s)});
+    api.env.setEnv({Canvas:class{},Image:class{},ImageData:class{},Video:class{},fetch:localFetch});
+    await tf.setBackend('cpu'); await tf.ready();
+    vm.runInContext(await readFile(new URL('coco-ssd.min.js',root),'utf8'),runtime);
+    const model=await runtime.cocoSsd.load({base:'lite_mobilenet_v2',modelUrl:'https://models.invalid/objects/model.json'});
+    const input=tf.zeros([224,224,3],'int32');
+    try {
+        assert.equal((await model.detect(input,20,.45)).length,0);
+        await api.nets.tinyFaceDetector.loadFromUri('https://models.invalid/face');
+        await api.nets.ageGenderNet.loadFromUri('https://models.invalid/face');
+        assert.equal((await api.detectAllFaces(input,new api.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:.55})).withAgeAndGender()).length,0);
+        assert.ok(Number.isFinite((await api.nets.ageGenderNet.predictAgeAndGender(input)).age));
+    } finally {
+        input.dispose(); model.dispose(); api.nets.tinyFaceDetector.dispose(); api.nets.ageGenderNet.dispose();
+    }
+    assert.equal(tf.memory().numTensors,0);
+});
+
+// A minimal DOM/media fixture tests lifecycle logic without a device or browser.
+async function controllerFixture(getUserMedia) {
+    class Element {
+        constructor() { this.children=[]; this.style={}; this.dataset={}; this.events={}; this.checked=true; this.value='auto'; this.textContent=''; this.videoWidth=1280; this.videoHeight=720; this.readyState=4; this.classList={ toggle(){},add(){},remove(){} }; }
+        addEventListener(name,fn) { this.events[name]=fn; }
+        append(...nodes) { this.children.push(...nodes); }
+        appendChild(node) { this.append(node); return node; }
+        replaceChildren(...nodes) { this.children=nodes; }
+        querySelector() { return null; }
+        querySelectorAll() { return []; }
+        setAttribute() {}
+        remove() {}
+        getBoundingClientRect() { return { width:800,height:500,left:0,top:0 }; }
+        getContext() { return { clearRect(){},drawImage(){} }; }
+        async play() {}
+        pause() {}
+    }
+    const elements = new Map(), events = {}, media = getUserMedia || (async () => { throw Object.assign(new Error('Blocked'),{name:'NotAllowedError'}); });
+    const document = { getElementById(id) { if(!elements.has(id)) elements.set(id,new Element()); return elements.get(id); },createElement:()=>new Element(),createTextNode:(s)=>s,querySelector:()=>new Element(),querySelectorAll:()=>[],addEventListener:(name,fn)=>{events[name]=fn;},head:new Element() };
+    const window = { addEventListener:(name,fn)=>{events[name]=fn;}, isSecureContext:true };
+    const context = { core,document,window,navigator:{mediaDevices:{getUserMedia:media,enumerateDevices:async()=>[]}},location:{search:'',origin:'http://localhost'},URL,URLSearchParams,performance,console,setTimeout:()=>1,clearTimeout(){},ResizeObserver:class {observe(){}} };
+    const url = new URL('../public/vision-pen-studio/static/js/smartVision.js',import.meta.url);
+    const source = (await readFile(url,'utf8')).replace(/^import[^\n]+/,`const { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } = core;`).replaceAll('import.meta.url',JSON.stringify(url.href));
+    vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},getEpoch:()=>epoch};`,context);
+    return {...context.api,elements,events};
+}
+test('camera permission denial resets controls and shows recovery instructions', async () => {
+    const app = await controllerFixture(); await app.startCamera();
+    assert.equal(app.getState(),'idle'); assert.equal(app.elements.get('startButton').disabled,false);
+    assert.match(app.elements.get('gateMessage').textContent,/permission was blocked/);
+});
+test('stopping during a permission request releases the late stream and prevents restart', async () => {
+    let resolve,stops=0;
+    const app = await controllerFixture(()=>new Promise((r)=>{resolve=r;}));
+    const starting = app.startCamera(); app.stopCamera();
+    resolve({getTracks:()=>[{stop:()=>stops++}]}); await starting;
+    assert.equal(stops,1); assert.equal(app.getState(),'idle');
+    assert.equal(app.elements.get('visionVideo').srcObject,null);
+});
+test('pause retains the stream; stop and hidden-page cleanup release camera tracks', async () => {
+    let stops=0;
+    const track={stop:()=>stops++,getSettings:()=>({deviceId:'camera1',facingMode:'user'})};
+    const stream={getTracks:()=>[track],getVideoTracks:()=>[track]};
+    const app=await controllerFixture(async()=>stream); app.setReady();
+    await app.startCamera(); assert.equal(app.getState(),'running');
+    app.elements.get('pauseButton').events.click(); assert.equal(app.getState(),'paused'); assert.equal(stops,0);
+    app.elements.get('pauseButton').events.click(); assert.equal(app.getState(),'running');
+    app.stopCamera(); assert.equal(stops,1); assert.equal(app.elements.get('visionVideo').srcObject,null);
+    await app.startCamera(); app.events.pagehide(); assert.equal(stops,2); assert.equal(app.getState(),'idle');
+});

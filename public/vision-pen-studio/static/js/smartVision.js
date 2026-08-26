@@ -1,0 +1,427 @@
+import { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } from './smartVisionCore.mjs';
+
+const $ = (id) => document.getElementById(id);
+const video = $('visionVideo'), overlay = $('visionOverlay'), ctx = overlay.getContext('2d');
+const frame = document.createElement('canvas'), frameContext = frame.getContext('2d', { willReadFrequently: true });
+const assetRoot = new URL('../vendor/smart-vision/', import.meta.url).href;
+const trackers = { objects: new ObjectTracker(), faces: new ObjectTracker('F'), hands: new ObjectTracker('H', 900) };
+const models = { objects: null, faces: null, hands: null };
+const modelStates = { objects: 'Not loaded', faces: 'Not loaded', hands: 'Not loaded' };
+const countState = new StableValue(180), gestureState = new StableValue(200);
+let detections = { objects: [], faces: [], hands: [] };
+let stream = null, state = 'idle', epoch = 0, facingMode = 'user', devices = [], deviceId = null;
+let selectedId = null, lastFaceAt = 0, lastResultAt = 0, cycles = 0, fpsAt = performance.now();
+let loadPromise = null, runtimePromise = null, handSession = -1, shutdown = false, pumpTimer = null;
+const scripts = new Map();
+const colors = { objects: '#64e9ce', faces: '#edb964', hands: '#aeb3ff' };
+
+function notify(message, error = false) { $('notice').textContent = message; $('notice').classList.toggle('error', error); }
+function setModel(kind, status) {
+    modelStates[kind] = status;
+    const element = $(`${kind}Model`);
+    element.textContent = status;
+    element.classList.toggle('ready', status === 'Ready');
+    refreshStatus();
+}
+function refreshStatus() {
+    const ready = Object.values(models).filter(Boolean).length;
+    const failed = Object.values(modelStates).some((value) => value.startsWith('Unavailable'));
+    const status = $('systemStatus');
+    let label = 'CAMERA OFF', tone = 'idle';
+    if (state === 'starting') { label = 'CONNECTING'; tone = 'loading'; }
+    if (state === 'paused') { label = 'AI PAUSED'; tone = 'paused'; }
+    if (state === 'running') { label = ready ? (failed ? 'AI ACTIVE · PARTIAL' : 'AI ACTIVE') : (loadPromise ? 'LOADING MODELS' : 'AI UNAVAILABLE'); tone = ready ? 'active' : 'loading'; }
+    status.dataset.state = tone;
+    $('insightsStatus').textContent = state === 'running' ? (ready ? 'ACTIVE' : 'LOADING') : state === 'paused' ? 'PAUSED' : 'OFF';
+    status.replaceChildren(document.createElement('span'), document.createTextNode(` ${label}`));
+    $('trackingBadge').textContent = state === 'paused' ? 'DETECTION PAUSED' : state === 'running' ? (ready ? 'TRACKING ACTIVE' : 'MODELS LOADING') : 'TRACKING STANDBY';
+    const active = state === 'running' || state === 'paused';
+    $('startButton').disabled = state === 'starting' || active;
+    $('gateStart').disabled = state === 'starting';
+    $('pauseButton').disabled = !active;
+    $('stopButton').disabled = !active && state !== 'starting';
+    $('switchButton').disabled = !active || devices.length < 2;
+    $('pauseButton').innerHTML = state === 'paused' ? '<i class="fa-solid fa-play" aria-hidden="true"></i> Resume Detection' : '<i class="fa-solid fa-pause" aria-hidden="true"></i> Pause Detection';
+}
+function stage(name, active) {
+    document.querySelector(`[data-stage="${name}"]`)?.classList.toggle('active', active);
+}
+function resetPipeline() { document.querySelectorAll('[data-stage]').forEach((item) => item.classList.remove('active')); }
+function loadScript(url) {
+    if (scripts.has(url)) return scripts.get(url);
+    const promise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.onload = resolve;
+        script.onerror = () => { scripts.delete(url); script.remove(); reject(new Error('Library could not load')); };
+        document.head.appendChild(script);
+    });
+    scripts.set(url, promise);
+    return promise;
+}
+
+async function ensureModels() {
+    if (loadPromise) return loadPromise;
+    const missing = Object.keys(models).filter((kind) => !models[kind]);
+    if (!missing.length) return;
+    missing.forEach((kind) => setModel(kind, 'Loading…'));
+    notify('Loading local AI models. First start may take a moment; your video is not uploaded.');
+    loadPromise = (async () => {
+        const shared = runtimePromise ||= (async () => {
+            await loadScript(`${assetRoot}face-api.js`);
+            const tf = window.faceapi.tf;
+            // COCO-SSD and face analysis share one TensorFlow runtime/backend.
+            window.tf = tf;
+            try {
+                if (!await tf.setBackend('webgl')) throw new Error('WebGL not supported');
+                await tf.ready();
+            } catch {
+                await tf.setBackend('cpu');
+                await tf.ready();
+            }
+            return window.faceapi;
+        })().catch((error) => { runtimePromise = null; throw error; });
+        const jobs = {
+            objects: async () => {
+                await shared;
+                await loadScript(`${assetRoot}coco-ssd.min.js`);
+                return window.cocoSsd.load({ base: 'lite_mobilenet_v2', modelUrl: `${assetRoot}objects/model.json` });
+            },
+            faces: async () => {
+                const api = await shared;
+                await Promise.all([api.nets.tinyFaceDetector.loadFromUri(`${assetRoot}face`), api.nets.ageGenderNet.loadFromUri(`${assetRoot}face`)]);
+                return api;
+            },
+            hands: async () => {
+                await loadScript(new URL('../vendor/mediapipe-hands/hands.js', import.meta.url).href);
+                const hands = new window.Hands({ locateFile: (file) => new URL(`../vendor/mediapipe-hands/${file}`, import.meta.url).href });
+                hands.setOptions({ maxNumHands: 2, modelComplexity: 1, selfieMode: false, minDetectionConfidence: 0.65, minTrackingConfidence: 0.65 });
+                hands.onResults(handleHands);
+                try { await hands.initialize(); } catch (error) { await hands.close(); throw error; }
+                return hands;
+            }
+        };
+        // Always consume shared failures, including a hands-only retry.
+        shared.catch(() => {});
+        await Promise.all(missing.map(async (kind) => {
+            try {
+                models[kind] = await jobs[kind](); setModel(kind, 'Ready');
+                document.querySelector(`[data-stage="${kind}"]`)?.classList.remove('failed');
+            }
+            catch (error) { console.warn(`Smart Vision ${kind}:`, error); setModel(kind, 'Unavailable · retry'); }
+        }));
+        const failed = Object.keys(models).filter((kind) => !models[kind]);
+        if (failed.length) notify(`Could not load ${failed.join(', ')}. Other available models can continue. Stop and start the camera to retry.`, true);
+        else notify(`All models ready · ${window.tf.getBackend() === 'cpu' ? 'CPU processing may be slower. ' : ''}80 common object classes · up to 2 hands · approximate apparent age.`);
+    })();
+    try { await loadPromise; } finally { loadPromise = null; refreshStatus(); }
+}
+
+function resetResults() {
+    detections = { objects: [], faces: [], hands: [] };
+    Object.values(trackers).forEach((tracker) => tracker.reset());
+    countState.reset(); gestureState.reset(); selectedId = null; lastFaceAt = 0;
+    cycles = 0; fpsAt = performance.now(); lastResultAt = 0;
+    $('gestureNumber').hidden = true; $('gestureResponse').hidden = true;
+    $('fpsBadge').textContent = '0 analysis FPS';
+    $('analysisRate').textContent = '0 FPS';
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    renderInsights(); resetPipeline();
+}
+function releaseStream() {
+    if (stream) stream.getTracks().forEach((track) => { track.onended = null; track.stop(); });
+    stream = null; video.srcObject = null;
+}
+function stopCamera(message = 'Your camera is off. Start again whenever you are ready.') {
+    epoch++; state = 'idle'; releaseStream(); resetResults();
+    $('visionGate').hidden = false;
+    $('gateTitle').textContent = 'Camera stopped'; $('gateMessage').textContent = message;
+    $('resolution').textContent = '—';
+    $('feedCaption').textContent = 'Camera off · No recording or upload';
+    refreshStatus();
+}
+async function startCamera(requestedDevice = null) {
+    if (state === 'starting') return;
+    stopCamera();
+    const session = ++epoch;
+    state = 'starting'; refreshStatus();
+    $('gateTitle').textContent = 'Opening your camera';
+    $('gateMessage').textContent = 'Allow camera access in your browser to begin live analysis.';
+    if (!navigator.mediaDevices?.getUserMedia) {
+        stopCamera('Camera access is unavailable. Use HTTPS or localhost in a browser with camera support.');
+        return;
+    }
+    try {
+        const next = await navigator.mediaDevices.getUserMedia({ audio: false, video: {
+            ...(requestedDevice ? { deviceId: { exact: requestedDevice } } : { facingMode: { ideal: facingMode } }),
+            width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30, max: 30 }
+        } });
+        if (session !== epoch || shutdown) { next.getTracks().forEach((track) => track.stop()); return; }
+        stream = next;
+        const track = stream.getVideoTracks()[0], settings = track.getSettings();
+        deviceId = settings.deviceId;
+        if (settings.facingMode) facingMode = settings.facingMode;
+        track.onended = () => stopCamera('The camera disconnected. Reconnect it and try again.');
+        video.srcObject = stream;
+        await video.play();
+        if (session !== epoch || shutdown) return;
+        state = 'running';
+        $('visionGate').hidden = true;
+        $('mirrorToggle').checked = facingMode === 'user';
+        $('resolution').textContent = `${video.videoWidth} × ${video.videoHeight}`;
+        $('feedCaption').textContent = 'Show an object, face, or hand · Select any detection to inspect it';
+        frame.width = Math.min(640, video.videoWidth);
+        frame.height = Math.round(frame.width * video.videoHeight / video.videoWidth);
+        overlay.width = Math.min(1280, video.videoWidth); overlay.height = Math.round(overlay.width * video.videoHeight / video.videoWidth);
+        fitCamera(); refreshStatus(); stage('camera', true);
+        void ensureModels();
+        try { devices = (await navigator.mediaDevices.enumerateDevices()).filter((item) => item.kind === 'videoinput'); } catch { devices = []; }
+        if (session === epoch) refreshStatus();
+    } catch (error) {
+        if (session !== epoch) return;
+        stopCamera(cameraError(error, window.isSecureContext));
+        $('gateTitle').textContent = 'Let’s get your camera connected';
+        notify(cameraError(error, window.isSecureContext), true);
+    }
+}
+function fitCamera() {
+    const bounds = $('cameraStage').getBoundingClientRect();
+    const ratio = video.videoWidth && video.videoHeight ? video.videoWidth / video.videoHeight : 16 / 9;
+    const width = Math.min(bounds.width, bounds.height * ratio);
+    $('cameraImage').style.width = `${width}px`;
+    $('cameraImage').style.height = `${width / ratio}px`;
+    $('cameraImage').classList.toggle('mirrored', $('mirrorToggle').checked);
+}
+function handleHands(results) {
+    if (handSession !== epoch || state !== 'running') return;
+    const hands = (results.multiHandLandmarks || []).map((points, index) => {
+        const info = results.multiHandedness?.[index];
+        // MediaPipe assumes selfie input. Our inference frame is unmirrored.
+        const label = info?.label === 'Left' ? 'Right' : info?.label === 'Right' ? 'Left' : 'Unknown';
+        return analyzeHand(points, label, info?.score ?? null);
+    }).filter(Boolean);
+    detections.hands = trackers.hands.update(hands, performance.now());
+}
+function live(session) { return session === epoch && state === 'running' && !shutdown; }
+function modelFailure(kind, error) {
+    console.warn(`Smart Vision ${kind} inference:`, error);
+    if (kind === 'objects') models[kind]?.dispose();
+    if (kind === 'hands') void models[kind]?.close();
+    models[kind] = null; detections[kind] = [];
+    setModel(kind, 'Unavailable · retry');
+    document.querySelector(`[data-stage="${kind}"]`)?.classList.add('failed');
+    notify(`${kind === 'faces' ? 'Face analysis' : kind === 'hands' ? 'Hand tracking' : 'Object detection'} stopped. Stop and start the camera to retry; other models remain available.`, true);
+}
+
+async function pump() {
+    const session = epoch;
+    try {
+        if (!live(session) || video.readyState < 2 || !Object.values(models).some(Boolean) || loadPromise) return;
+        frameContext.drawImage(video, 0, 0, frame.width, frame.height);
+        stage('frame', true);
+        if (models.objects) {
+            stage('objects', true);
+            try {
+                const items = await models.objects.detect(frame, 20, 0.45);
+                if (!live(session)) return;
+                detections.objects = trackers.objects.update(items.map((item) => ({ label: item.class, score: item.score, bbox: [item.bbox[0] / frame.width, item.bbox[1] / frame.height, item.bbox[2] / frame.width, item.bbox[3] / frame.height] })), performance.now());
+            } catch (error) { if (live(session)) modelFailure('objects', error); }
+            finally { stage('objects', false); }
+        }
+        if (!live(session)) return;
+        if (models.hands) {
+            stage('hands', true); handSession = session;
+            try { await models.hands.send({ image: frame }); }
+            catch (error) { if (live(session)) modelFailure('hands', error); }
+            finally { stage('hands', false); }
+        }
+        if (!live(session)) return;
+        if (models.faces && performance.now() - lastFaceAt > 1000) {
+            stage('faces', true);
+            try {
+                const api = models.faces;
+                const faces = await api.detectAllFaces(frame, new api.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.55 })).withAgeAndGender();
+                if (!live(session)) return;
+                // Discard gender output. Do not run identity/recognition models.
+                detections.faces = trackers.faces.update(faces.map(({ detection, age }) => ({ label: 'Human face', score: detection.score, age, bbox: [detection.box.x / frame.width, detection.box.y / frame.height, detection.box.width / frame.width, detection.box.height / frame.height] })), performance.now());
+                lastFaceAt = performance.now();
+            } catch (error) { if (live(session)) modelFailure('faces', error); }
+            finally { stage('faces', false); }
+        }
+        if (!live(session)) return;
+        stage('fingers', Boolean(models.hands)); stage('gestures', Boolean(models.hands));
+        updateGestures(); renderInsights(); drawOverlays(); stage('result', true);
+        lastResultAt = performance.now(); cycles++;
+        if (lastResultAt - fpsAt >= 1000) {
+            $('fpsBadge').textContent = `${Math.round(cycles * 1000 / (lastResultAt - fpsAt))} analysis FPS`;
+            $('analysisRate').textContent = `${Math.round(cycles * 1000 / (lastResultAt - fpsAt))} FPS`;
+            cycles = 0; fpsAt = lastResultAt;
+        }
+    } catch (error) { console.warn('Smart Vision processing:', error); notify('A frame could not be processed. Retrying…', true); }
+    finally {
+        stage('frame', false);
+        if (!shutdown) pumpTimer = setTimeout(pump, state === 'running' ? 45 : 200);
+    }
+}
+
+function animate(element) {
+    element.hidden = false; element.classList.remove('animate');
+    void element.offsetWidth; element.classList.add('animate');
+}
+function updateGestures() {
+    const hands = detections.hands;
+    const total = hands.reduce((sum, hand) => sum + hand.count, 0);
+    const now = performance.now();
+    $('countNames').textContent = (hands.length === 1 && hands[0].count === 5 ? 'Open Palm' : hands.length === 1 && !total ? 'Closed Fist' : hands.flatMap((hand) => hand.names).join(' + ')).toUpperCase();
+    if (countState.update(hands.length ? total : null, now)) {
+        if (!hands.length) $('gestureNumber').hidden = true;
+        else {
+            $('countNumber').textContent = total;
+            animate($('gestureNumber'));
+        }
+    }
+    const signature = hands.map((hand) => `${hand.handedness}:${hand.gesture}`).sort().join('|');
+    if (gestureState.update(signature, now)) {
+        if (!hands.length) $('gestureResponse').hidden = true;
+        else {
+            $('gestureResponse').textContent = hands.map((hand) => `${hand.emoji} ${hand.gesture === 'Thumbs Up' ? 'Great!' : hand.gesture === 'Closed Fist' ? 'Fist Detected' : hand.gesture}`).join(' · ');
+            animate($('gestureResponse'));
+        }
+    }
+}
+function allItems() { return Object.entries(detections).flatMap(([kind, items]) => items.map((item) => ({ ...item, kind }))); }
+function confidence(score) { return Number.isFinite(score) ? `${(score * 100).toFixed(1)}%` : 'Unavailable'; }
+function renderInsights() {
+    const hands = detections.hands;
+    $('objectCount').textContent = detections.objects.length;
+    $('personCount').textContent = detections.objects.filter((item) => item.label === 'person').length;
+    $('faceCount').textContent = detections.faces.length; $('handCount').textContent = hands.length;
+    $('fingerTotal').textContent = hands.length ? hands.reduce((sum, hand) => sum + hand.count, 0) : '—';
+    $('gestureSummary').textContent = hands.length ? hands.map((hand) => hand.gesture).join(' / ') : 'Waiting for a hand';
+    $('raisedNames').textContent = hands.length ? hands.map((hand) => `${hand.handedness}: ${hand.names.join(', ') || 'No raised fingers'}`).join(' · ') : 'Raise a finger to see its name.';
+    $('ageSummary').textContent = detections.faces.length ? detections.faces.map((face) => ageRange(face.age)).join(' / ') : '—';
+    const items = allItems(), list = $('detectionList');
+    $('detectionTotal').textContent = items.length;
+    list.querySelector('.empty-list')?.remove();
+    const valid = new Set(items.map((item) => item.id));
+    list.querySelectorAll('.detection-item').forEach((element) => { if (!valid.has(element.dataset.id)) element.remove(); });
+    items.forEach((item) => {
+        let button = list.querySelector(`[data-id="${item.id}"]`);
+        if (!button) {
+            button = document.createElement('button'); button.className = 'detection-item'; button.dataset.id = item.id;
+            button.append(document.createElement('span'), document.createElement('span'));
+            button.addEventListener('click', () => { selectedId = item.id; renderInsights(); drawOverlays(); });
+            list.appendChild(button);
+        }
+        button.firstChild.textContent = `${item.label} #${item.id}`;
+        button.lastChild.textContent = item.kind === 'hands' ? `${item.count} fingers` : item.kind === 'faces' ? `${ageRange(item.age)} yrs` : $('confidenceToggle').checked ? confidence(item.score) : 'Object';
+        button.setAttribute('aria-pressed', String(selectedId === item.id));
+    });
+    if (!items.length) {
+        const empty = document.createElement('p'); empty.className = 'empty-list';
+        empty.textContent = state === 'running' ? 'No confident detections yet. Try a clear, well-lit view.' : 'Detections will appear here when the camera is active.';
+        list.appendChild(empty);
+    }
+    renderSelection(items.find((item) => item.id === selectedId));
+}
+function renderSelection(item) {
+    const target = $('selectionDetails'); target.replaceChildren();
+    $('selectionType').textContent = item ? `#${item.id}` : 'DETAILS';
+    if (!item) { target.textContent = selectedId ? 'This detection is no longer visible.' : 'Select a bounding box or an item below to inspect it.'; return; }
+    const rows = [['Type', item.label], ['Tracking ID', `#${item.id}`]];
+    if ($('confidenceToggle').checked) rows.push([item.kind === 'hands' ? 'Handedness confidence' : 'Detection confidence', confidence(item.score)]);
+    if (item.kind === 'faces') rows.push(['AI Estimated Apparent Age', `${ageRange(item.age)} years`], ['Age confidence', 'Not provided by model']);
+    if (item.kind === 'hands') rows.push(['Hand', item.handedness], ['Raised fingers', `${item.count} · ${item.names.join(', ') || 'None'}`], ['Gesture', item.gesture], ['Finger state', 'Landmark geometry estimate']);
+    rows.push(['Source', sceneSource(item, detections.objects, $('sourceMode').value)]);
+    const dl = document.createElement('dl');
+    rows.forEach(([label, value]) => { const row = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = label; dd.textContent = value; row.append(dt, dd); dl.append(row); });
+    target.append(dl);
+}
+function drawOverlays() {
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    const mirror = $('mirrorToggle').checked, width = overlay.width, height = overlay.height;
+    const scale = Math.max(1, width / 800);
+    ctx.font = `600 ${12 * scale}px system-ui`;
+    const point = (p) => [(mirror ? 1 - p.x : p.x) * width, p.y * height];
+    allItems().forEach((item) => {
+        const color = colors[item.kind], box = item.bbox;
+        const x = (mirror ? 1 - box[0] - box[2] : box[0]) * width, y = box[1] * height;
+        ctx.strokeStyle = color; ctx.lineWidth = (item.id === selectedId ? 3 : 1.5) * scale;
+        ctx.strokeRect(x, y, box[2] * width, box[3] * height);
+        let label = `${item.label.toUpperCase()} #${item.id}`;
+        if ($('confidenceToggle').checked) label += ` | ${confidence(item.score)}`;
+        if (item.kind === 'faces') label += ` | EST. AGE ${ageRange(item.age)}`;
+        if (item.kind === 'hands') label += ` | ${item.count} FINGERS | ${item.gesture.toUpperCase()}`;
+        const labelWidth = Math.min(ctx.measureText(label).width + 14 * scale, width);
+        const lx = Math.max(0, Math.min(x, width - labelWidth)), ly = Math.max(0, Math.min(y - 24 * scale, height - 25 * scale));
+        ctx.fillStyle = '#07121fe8'; ctx.fillRect(lx, ly, labelWidth, 24 * scale);
+        ctx.fillStyle = color; ctx.fillText(label, lx + 7 * scale, ly + 16 * scale, labelWidth - 10 * scale);
+        if (item.kind !== 'hands' || !$('landmarksToggle').checked) return;
+        ctx.lineWidth = 2 * scale;
+        CHAINS.forEach((chain) => { ctx.beginPath(); chain.forEach((index, i) => { const p = point(item.points[index]); if (i) ctx.lineTo(...p); else ctx.moveTo(...p); }); ctx.stroke(); });
+        item.points.forEach((p, index) => {
+            const fingertip = [4, 8, 12, 16, 20].indexOf(index);
+            ctx.fillStyle = fingertip >= 0 && item.raised[fingertip] ? '#64e9ce' : color;
+            ctx.beginPath(); ctx.arc(...point(p), (fingertip >= 0 ? 4.5 : 2.5) * scale, 0, Math.PI * 2); ctx.fill();
+            if (fingertip >= 0 && item.raised[fingertip]) {
+                const [px, py] = point(p); ctx.fillStyle = '#fff'; ctx.fillText(['THUMB', 'INDEX', 'MIDDLE', 'RING', 'PINKY'][fingertip], Math.max(0, Math.min(px + 6, width - 62 * scale)), Math.max(13 * scale, py - 9));
+            }
+        });
+    });
+}
+
+$('startButton').addEventListener('click', () => void startCamera());
+$('gateStart').addEventListener('click', () => void startCamera());
+$('stopButton').addEventListener('click', () => stopCamera());
+$('pauseButton').addEventListener('click', () => {
+    epoch++;
+    if (state === 'running') {
+        state = 'paused'; video.pause(); resetPipeline();
+        $('gestureNumber').hidden = true; $('gestureResponse').hidden = true;
+        $('fpsBadge').textContent = '0 analysis FPS · paused';
+        $('analysisRate').textContent = '0 FPS · paused';
+        $('feedCaption').textContent = 'Detection paused · Camera remains on · Stop Camera releases it';
+    } else if (state === 'paused') {
+        state = 'running'; resetResults();
+        video.play().catch(() => stopCamera('The camera could not resume. Please start again.'));
+        stage('camera', true);
+        $('feedCaption').textContent = 'Show an object, face, or hand · Select any detection to inspect it';
+    }
+    refreshStatus();
+});
+$('switchButton').addEventListener('click', () => {
+    if (devices.length < 2) { notify('Only one camera is available on this device.'); return; }
+    const index = devices.findIndex((device) => device.deviceId === deviceId);
+    facingMode = facingMode === 'user' ? 'environment' : 'user';
+    void startCamera(devices[(index + 1) % devices.length].deviceId);
+});
+$('backButton').addEventListener('click', () => {
+    stopCamera();
+    if (window.parent !== window) window.parent.postMessage({ type: 'vision-pen:close-smart-vision' }, location.origin);
+    else location.href = './index.html';
+});
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape') $('backButton').click(); });
+['landmarksToggle', 'confidenceToggle'].forEach((id) => $(id).addEventListener('change', () => { renderInsights(); drawOverlays(); }));
+$('mirrorToggle').addEventListener('change', () => { fitCamera(); drawOverlays(); });
+$('insightsToggle').addEventListener('change', () => { $('insights').hidden = !$('insightsToggle').checked; $('workspace').classList.toggle('no-insights', !$('insightsToggle').checked); fitCamera(); });
+$('sourceMode').addEventListener('change', () => {
+    $('sceneBadge').textContent = { auto: 'SOURCE: AUTO · UNVERIFIED', live: 'SOURCE: LIVE SCENE', displayed: 'SOURCE: DISPLAYED IMAGE' }[$('sourceMode').value];
+    renderInsights();
+});
+overlay.addEventListener('click', (event) => {
+    const rect = overlay.getBoundingClientRect();
+    const x = $('mirrorToggle').checked ? 1 - (event.clientX - rect.left) / rect.width : (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+    const hits = allItems().filter(({ bbox: b }) => x >= b[0] && x <= b[0] + b[2] && y >= b[1] && y <= b[1] + b[3]).sort((a, b) => a.bbox[2] * a.bbox[3] - b.bbox[2] * b.bbox[3]);
+    selectedId = hits[0]?.id || null; renderInsights(); drawOverlays();
+});
+new ResizeObserver(fitCamera).observe($('cameraStage'));
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && (state === 'running' || state === 'starting' || state === 'paused')) stopCamera('Camera stopped while this page was hidden. Start it again when you are ready.');
+});
+window.addEventListener('pagehide', () => { shutdown = true; clearTimeout(pumpTimer); stopCamera(); });
+window.addEventListener('pageshow', (event) => { if (event.persisted) { shutdown = false; pumpTimer = setTimeout(pump, 100); } });
+['gestureNumber', 'gestureResponse'].forEach((id) => $(id).addEventListener('animationend', () => { $(id).hidden = true; }));
+refreshStatus(); renderInsights(); fitCamera();
+pumpTimer = setTimeout(pump, 100);
+if (new URLSearchParams(location.search).get('autostart') === '1') void startCamera();

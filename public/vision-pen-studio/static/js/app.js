@@ -11,15 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const startCameraBtn = byId('startCameraBtn');
     const cameraToggleBtn = byId('cameraToggleBtn');
     const flipCameraBtn = byId('flipCameraBtn');
-    const yoloScanBtn = byId('yoloScanBtn');
-    const yoloResultCard = byId('yoloResultCard');
-    const yoloCardContent = byId('yoloCardContent');
+    const objectDetectionBtn = byId('objectDetectionBtn');
+    const smartVisionDialog = byId('smartVisionDialog');
+    const smartVisionFrame = byId('smartVisionFrame');
     const toastRegion = byId('toastRegion');
     const undoBtn = byId('undoBtn');
     const redoBtn = byId('redoBtn');
     const gestureModal = byId('gestureModal');
 
     let stream = null;
+    let cameraGeneration = 0;
     let facingMode = 'user';
     let isRunning = false;
     let processingFrame = false;
@@ -30,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let frameCount = 0;
     let lastFpsTime = performance.now();
     let clearTriggered = false;
-    let appConfig = { yolo_enabled: false };
     let activeBoardMode = 'camera';
     const boardColors = { camera: '#00f3ff', black: '#ffffff', white: '#111827' };
     const apiUrl = (path) => `./api/${path}`;
@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function stopCamera({ showGate = true } = {}) {
+        cameraGeneration += 1;
         isRunning = false;
         processingFrame = false;
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -97,9 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
         stream?.getTracks().forEach((track) => track.stop());
         stream = null;
         video.srcObject = null;
+        startCameraBtn.disabled = false;
         cameraToggleBtn.disabled = true;
         flipCameraBtn.disabled = true;
-        yoloScanBtn.disabled = true;
         fpsDisplay.querySelector('span').textContent = '0 FPS';
         updateCameraStatus('idle', 'Camera off');
         if (showGate && canvasEngine.boardMode === 'camera') {
@@ -117,10 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        stopCamera({ showGate: false });
+        const request = cameraGeneration;
         startCameraBtn.disabled = true;
         updateCameraStatus('warning', 'Connecting…');
         try {
-            stopCamera({ showGate: false });
             const constraints = {
                 audio: false,
                 video: {
@@ -130,9 +132,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     frameRate: { ideal: 30, max: 60 }
                 }
             };
-            stream = await navigator.mediaDevices.getUserMedia(constraints);
+            const nextStream = await navigator.mediaDevices.getUserMedia(constraints);
+            if (request !== cameraGeneration) {
+                nextStream.getTracks().forEach((track) => track.stop());
+                return;
+            }
+            stream = nextStream;
             video.srcObject = stream;
             await video.play();
+            if (request !== cameraGeneration) return;
             if (!video.videoWidth) {
                 await new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, { once: true }));
             }
@@ -142,13 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCameraStatus('active', 'Camera live');
             cameraToggleBtn.disabled = false;
             flipCameraBtn.disabled = false;
-            yoloScanBtn.disabled = !appConfig.yolo_enabled;
             cameraToggleBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
             cameraToggleBtn.title = 'Pause camera';
             frameCount = 0;
             lastFpsTime = performance.now();
             animationFrameId = requestAnimationFrame(processingLoop);
         } catch (error) {
+            if (request !== cameraGeneration) return;
             console.error('Camera access error:', error);
             updateCameraStatus('error', 'Camera blocked');
             setGate('error', 'We could not open the camera', cameraErrorMessage(error));
@@ -159,9 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function processingLoop() {
         if (!isRunning) return;
+        const generation = cameraGeneration;
         if (!processingFrame) {
             processingFrame = true;
             const processed = await handTracker.sendFrame(video);
+            if (!isRunning || generation !== cameraGeneration) return;
             if (processed) frameCount += 1;
             processingFrame = false;
         }
@@ -228,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleHandResults({ landmarks, gesture, cursorPt, clearProgress }) {
+        if (!isRunning) return;
         const cursor = cursorPt ? canvasEngine.transformPoint(cursorPt) : null;
         const tool = canvasEngine.activeTool;
 
@@ -281,39 +292,10 @@ document.addEventListener('DOMContentLoaded', () => {
         byId('gestureSub').textContent = sub;
     }
 
-    async function runYoloScan() {
-        yoloResultCard.classList.add('active');
-        yoloCardContent.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning the current view…';
-        yoloScanBtn.disabled = true;
-        try {
-            const response = await fetch(apiUrl('yolo-detect'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: canvas.toDataURL('image/jpeg', 0.82) })
-            });
-            const data = await response.json();
-            if (!response.ok || !data.success) throw new Error(data.message || data.error || 'Scan failed');
-            if (!data.count) {
-                yoloCardContent.textContent = 'No known objects were found in this frame.';
-                return;
-            }
-            const items = data.detections
-                .sort((a, b) => b.confidence - a.confidence)
-                .slice(0, 12)
-                .map((item) => `<div class="yolo-item"><span class="yolo-item-name">${escapeHtml(item.class_name)}</span><span class="yolo-item-conf">${Math.round(item.confidence * 100)}%</span></div>`)
-                .join('');
-            yoloCardContent.innerHTML = `<p class="scan-summary">Found ${data.count} object${data.count === 1 ? '' : 's'}</p>${items}`;
-        } catch (error) {
-            yoloCardContent.innerHTML = `<span class="scan-error">${escapeHtml(error.message)}</span>`;
-        } finally {
-            yoloScanBtn.disabled = !isRunning || !appConfig.yolo_enabled;
-        }
-    }
-
-    function escapeHtml(value) {
-        const element = document.createElement('span');
-        element.textContent = value;
-        return element.innerHTML;
+    function openSmartVision() {
+        stopCamera();
+        smartVisionFrame.src = './smart-vision.html?autostart=1&v=20260826';
+        smartVisionDialog.showModal();
     }
 
     async function downloadDrawing() {
@@ -372,8 +354,14 @@ document.addEventListener('DOMContentLoaded', () => {
         canvasEngine.setMirror(facingMode === 'user');
         await startCamera();
     });
-    yoloScanBtn.addEventListener('click', runYoloScan);
-    byId('closeYoloCardBtn').addEventListener('click', () => yoloResultCard.classList.remove('active'));
+    objectDetectionBtn.addEventListener('click', openSmartVision);
+    smartVisionDialog.addEventListener('close', () => {
+        smartVisionFrame.src = 'about:blank';
+        objectDetectionBtn.focus();
+    });
+    window.addEventListener('message', (event) => {
+        if (event.origin === location.origin && event.source === smartVisionFrame.contentWindow && event.data?.type === 'vision-pen:close-smart-vision') smartVisionDialog.close();
+    });
     byId('gestureGuideBtn').addEventListener('click', () => gestureModal.classList.add('open'));
     byId('closeModalBtn').addEventListener('click', () => gestureModal.classList.remove('open'));
     byId('gotItBtn').addEventListener('click', () => gestureModal.classList.remove('open'));
@@ -417,21 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.hidden && isDrawingActive) finishStroke();
     });
     window.addEventListener('beforeunload', () => stopCamera({ showGate: false }));
-
-    fetch(apiUrl('config'))
-        .then((response) => {
-            if (!response.ok) throw new Error('Backend unavailable');
-            return response.json();
-        })
-        .then((config) => {
-            appConfig = config;
-            if (!config.yolo_enabled) yoloScanBtn.title = 'Object scanning is disabled on this server';
-        })
-        .catch(() => {
-            appConfig = { yolo_enabled: false };
-            yoloScanBtn.disabled = true;
-            yoloScanBtn.title = 'Object scanning is available in the local Vision Pen app';
-        });
 
     canvasEngine.renderFrame(null);
     updateCameraStatus('idle', 'Camera off');

@@ -153,7 +153,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.equal(response.status, 200);
   assert.match(html, /class="site-header"/);
   assert.match(html, /title="Vision Pen air-writing studio"/);
-  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260814-smooth-board"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-smart-vision"/);
   assert.match(html, /class="site-footer"/);
 });
 
@@ -231,7 +231,11 @@ test("packages the responsive Vision Pen browser app", async () => {
   assert.match(html, /data-board="black"/);
   assert.match(html, /data-board="white"/);
   assert.match(html, /\.\/static\/js\/app\.js/);
-  assert.match(appScript, /yolo_enabled: false/);
+  assert.match(html, /id="objectDetectionBtn"[^>]*aria-haspopup="dialog"/);
+  assert.match(html, />Object Detection<\/span>/);
+  assert.match(appScript, /smartVisionDialog\.showModal\(\)/);
+  assert.match(appScript, /smart-vision\.html\?autostart=1/);
+  assert.doesNotMatch(appScript, /yolo-detect|yolo_enabled/);
   assert.match(appScript, /pointerdown/);
   assert.match(canvasEngine, /drawCurve/);
   assert.match(canvasEngine, /maxSpacing/);
@@ -241,4 +245,11 @@ test("packages the responsive Vision Pen browser app", async () => {
   assert.match(styles, /\.control-dock\s*\{[^}]*overflow:\s*hidden/s);
   assert.match(styles, /grid-template-areas:\s*"board board"\s*"tools colours"\s*"stroke options"/s);
   assert.match(styles, /\.tool-btn i\s*\{[^}]*font-size:\s*0\.7rem/s);
+
+  // Static builds must ship our current camera app, never a sibling checkout.
+  for (const asset of ["index.html", "smart-vision.html", "static/js/smartVision.js", "static/js/smartVisionCore.mjs", "static/vendor/smart-vision/face/age_gender_model.bin"]) {
+    const source = await readFile(new URL(`../public/vision-pen-studio/${asset}`, import.meta.url));
+    const packaged = await readFile(new URL(`../dist/vision-pen-studio/${asset}`, import.meta.url));
+    assert.deepEqual(packaged, source, asset);
+  }
 });

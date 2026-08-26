@@ -17,7 +17,7 @@ CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0", "--port", "3000"]
 FROM dependencies AS builder
 ENV NODE_ENV=production
 COPY . .
-RUN npm run build
+RUN node scripts/prepare-smart-vision.mjs --check && npm run build
 
 FROM base AS runner
 ENV NODE_ENV=production
@@ -25,6 +25,7 @@ ENV PORT=3000
 
 COPY --from=dependencies --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/dist ./dist
+# Includes Smart Vision's local model weights, JS and MediaPipe WASM assets.
 COPY --from=builder --chown=node:node /app/public ./public
 COPY --chown=node:node package.json package-lock.json ./
 
