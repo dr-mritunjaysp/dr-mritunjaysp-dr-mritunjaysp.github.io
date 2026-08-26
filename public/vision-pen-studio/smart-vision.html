@@ -7,7 +7,7 @@
     <meta name="description" content="Private, on-device object detection, hand gestures and approximate apparent-age estimates in your camera.">
     <title>Smart Vision · AI Camera Lab</title>
     <link rel="stylesheet" href="./static/vendor/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="./static/css/smart-vision.css?v=20260826-fullscreen">
+    <link rel="stylesheet" href="./static/css/smart-vision.css?v=20260826-maximize-age">
 </head>
 <body>
 <div class="vision-app">
@@ -15,7 +15,7 @@
         <div class="lab-brand"><span class="brand-mark"><i class="fa-solid fa-expand" aria-hidden="true"></i></span><div><h1>Smart Vision <span>AI</span></h1><p>COMPUTER VISION LAB</p></div></div>
         <div class="private-badge"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> On-device processing</div>
         <div class="lab-header-actions">
-            <button id="fullscreenButton" class="button" type="button" aria-label="Enter fullscreen" aria-pressed="false" title="Enter fullscreen"><i id="fullscreenIcon" class="fa-solid fa-expand" aria-hidden="true"></i><span id="fullscreenLabel">Fullscreen</span></button>
+            <button id="fullscreenButton" class="button" type="button" aria-label="Maximize Smart Vision" aria-pressed="false" title="Maximize Smart Vision"><i id="fullscreenIcon" class="fa-solid fa-expand" aria-hidden="true"></i><span id="fullscreenLabel">Maximize</span></button>
             <button id="backButton" class="button quiet" type="button"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Vision Pen</button>
         </div>
     </header>
@@ -64,7 +64,7 @@
                 <div class="panel-heading"><h3><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> AI VISION INSIGHTS</h3><span class="live-label" id="insightsStatus">OFF</span></div>
                 <div class="metrics"><div><span>Objects detected</span><strong id="objectCount">0</strong></div><div><span>Persons</span><strong id="personCount">0</strong></div><div><span>Faces</span><strong id="faceCount">0</strong></div><div><span>Hands</span><strong id="handCount">0</strong></div></div>
                 <section class="hand-summary"><div class="finger-total"><span>RAISED FINGERS</span><strong id="fingerTotal">—</strong><span>ACROSS BOTH HANDS</span></div><div class="insight-row"><span>Current gesture</span><strong id="gestureSummary">Waiting for a hand</strong></div><div id="raisedNames" class="raised-names">Raise a finger to see its name.</div></section>
-                <section class="age-summary"><div class="insight-row"><span>AI Estimated Apparent Age</span><strong id="ageSummary">—</strong></div><p>Approximate visual estimate, not actual age. Accuracy varies with lighting, pose and the individual. No age confidence score is provided by this model. Do not use for age verification.</p></section>
+                <section class="age-summary"><div class="insight-row"><span>AI Estimated Apparent Age</span><strong id="ageSummary">—</strong></div><p>Face-aligned, multi-frame visual estimate—not actual age. Accuracy varies with lighting, pose and the individual. No age confidence score is provided by this model. Do not use for age verification.</p></section>
                 <section class="selected-section"><h4>SELECTED DETECTION <span id="selectionType">DETAILS</span></h4><div id="selectionDetails" class="selection-details">Select a bounding box or an item below to inspect it.</div></section>
                 <section class="detections-section"><h4>IN THE FRAME <span id="detectionTotal">0</span></h4><div id="detectionList" class="detection-list"><p class="empty-list">Detections will appear here when the camera is active.</p></div></section>
                 <section class="model-section"><h4>MODEL STATUS <span id="analysisRate">0 FPS</span></h4><div class="model-row"><span>COCO-SSD · 80 object classes</span><span id="objectsModel">Not loaded</span></div><div class="model-row"><span>MediaPipe · 21 hand points</span><span id="handsModel">Not loaded</span></div><div class="model-row"><span>Face detection + apparent age</span><span id="facesModel">Not loaded</span></div></section>
@@ -73,6 +73,6 @@
         <footer class="lab-footer"><span><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Photos and screens can also produce detections. Automatic source labels are tentative; select the source when you know it.</span><a href="./static/vendor/smart-vision/README.md" target="_blank" rel="noopener">Models &amp; limitations <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></footer>
     </main>
 </div>
-<script type="module" src="./static/js/smartVision.js?v=20260826-fullscreen"></script>
+<script type="module" src="./static/js/smartVision.js?v=20260826-maximize-age"></script>
 </body>
 </html>

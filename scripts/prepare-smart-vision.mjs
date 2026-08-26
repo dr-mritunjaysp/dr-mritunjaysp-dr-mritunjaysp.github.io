@@ -33,7 +33,7 @@ if (process.argv.includes('--check')) {
   await download(`${cocoBase}dist/coco-ssd.min.js`, 'coco-ssd.min.js');
   await download('https://raw.githubusercontent.com/tensorflow/tfjs-models/master/LICENSE', 'COCO-SSD-LICENSE');
   await download('https://raw.githubusercontent.com/tensorflow/tfjs/tfjs-v4.22.0/LICENSE', 'TENSORFLOW-LICENSE');
-  for (const model of ['tiny_face_detector', 'age_gender']) {
+  for (const model of ['tiny_face_detector', 'face_landmark_68_tiny', 'age_gender']) {
     const manifest = JSON.parse(await download(`${faceBase}model/${model}_model-weights_manifest.json`, `face/${model}_model-weights_manifest.json`));
     for (const shard of new Set(manifest.flatMap((group) => group.paths))) {
       await download(`${faceBase}model/${shard}`, `face/${shard}`);

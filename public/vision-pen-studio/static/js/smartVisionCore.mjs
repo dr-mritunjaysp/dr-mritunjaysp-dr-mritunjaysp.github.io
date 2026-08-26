@@ -73,7 +73,15 @@ export class ObjectTracker {
         return detections.map((detection, index) => {
             const previous = assigned.has(index) ? this.tracks[assigned.get(index)] : null;
             const result = { ...detection, id: previous?.id || `${this.prefix}${String(this.nextId++).padStart(2, '0')}`, lastSeen: now };
-            if (Number.isFinite(detection.age) && Number.isFinite(previous?.age)) result.age = previous.age * 0.75 + detection.age * 0.25;
+            if (Number.isFinite(detection.age)) {
+                const samples = [...(previous?.ageSamples || []), detection.age].slice(-9);
+                const sorted = [...samples].sort((a, b) => a - b);
+                const middle = Math.floor(sorted.length / 2);
+                result.ageSamples = samples;
+                result.ageSampleCount = samples.length;
+                // A rolling median rejects occasional extreme frame estimates.
+                result.age = sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+            }
             if (previous) Object.assign(previous, result);
             else this.tracks.push(result);
             return result;

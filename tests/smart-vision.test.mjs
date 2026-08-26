@@ -55,7 +55,10 @@ test('smooths age estimates and handles all range boundaries without fabricated 
     for (const [age, expected] of [[0,'0–5'],[5,'0–5'],[6,'6–12'],[13,'13–17'],[18,'18–24'],[25,'25–34'],[35,'35–44'],[45,'45–54'],[55,'55–64'],[65,'65+'],[NaN,'Unavailable']]) assert.equal(ageRange(age), expected);
     const tracker = new ObjectTracker('F');
     tracker.update([{ label:'face',bbox:[.1,.1,.2,.2],age:20 }], 0);
-    assert.equal(tracker.update([{ label:'face',bbox:[.1,.1,.2,.2],age:40 }], 10)[0].age, 25);
+    const second = tracker.update([{ label:'face',bbox:[.1,.1,.2,.2],age:40 }], 10)[0];
+    assert.equal(second.age, 30); assert.equal(second.ageSampleCount, 2);
+    const stable = tracker.update([{ label:'face',bbox:[.1,.1,.2,.2],age:22 }], 20)[0];
+    assert.equal(stable.age, 22); assert.deepEqual(stable.ageSamples,[20,40,22]);
 });
 test('marks automatic source inference as uncertain, with explicit user overrides', () => {
     const screen = { label:'laptop',bbox:[.1,.1,.8,.8] };
@@ -112,11 +115,12 @@ test('real bundled object, face and age models share a runtime and release tenso
     try {
         assert.equal((await model.detect(input,20,.45)).length,0);
         await api.nets.tinyFaceDetector.loadFromUri('https://models.invalid/face');
+        await api.nets.faceLandmark68TinyNet.loadFromUri('https://models.invalid/face');
         await api.nets.ageGenderNet.loadFromUri('https://models.invalid/face');
-        assert.equal((await api.detectAllFaces(input,new api.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:.55})).withAgeAndGender()).length,0);
+        assert.equal((await api.detectAllFaces(input,new api.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:.55})).withFaceLandmarks(true).withAgeAndGender()).length,0);
         assert.ok(Number.isFinite((await api.nets.ageGenderNet.predictAgeAndGender(input)).age));
     } finally {
-        input.dispose(); model.dispose(); api.nets.tinyFaceDetector.dispose(); api.nets.ageGenderNet.dispose();
+        input.dispose(); model.dispose(); api.nets.tinyFaceDetector.dispose(); api.nets.faceLandmark68TinyNet.dispose(); api.nets.ageGenderNet.dispose();
     }
     assert.equal(tf.memory().numTensors,0);
 });
@@ -142,11 +146,12 @@ async function controllerFixture(getUserMedia) {
     const elements = new Map(), events = {}, media = getUserMedia || (async () => { throw Object.assign(new Error('Blocked'),{name:'NotAllowedError'}); });
     const document = { documentElement:new Element(), getElementById(id) { if(!elements.has(id)) elements.set(id,new Element()); return elements.get(id); },createElement:()=>new Element(),createTextNode:(s)=>s,querySelector:()=>new Element(),querySelectorAll:()=>[],addEventListener:(name,fn)=>{events[name]=fn;},head:new Element() };
     const window = { addEventListener:(name,fn)=>{events[name]=fn;}, isSecureContext:true };
+    window.parent=window; window.top=window;
     const context = { core,document,window,navigator:{mediaDevices:{getUserMedia:media,enumerateDevices:async()=>[]}},location:{search:'',origin:'http://localhost'},URL,URLSearchParams,performance,console,setTimeout:()=>1,clearTimeout(){},ResizeObserver:class {observe(){}} };
     const url = new URL('../public/vision-pen-studio/static/js/smartVision.js',import.meta.url);
     const source = (await readFile(url,'utf8')).replace(/^import[^\n]+/,`const { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } = core;`).replaceAll('import.meta.url',JSON.stringify(url.href));
     vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},getEpoch:()=>epoch};`,context);
-    return {...context.api,elements,events,document};
+    return {...context.api,elements,events,document,window};
 }
 test('camera permission denial resets controls and shows recovery instructions', async () => {
     const app = await controllerFixture(); await app.startCamera();
@@ -181,10 +186,10 @@ test('fullscreen toggle updates its label and exits without stopping the camera'
     app.document.documentElement.requestFullscreen=async()=>{app.document.fullscreenElement=app.document.documentElement;app.events.fullscreenchange();};
     app.document.exitFullscreen=async()=>{app.document.fullscreenElement=null;app.events.fullscreenchange();};
     await app.elements.get('fullscreenButton').click();
-    assert.equal(app.elements.get('fullscreenLabel').textContent,'Exit Fullscreen');
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Restore');
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'true');
     await app.elements.get('fullscreenButton').click();
-    assert.equal(app.elements.get('fullscreenLabel').textContent,'Fullscreen');
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Maximize');
     assert.equal(app.getState(),'running'); assert.equal(stops,0);
     // Browsers can report fullscreen exit before delivering Escape.
     app.events.keydown({key:'Escape'});
@@ -199,18 +204,43 @@ test('Escape leaves fullscreen before leaving the studio and handles external ex
     app.events.keydown({key:'Escape',preventDefault:()=>{prevented=true;},stopPropagation(){}});
     await Promise.resolve(); await Promise.resolve();
     assert.equal(prevented,true); assert.equal(backClicks,0);
-    assert.equal(app.elements.get('fullscreenLabel').textContent,'Fullscreen');
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Maximize');
     app.document.fullscreenElement=app.document.documentElement;app.events.fullscreenchange();
     app.document.fullscreenElement=null;app.events.fullscreenchange();
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'false');
 });
-test('unsupported or rejected fullscreen requests leave the camera controls usable', async () => {
+test('unsupported fullscreen uses a working in-page maximize fallback', async () => {
     const app=await controllerFixture();
     await app.elements.get('fullscreenButton').click();
-    assert.match(app.elements.get('notice').textContent,/not supported/);
-    app.document.documentElement.requestFullscreen=async()=>{throw new Error('Denied');};
+    assert.match(app.elements.get('notice').textContent,/Maximized inside Vision Pen/);
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Restore');
+    assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'true');
     await app.elements.get('fullscreenButton').click();
-    assert.match(app.elements.get('notice').textContent,/could not change/);
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Maximize');
     assert.equal(app.elements.get('fullscreenButton').disabled,false);
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'false');
+});
+test('rejected browser fullscreen falls back to in-page maximize', async () => {
+    const app=await controllerFixture();
+    app.document.documentElement.requestFullscreen=async()=>{throw new Error('Denied');};
+    await app.elements.get('fullscreenButton').click();
+    assert.match(app.elements.get('notice').textContent,/Browser fullscreen was blocked/);
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Restore');
+    assert.equal(app.elements.get('fullscreenButton').disabled,false);
+});
+test('maximize requests fullscreen on the outermost accessible Vision Pen frame', async () => {
+    const app=await controllerFixture(); let innerRequests=0,outerRequests=0;
+    const topEvents={};
+    const topDocument={fullscreenElement:null,addEventListener:(name,fn)=>{topEvents[name]=fn;}};
+    topDocument.exitFullscreen=async()=>{topDocument.fullscreenElement=null;topEvents.fullscreenchange?.();};
+    const topWindow={document:topDocument}; topWindow.parent=topWindow; topWindow.top=topWindow;
+    const outerFrame={requestFullscreen:async()=>{outerRequests++;topDocument.fullscreenElement=outerFrame;topEvents.fullscreenchange?.();}};
+    const middleWindow={document:{addEventListener(){}},parent:topWindow,top:topWindow,frameElement:outerFrame};
+    const innerFrame={requestFullscreen:async()=>{innerRequests++;}};
+    app.window.parent=middleWindow; app.window.top=topWindow; app.window.frameElement=innerFrame;
+    await app.elements.get('fullscreenButton').click();
+    assert.equal(outerRequests,1); assert.equal(innerRequests,0);
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Restore');
+    await app.elements.get('fullscreenButton').click();
+    assert.equal(topDocument.fullscreenElement,null);
 });

@@ -42,6 +42,18 @@
     "sha256": "b7503ce7df31039b1c43316a9b865cab6a70dd748cc602d3fa28b551503c3871"
   },
   {
+    "path": "face/face_landmark_68_tiny_model-weights_manifest.json",
+    "url": "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/face_landmark_68_tiny_model-weights_manifest.json",
+    "bytes": 4806,
+    "sha256": "9a1a5dd19fd814fd5095c3cb58f8e0d3193b8c5b9a6715b30a69d559aea31ad4"
+  },
+  {
+    "path": "face/face_landmark_68_tiny_model.bin",
+    "url": "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/face_landmark_68_tiny_model.bin",
+    "bytes": 77224,
+    "sha256": "b98e9f2f7da76f8a6dda9741a36ed485b224b889d552de2b2c1bb16217f67bfc"
+  },
+  {
     "path": "face/age_gender_model-weights_manifest.json",
     "url": "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/age_gender_model-weights_manifest.json",
     "bytes": 8392,

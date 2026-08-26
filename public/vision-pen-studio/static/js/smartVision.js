@@ -12,7 +12,19 @@ let detections = { objects: [], faces: [], hands: [] };
 let stream = null, state = 'idle', epoch = 0, facingMode = 'user', devices = [], deviceId = null;
 let selectedId = null, lastFaceAt = 0, lastResultAt = 0, cycles = 0, fpsAt = performance.now();
 let loadPromise = null, runtimePromise = null, handSession = -1, shutdown = false, pumpTimer = null;
-let wasFullscreen = false, fullscreenExitedAt = -Infinity;
+let wasFullscreen = false, presentationMode = false, fullscreenExitedAt = -Infinity;
+const fullscreenDocuments = () => {
+    const documents = [document];
+    try {
+        let context = window;
+        while (context.parent && context.parent !== context) {
+            context = context.parent;
+            if (context.document && !documents.includes(context.document)) documents.push(context.document);
+        }
+    } catch { /* Cross-origin ancestors are not accessible. */ }
+    return documents;
+};
+const fullscreenListeners = new WeakSet();
 const scripts = new Map();
 const colors = { objects: '#64e9ce', faces: '#edb964', hands: '#aeb3ff' };
 
@@ -90,7 +102,11 @@ async function ensureModels() {
             },
             faces: async () => {
                 const api = await shared;
-                await Promise.all([api.nets.tinyFaceDetector.loadFromUri(`${assetRoot}face`), api.nets.ageGenderNet.loadFromUri(`${assetRoot}face`)]);
+                await Promise.all([
+                    api.nets.tinyFaceDetector.loadFromUri(`${assetRoot}face`),
+                    api.nets.faceLandmark68TinyNet.loadFromUri(`${assetRoot}face`),
+                    api.nets.ageGenderNet.loadFromUri(`${assetRoot}face`)
+                ]);
                 return api;
             },
             hands: async () => {
@@ -193,36 +209,70 @@ function fitCamera() {
     $('cameraImage').style.height = `${width / ratio}px`;
     $('cameraImage').classList.toggle('mirrored', $('mirrorToggle').checked);
 }
-function isFullscreen() { return Boolean(document.fullscreenElement || document.webkitFullscreenElement); }
+function nativeFullscreenDocument() { return fullscreenDocuments().find((doc) => doc.fullscreenElement || doc.webkitFullscreenElement) || null; }
+function isFullscreen() { return Boolean(nativeFullscreenDocument()); }
+function fullscreenTarget() {
+    let target = document.documentElement;
+    try {
+        let context = window;
+        while (context.frameElement && context.parent && context.parent !== context) {
+            target = context.frameElement;
+            context = context.parent;
+        }
+    } catch { /* The nearest same-origin target is still usable. */ }
+    return target;
+}
+function bindFullscreenEvents() {
+    fullscreenDocuments().forEach((doc) => {
+        if (fullscreenListeners.has(doc)) return;
+        fullscreenListeners.add(doc);
+        doc.addEventListener('fullscreenchange', syncFullscreen);
+        doc.addEventListener('webkitfullscreenchange', syncFullscreen);
+    });
+}
 function syncFullscreen() {
-    const active = isFullscreen();
-    if (wasFullscreen && !active) fullscreenExitedAt = performance.now();
-    wasFullscreen = active;
-    const label = active ? 'Exit fullscreen' : 'Enter fullscreen';
+    const native = isFullscreen();
+    const active = native || presentationMode;
+    if (wasFullscreen && !native) fullscreenExitedAt = performance.now();
+    wasFullscreen = native;
+    const label = active ? 'Restore Smart Vision' : 'Maximize Smart Vision';
     $('fullscreenButton').setAttribute('aria-pressed', String(active));
     $('fullscreenButton').setAttribute('aria-label', label);
     $('fullscreenButton').title = label;
-    $('fullscreenLabel').textContent = active ? 'Exit Fullscreen' : 'Fullscreen';
+    $('fullscreenLabel').textContent = active ? 'Restore' : 'Maximize';
     $('fullscreenIcon').className = active ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
-    document.documentElement.classList.toggle('is-fullscreen', active);
+    document.documentElement.classList.toggle('is-fullscreen', native);
+    document.documentElement.classList.toggle('is-presentation-mode', presentationMode && !native);
     fitCamera();
 }
 async function exitFullscreen() {
-    const exit = document.exitFullscreen || document.webkitExitFullscreen;
-    if (isFullscreen() && exit) await exit.call(document);
+    const activeDocument = nativeFullscreenDocument();
+    const exit = activeDocument && (activeDocument.exitFullscreen || activeDocument.webkitExitFullscreen);
+    if (exit) await exit.call(activeDocument);
+    presentationMode = false;
 }
 async function toggleFullscreen() {
     $('fullscreenButton').disabled = true;
     try {
-        if (isFullscreen()) await exitFullscreen();
+        bindFullscreenEvents();
+        if (isFullscreen() || presentationMode) await exitFullscreen();
         else {
-            const root = document.documentElement;
-            const enter = root.requestFullscreen || root.webkitRequestFullscreen;
-            if (!enter) { notify('Fullscreen is not supported by this browser.', true); return; }
-            await enter.call(root);
+            const target = fullscreenTarget();
+            const enter = target.requestFullscreen || target.webkitRequestFullscreen;
+            if (!enter) {
+                presentationMode = true;
+                notify('Maximized inside Vision Pen. Browser fullscreen is unavailable on this device.');
+                return;
+            }
+            try { await enter.call(target); }
+            catch {
+                presentationMode = true;
+                notify('Maximized inside Vision Pen. Browser fullscreen was blocked.');
+            }
         }
     } catch {
-        notify('Fullscreen could not change. Your browser may block fullscreen for embedded pages.', true);
+        presentationMode = true;
+        notify('Maximized inside Vision Pen. Browser fullscreen could not open.');
     } finally {
         $('fullscreenButton').disabled = false;
         syncFullscreen();
@@ -276,7 +326,7 @@ async function pump() {
             stage('faces', true);
             try {
                 const api = models.faces;
-                const faces = await api.detectAllFaces(frame, new api.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.55 })).withAgeAndGender();
+                const faces = await api.detectAllFaces(frame, new api.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.55 })).withFaceLandmarks(true).withAgeAndGender();
                 if (!live(session)) return;
                 // Discard gender output. Do not run identity/recognition models.
                 detections.faces = trackers.faces.update(faces.map(({ detection, age }) => ({ label: 'Human face', score: detection.score, age, bbox: [detection.box.x / frame.width, detection.box.y / frame.height, detection.box.width / frame.width, detection.box.height / frame.height] })), performance.now());
@@ -327,6 +377,7 @@ function updateGestures() {
 }
 function allItems() { return Object.entries(detections).flatMap(([kind, items]) => items.map((item) => ({ ...item, kind }))); }
 function confidence(score) { return Number.isFinite(score) ? `${(score * 100).toFixed(1)}%` : 'Unavailable'; }
+function apparentAge(face) { return (face.ageSampleCount || 0) < 3 ? `Calibrating ${face.ageSampleCount || 1}/3` : ageRange(face.age); }
 function renderInsights() {
     const hands = detections.hands;
     $('objectCount').textContent = detections.objects.length;
@@ -335,7 +386,7 @@ function renderInsights() {
     $('fingerTotal').textContent = hands.length ? hands.reduce((sum, hand) => sum + hand.count, 0) : '—';
     $('gestureSummary').textContent = hands.length ? hands.map((hand) => hand.gesture).join(' / ') : 'Waiting for a hand';
     $('raisedNames').textContent = hands.length ? hands.map((hand) => `${hand.handedness}: ${hand.names.join(', ') || 'No raised fingers'}`).join(' · ') : 'Raise a finger to see its name.';
-    $('ageSummary').textContent = detections.faces.length ? detections.faces.map((face) => ageRange(face.age)).join(' / ') : '—';
+    $('ageSummary').textContent = detections.faces.length ? detections.faces.map(apparentAge).join(' / ') : '—';
     const items = allItems(), list = $('detectionList');
     $('detectionTotal').textContent = items.length;
     list.querySelector('.empty-list')?.remove();
@@ -350,7 +401,7 @@ function renderInsights() {
             list.appendChild(button);
         }
         button.firstChild.textContent = `${item.label} #${item.id}`;
-        button.lastChild.textContent = item.kind === 'hands' ? `${item.count} fingers` : item.kind === 'faces' ? `${ageRange(item.age)} yrs` : $('confidenceToggle').checked ? confidence(item.score) : 'Object';
+        button.lastChild.textContent = item.kind === 'hands' ? `${item.count} fingers` : item.kind === 'faces' ? apparentAge(item) : $('confidenceToggle').checked ? confidence(item.score) : 'Object';
         button.setAttribute('aria-pressed', String(selectedId === item.id));
     });
     if (!items.length) {
@@ -366,7 +417,7 @@ function renderSelection(item) {
     if (!item) { target.textContent = selectedId ? 'This detection is no longer visible.' : 'Select a bounding box or an item below to inspect it.'; return; }
     const rows = [['Type', item.label], ['Tracking ID', `#${item.id}`]];
     if ($('confidenceToggle').checked) rows.push([item.kind === 'hands' ? 'Handedness confidence' : 'Detection confidence', confidence(item.score)]);
-    if (item.kind === 'faces') rows.push(['AI Estimated Apparent Age', `${ageRange(item.age)} years`], ['Age confidence', 'Not provided by model']);
+    if (item.kind === 'faces') rows.push(['AI Estimated Apparent Age', (item.ageSampleCount || 0) < 3 ? apparentAge(item) : `${apparentAge(item)} years`], ['Stabilization', `${item.ageSampleCount || 1}/3+ aligned frames`], ['Age confidence', 'Not provided by model']);
     if (item.kind === 'hands') rows.push(['Hand', item.handedness], ['Raised fingers', `${item.count} · ${item.names.join(', ') || 'None'}`], ['Gesture', item.gesture], ['Finger state', 'Landmark geometry estimate']);
     rows.push(['Source', sceneSource(item, detections.objects, $('sourceMode').value)]);
     const dl = document.createElement('dl');
@@ -386,7 +437,7 @@ function drawOverlays() {
         ctx.strokeRect(x, y, box[2] * width, box[3] * height);
         let label = `${item.label.toUpperCase()} #${item.id}`;
         if ($('confidenceToggle').checked) label += ` | ${confidence(item.score)}`;
-        if (item.kind === 'faces') label += ` | EST. AGE ${ageRange(item.age)}`;
+        if (item.kind === 'faces') label += ` | EST. AGE ${apparentAge(item)}`;
         if (item.kind === 'hands') label += ` | ${item.count} FINGERS | ${item.gesture.toUpperCase()}`;
         const labelWidth = Math.min(ctx.measureText(label).width + 14 * scale, width);
         const lx = Math.max(0, Math.min(x, width - labelWidth)), ly = Math.max(0, Math.min(y - 24 * scale, height - 25 * scale));
@@ -432,8 +483,6 @@ $('switchButton').addEventListener('click', () => {
     void startCamera(devices[(index + 1) % devices.length].deviceId);
 });
 $('fullscreenButton').addEventListener('click', toggleFullscreen);
-document.addEventListener('fullscreenchange', syncFullscreen);
-document.addEventListener('webkitfullscreenchange', syncFullscreen);
 $('backButton').addEventListener('click', async () => {
     stopCamera();
     try { await exitFullscreen(); } catch { /* Removing the frame also exits fullscreen. */ }
@@ -443,7 +492,7 @@ $('backButton').addEventListener('click', async () => {
 document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
     // Escape exits fullscreen first, without closing the camera studio.
-    if (isFullscreen()) { event.preventDefault(); event.stopPropagation(); void toggleFullscreen(); }
+    if (isFullscreen() || presentationMode) { event.preventDefault(); event.stopPropagation(); void toggleFullscreen(); }
     else if (performance.now() - fullscreenExitedAt >= 350) $('backButton').click();
 });
 ['landmarksToggle', 'confidenceToggle'].forEach((id) => $(id).addEventListener('change', () => { renderInsights(); drawOverlays(); }));
@@ -467,6 +516,6 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', () => { shutdown = true; clearTimeout(pumpTimer); stopCamera(); });
 window.addEventListener('pageshow', (event) => { if (event.persisted) { shutdown = false; pumpTimer = setTimeout(pump, 100); } });
 ['gestureNumber', 'gestureResponse'].forEach((id) => $(id).addEventListener('animationend', () => { $(id).hidden = true; }));
-refreshStatus(); renderInsights(); syncFullscreen();
+bindFullscreenEvents(); refreshStatus(); renderInsights(); syncFullscreen();
 pumpTimer = setTimeout(pump, 100);
 if (new URLSearchParams(location.search).get('autostart') === '1') void startCamera();
