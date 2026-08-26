@@ -164,6 +164,28 @@ test("redirects the previous Vision Pen URL to the integrated page", async () =>
   assert.equal(response.headers.get("location"), "http://localhost/vision-pen");
 });
 
+test("serves and packages FilterVerse with its route metadata, workers and Vision Pen shortcut", async () => {
+  const response = await render("/filterverse");
+  const html = await response.text();
+  assert.equal(response.status, 200);
+  assert.match(html, /FilterVerse.*Image Processing Filter Laboratory/);
+  assert.match(html, /Live filter lab/);
+  assert.match(html, /Experiment controls/);
+  assert.match(html, /Export PNG/);
+  assert.match(html, /Image zoom/);
+  assert.match(html, /name="description" content="Explore image processing/);
+  const vision = await (await render("/vision-pen")).text();
+  assert.match(vision, /Computer vision laboratories/);
+  assert.match(vision, /href="\/filterverse"/);
+  const nav = await readFile(new URL("../app/PortfolioApp.tsx", import.meta.url), "utf8");
+  assert.match(nav, /href="\/filterverse"[\s\S]*FilterVerse[\s\S]*href="\/vision-pen"/);
+  for (const name of ["engine.mjs", "client.mjs", "worker.mjs"]) {
+    assert.equal(await readFile(new URL(`../dist/filterverse/${name}`, import.meta.url), "utf8"), await readFile(new URL(`../public/filterverse/${name}`, import.meta.url), "utf8"));
+  }
+  const staticPage = await readFile(new URL("../dist/filterverse/index.html", import.meta.url), "utf8");
+  assert.match(staticPage, /Filter Laboratory/);
+});
+
 test("packages the complete Scholar Resume app on its lowercase public route", async () => {
   const scholarHtml = await readFile(
     new URL("../dist/resumebuilder/index.html", import.meta.url),

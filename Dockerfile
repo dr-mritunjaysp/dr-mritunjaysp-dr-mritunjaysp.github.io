@@ -25,7 +25,7 @@ ENV PORT=3000
 
 COPY --from=dependencies --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/dist ./dist
-# Includes Smart Vision's local model weights, JS and MediaPipe WASM assets.
+# Includes Smart Vision models and FilterVerse's browser worker / processing modules.
 COPY --from=builder --chown=node:node /app/public ./public
 COPY --chown=node:node package.json package-lock.json ./
 

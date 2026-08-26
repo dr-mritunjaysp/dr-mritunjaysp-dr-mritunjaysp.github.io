@@ -48,7 +48,7 @@ services:
         - CMD
         - node
         - -e
-        - Promise.all(['/vision-pen','/vision-pen-studio/smart-vision.html'].map(p=>fetch('http://127.0.0.1:3000'+p))).then(rs=>{if(rs.some(r=>!r.ok))process.exit(1)}).catch(()=>process.exit(1))
+        - Promise.all(['/vision-pen','/vision-pen-studio/smart-vision.html','/filterverse','/filterverse/worker.mjs'].map(p=>fetch('http://127.0.0.1:3000'+p))).then(rs=>{if(rs.some(r=>!r.ok))process.exit(1)}).catch(()=>process.exit(1))
       interval: 30s
       timeout: 5s
       start_period: 20s

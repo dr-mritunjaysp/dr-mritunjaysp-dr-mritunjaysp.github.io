@@ -39,7 +39,7 @@ import {
   SiYoutube,
 } from "react-icons/si";
 import { FaLinkedinIn, FaEnvelope, FaFileLines } from "react-icons/fa6";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { LiveUpdateRefresh } from "./LiveUpdateRefresh";
 import { LottieIcon } from "./LottieIcon";
 
@@ -54,6 +54,7 @@ import { SortingVisualizer } from "./sorting/SortingVisualizer";
 import { InkoraApp } from "./inkora/InkoraApp";
 import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
 import { VisionPenPage } from "./vision-pen/VisionPenPage";
+const FilterVersePage = lazy(() => import("./filterverse/FilterVersePage").then(module => ({ default: module.FilterVersePage })));
 
 type SectionKey =
   | "home"
@@ -62,6 +63,7 @@ type SectionKey =
   | "projects"
   | "sorting-visualizer"
   | "vision-pen"
+  | "filterverse"
   | "inkora"
   | "pen-app"
   | "penapp"
@@ -108,6 +110,7 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
+  { label: "FilterVerse", href: "/filterverse", key: "filterverse" },
   { label: "Vision Pen", href: "/vision-pen", key: "vision-pen" },
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
@@ -655,6 +658,9 @@ function Header({
             </button>
             {moreOpen && (
               <div className="more-menu" role="menu">
+                <Link href="/filterverse" role="menuitem" className={section === "filterverse" ? "active" : ""} onClick={(e) => { e.stopPropagation(); setMoreOpen(false); setMobileOpen(false); }}>
+                  FilterVerse
+                </Link>
                 <Link
                   href="/vision-pen"
                   role="menuitem"
@@ -680,7 +686,7 @@ function Header({
                 >
                   Scholar Resume
                 </a>
-                {moreNav.slice(1).map((item) => (
+                {moreNav.slice(2).map((item) => (
                   <Link
                     href={item.href}
                     key={item.key}
@@ -4000,6 +4006,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "vision-pen":
       content = <VisionPenPage />;
+      break;
+    case "filterverse":
+      content = <Suspense fallback={<section className="vision-pen-page" aria-live="polite">Opening FilterVerse image laboratory…</section>}><FilterVersePage /></Suspense>;
       break;
     case "inkora":
     case "pen-app":

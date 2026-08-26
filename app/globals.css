@@ -349,6 +349,12 @@ img {
   padding: 8px 0 18px;
 }
 
+.vision-lab-nav { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; padding: 8px; }
+.vision-lab-nav a { display: inline-flex; align-items: center; gap: 12px; padding: 11px 16px; border-radius: 12px; background: var(--surface, #fff); border: 1px solid #8473c33b; color: inherit; text-decoration: none; font-size: 13px; font-weight: 600; }
+.vision-lab-nav a:first-child { color: #7052cf; background: #efe9ff; }
+.vision-lab-nav a span { font-size: 11px; font-weight: 400; }
+.vision-lab-nav a[aria-current] { box-shadow: inset 0 -2px #8473c3; }
+
 .vision-pen-frame-shell {
   width: 100%;
   height: clamp(680px, calc(100dvh - 116px), 900px);
