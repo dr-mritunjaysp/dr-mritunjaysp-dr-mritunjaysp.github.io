@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openSmartVision() {
         stopCamera();
-        smartVisionFrame.src = './smart-vision.html?autostart=1&v=20260826';
+        smartVisionFrame.src = './smart-vision.html?autostart=1&v=20260826-studio-layout';
         smartVisionDialog.showModal();
     }
 

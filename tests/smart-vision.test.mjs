@@ -128,7 +128,7 @@ test('real bundled object, face and age models share a runtime and release tenso
 // A minimal DOM/media fixture tests lifecycle logic without a device or browser.
 async function controllerFixture(getUserMedia) {
     class Element {
-        constructor() { this.children=[]; this.style={}; this.dataset={}; this.events={}; this.checked=true; this.value='auto'; this.textContent=''; this.videoWidth=1280; this.videoHeight=720; this.readyState=4; this.classList={ toggle(){},add(){},remove(){} }; }
+        constructor() { this.children=[]; this.style={}; this.dataset={}; this.events={}; this.checked=true; this.value='auto'; this.textContent=''; this.videoWidth=1280; this.videoHeight=720; this.clientWidth=800; this.clientHeight=500; this.readyState=4; this.classList={ toggle(){},add(){},remove(){} }; }
         addEventListener(name,fn) { this.events[name]=fn; }
         append(...nodes) { this.children.push(...nodes); }
         appendChild(node) { this.append(node); return node; }
@@ -150,7 +150,7 @@ async function controllerFixture(getUserMedia) {
     const context = { core,document,window,navigator:{mediaDevices:{getUserMedia:media,enumerateDevices:async()=>[]}},location:{search:'',origin:'http://localhost'},URL,URLSearchParams,performance,console,setTimeout:()=>1,clearTimeout(){},ResizeObserver:class {observe(){}} };
     const url = new URL('../public/vision-pen-studio/static/js/smartVision.js',import.meta.url);
     const source = (await readFile(url,'utf8')).replace(/^import[^\n]+/,`const { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } = core;`).replaceAll('import.meta.url',JSON.stringify(url.href));
-    vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},getEpoch:()=>epoch};`,context);
+    vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,fitCamera,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},getEpoch:()=>epoch};`,context);
     return {...context.api,elements,events,document,window};
 }
 test('camera permission denial resets controls and shows recovery instructions', async () => {
@@ -176,6 +176,22 @@ test('pause retains the stream; stop and hidden-page cleanup release camera trac
     app.elements.get('pauseButton').events.click(); assert.equal(app.getState(),'running');
     app.stopCamera(); assert.equal(stops,1); assert.equal(app.elements.get('visionVideo').srcObject,null);
     await app.startCamera(); app.events.pagehide(); assert.equal(stops,2); assert.equal(app.getState(),'idle');
+});
+
+test('camera fitting stays within desktop, tablet and mobile content boxes', async () => {
+    const app=await controllerFixture();
+    const stage=app.elements.get('cameraStage'),video=app.elements.get('visionVideo'),image=app.elements.get('cameraImage');
+    for (const [width,height] of [[1040,530],[440,390],[720,460],[278,420],[0,0]]) {
+        stage.clientWidth=width; stage.clientHeight=height;
+        for (const [sourceWidth,sourceHeight] of [[1920,1080],[1080,1920],[640,480],[0,0]]) {
+            video.videoWidth=sourceWidth; video.videoHeight=sourceHeight;
+            app.fitCamera();
+            const fittedWidth=parseFloat(image.style.width),fittedHeight=parseFloat(image.style.height);
+            assert.ok(fittedWidth>=0 && fittedWidth<=width);
+            assert.ok(fittedHeight>=0 && fittedHeight<=height+1e-8);
+            if(width) assert.ok(Math.abs(fittedWidth/fittedHeight-(sourceWidth ? sourceWidth/sourceHeight : 16/9))<1e-8);
+        }
+    }
 });
 
 test('header icon and fullscreen button stay synchronized without stopping the camera', async () => {

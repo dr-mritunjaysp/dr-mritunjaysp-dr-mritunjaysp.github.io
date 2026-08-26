@@ -203,9 +203,10 @@ async function startCamera(requestedDevice = null) {
     }
 }
 function fitCamera() {
-    const bounds = $('cameraStage').getBoundingClientRect();
+    const stage = $('cameraStage');
     const ratio = video.videoWidth && video.videoHeight ? video.videoWidth / video.videoHeight : 16 / 9;
-    const width = Math.min(bounds.width, bounds.height * ratio);
+    // Fit inside the content box, excluding the border and any scrollbar.
+    const width = Math.max(0, Math.min(stage.clientWidth, stage.clientHeight * ratio));
     $('cameraImage').style.width = `${width}px`;
     $('cameraImage').style.height = `${width / ratio}px`;
     $('cameraImage').classList.toggle('mirrored', $('mirrorToggle').checked);

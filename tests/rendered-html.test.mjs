@@ -153,7 +153,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.equal(response.status, 200);
   assert.match(html, /class="site-header"/);
   assert.match(html, /title="Vision Pen air-writing studio"/);
-  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-smart-vision"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-studio-layout"/);
   assert.match(html, /class="site-footer"/);
 });
 
@@ -247,7 +247,7 @@ test("packages the responsive Vision Pen browser app", async () => {
   assert.match(styles, /\.tool-btn i\s*\{[^}]*font-size:\s*0\.7rem/s);
 
   // Static builds must ship our current camera app, never a sibling checkout.
-  for (const asset of ["index.html", "smart-vision.html", "static/js/smartVision.js", "static/js/smartVisionCore.mjs", "static/vendor/smart-vision/face/age_gender_model.bin"]) {
+  for (const asset of ["index.html", "smart-vision.html", "static/css/smart-vision.css", "static/js/smartVision.js", "static/js/smartVisionCore.mjs", "static/vendor/smart-vision/face/age_gender_model.bin"]) {
     const source = await readFile(new URL(`../public/vision-pen-studio/${asset}`, import.meta.url));
     const packaged = await readFile(new URL(`../dist/vision-pen-studio/${asset}`, import.meta.url));
     assert.deepEqual(packaged, source, asset);
