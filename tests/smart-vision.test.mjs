@@ -131,7 +131,8 @@ async function controllerFixture(getUserMedia) {
         replaceChildren(...nodes) { this.children=nodes; }
         querySelector() { return null; }
         querySelectorAll() { return []; }
-        setAttribute() {}
+        setAttribute(name,value) { this[name]=value; }
+        click() { return this.events.click?.(); }
         remove() {}
         getBoundingClientRect() { return { width:800,height:500,left:0,top:0 }; }
         getContext() { return { clearRect(){},drawImage(){} }; }
@@ -139,13 +140,13 @@ async function controllerFixture(getUserMedia) {
         pause() {}
     }
     const elements = new Map(), events = {}, media = getUserMedia || (async () => { throw Object.assign(new Error('Blocked'),{name:'NotAllowedError'}); });
-    const document = { getElementById(id) { if(!elements.has(id)) elements.set(id,new Element()); return elements.get(id); },createElement:()=>new Element(),createTextNode:(s)=>s,querySelector:()=>new Element(),querySelectorAll:()=>[],addEventListener:(name,fn)=>{events[name]=fn;},head:new Element() };
+    const document = { documentElement:new Element(), getElementById(id) { if(!elements.has(id)) elements.set(id,new Element()); return elements.get(id); },createElement:()=>new Element(),createTextNode:(s)=>s,querySelector:()=>new Element(),querySelectorAll:()=>[],addEventListener:(name,fn)=>{events[name]=fn;},head:new Element() };
     const window = { addEventListener:(name,fn)=>{events[name]=fn;}, isSecureContext:true };
     const context = { core,document,window,navigator:{mediaDevices:{getUserMedia:media,enumerateDevices:async()=>[]}},location:{search:'',origin:'http://localhost'},URL,URLSearchParams,performance,console,setTimeout:()=>1,clearTimeout(){},ResizeObserver:class {observe(){}} };
     const url = new URL('../public/vision-pen-studio/static/js/smartVision.js',import.meta.url);
     const source = (await readFile(url,'utf8')).replace(/^import[^\n]+/,`const { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } = core;`).replaceAll('import.meta.url',JSON.stringify(url.href));
     vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},getEpoch:()=>epoch};`,context);
-    return {...context.api,elements,events};
+    return {...context.api,elements,events,document};
 }
 test('camera permission denial resets controls and shows recovery instructions', async () => {
     const app = await controllerFixture(); await app.startCamera();
@@ -170,4 +171,46 @@ test('pause retains the stream; stop and hidden-page cleanup release camera trac
     app.elements.get('pauseButton').events.click(); assert.equal(app.getState(),'running');
     app.stopCamera(); assert.equal(stops,1); assert.equal(app.elements.get('visionVideo').srcObject,null);
     await app.startCamera(); app.events.pagehide(); assert.equal(stops,2); assert.equal(app.getState(),'idle');
+});
+
+test('fullscreen toggle updates its label and exits without stopping the camera', async () => {
+    let stops=0;
+    const track={stop:()=>stops++,getSettings:()=>({deviceId:'camera1'})};
+    const app=await controllerFixture(async()=>({getTracks:()=>[track],getVideoTracks:()=>[track]}));
+    app.setReady(); await app.startCamera();
+    app.document.documentElement.requestFullscreen=async()=>{app.document.fullscreenElement=app.document.documentElement;app.events.fullscreenchange();};
+    app.document.exitFullscreen=async()=>{app.document.fullscreenElement=null;app.events.fullscreenchange();};
+    await app.elements.get('fullscreenButton').click();
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Exit Fullscreen');
+    assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'true');
+    await app.elements.get('fullscreenButton').click();
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Fullscreen');
+    assert.equal(app.getState(),'running'); assert.equal(stops,0);
+    // Browsers can report fullscreen exit before delivering Escape.
+    app.events.keydown({key:'Escape'});
+    assert.equal(app.getState(),'running');
+});
+test('Escape leaves fullscreen before leaving the studio and handles external exits', async () => {
+    const app=await controllerFixture(); let backClicks=0;
+    app.elements.get('backButton').click=()=>{backClicks++;};
+    app.document.fullscreenElement=app.document.documentElement;app.events.fullscreenchange();
+    app.document.exitFullscreen=async()=>{app.document.fullscreenElement=null;app.events.fullscreenchange();};
+    let prevented=false;
+    app.events.keydown({key:'Escape',preventDefault:()=>{prevented=true;},stopPropagation(){}});
+    await Promise.resolve(); await Promise.resolve();
+    assert.equal(prevented,true); assert.equal(backClicks,0);
+    assert.equal(app.elements.get('fullscreenLabel').textContent,'Fullscreen');
+    app.document.fullscreenElement=app.document.documentElement;app.events.fullscreenchange();
+    app.document.fullscreenElement=null;app.events.fullscreenchange();
+    assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'false');
+});
+test('unsupported or rejected fullscreen requests leave the camera controls usable', async () => {
+    const app=await controllerFixture();
+    await app.elements.get('fullscreenButton').click();
+    assert.match(app.elements.get('notice').textContent,/not supported/);
+    app.document.documentElement.requestFullscreen=async()=>{throw new Error('Denied');};
+    await app.elements.get('fullscreenButton').click();
+    assert.match(app.elements.get('notice').textContent,/could not change/);
+    assert.equal(app.elements.get('fullscreenButton').disabled,false);
+    assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'false');
 });

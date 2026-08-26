@@ -12,6 +12,7 @@ let detections = { objects: [], faces: [], hands: [] };
 let stream = null, state = 'idle', epoch = 0, facingMode = 'user', devices = [], deviceId = null;
 let selectedId = null, lastFaceAt = 0, lastResultAt = 0, cycles = 0, fpsAt = performance.now();
 let loadPromise = null, runtimePromise = null, handSession = -1, shutdown = false, pumpTimer = null;
+let wasFullscreen = false, fullscreenExitedAt = -Infinity;
 const scripts = new Map();
 const colors = { objects: '#64e9ce', faces: '#edb964', hands: '#aeb3ff' };
 
@@ -191,6 +192,41 @@ function fitCamera() {
     $('cameraImage').style.width = `${width}px`;
     $('cameraImage').style.height = `${width / ratio}px`;
     $('cameraImage').classList.toggle('mirrored', $('mirrorToggle').checked);
+}
+function isFullscreen() { return Boolean(document.fullscreenElement || document.webkitFullscreenElement); }
+function syncFullscreen() {
+    const active = isFullscreen();
+    if (wasFullscreen && !active) fullscreenExitedAt = performance.now();
+    wasFullscreen = active;
+    const label = active ? 'Exit fullscreen' : 'Enter fullscreen';
+    $('fullscreenButton').setAttribute('aria-pressed', String(active));
+    $('fullscreenButton').setAttribute('aria-label', label);
+    $('fullscreenButton').title = label;
+    $('fullscreenLabel').textContent = active ? 'Exit Fullscreen' : 'Fullscreen';
+    $('fullscreenIcon').className = active ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+    document.documentElement.classList.toggle('is-fullscreen', active);
+    fitCamera();
+}
+async function exitFullscreen() {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (isFullscreen() && exit) await exit.call(document);
+}
+async function toggleFullscreen() {
+    $('fullscreenButton').disabled = true;
+    try {
+        if (isFullscreen()) await exitFullscreen();
+        else {
+            const root = document.documentElement;
+            const enter = root.requestFullscreen || root.webkitRequestFullscreen;
+            if (!enter) { notify('Fullscreen is not supported by this browser.', true); return; }
+            await enter.call(root);
+        }
+    } catch {
+        notify('Fullscreen could not change. Your browser may block fullscreen for embedded pages.', true);
+    } finally {
+        $('fullscreenButton').disabled = false;
+        syncFullscreen();
+    }
 }
 function handleHands(results) {
     if (handSession !== epoch || state !== 'running') return;
@@ -395,12 +431,21 @@ $('switchButton').addEventListener('click', () => {
     facingMode = facingMode === 'user' ? 'environment' : 'user';
     void startCamera(devices[(index + 1) % devices.length].deviceId);
 });
-$('backButton').addEventListener('click', () => {
+$('fullscreenButton').addEventListener('click', toggleFullscreen);
+document.addEventListener('fullscreenchange', syncFullscreen);
+document.addEventListener('webkitfullscreenchange', syncFullscreen);
+$('backButton').addEventListener('click', async () => {
     stopCamera();
+    try { await exitFullscreen(); } catch { /* Removing the frame also exits fullscreen. */ }
     if (window.parent !== window) window.parent.postMessage({ type: 'vision-pen:close-smart-vision' }, location.origin);
     else location.href = './index.html';
 });
-document.addEventListener('keydown', (event) => { if (event.key === 'Escape') $('backButton').click(); });
+document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    // Escape exits fullscreen first, without closing the camera studio.
+    if (isFullscreen()) { event.preventDefault(); event.stopPropagation(); void toggleFullscreen(); }
+    else if (performance.now() - fullscreenExitedAt >= 350) $('backButton').click();
+});
 ['landmarksToggle', 'confidenceToggle'].forEach((id) => $(id).addEventListener('change', () => { renderInsights(); drawOverlays(); }));
 $('mirrorToggle').addEventListener('change', () => { fitCamera(); drawOverlays(); });
 $('insightsToggle').addEventListener('change', () => { $('insights').hidden = !$('insightsToggle').checked; $('workspace').classList.toggle('no-insights', !$('insightsToggle').checked); fitCamera(); });
@@ -422,6 +467,6 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', () => { shutdown = true; clearTimeout(pumpTimer); stopCamera(); });
 window.addEventListener('pageshow', (event) => { if (event.persisted) { shutdown = false; pumpTimer = setTimeout(pump, 100); } });
 ['gestureNumber', 'gestureResponse'].forEach((id) => $(id).addEventListener('animationend', () => { $(id).hidden = true; }));
-refreshStatus(); renderInsights(); fitCamera();
+refreshStatus(); renderInsights(); syncFullscreen();
 pumpTimer = setTimeout(pump, 100);
 if (new URLSearchParams(location.search).get('autostart') === '1') void startCamera();
