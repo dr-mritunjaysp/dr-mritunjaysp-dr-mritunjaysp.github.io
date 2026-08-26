@@ -5,15 +5,20 @@ const fullscreenButtons = ['fullscreenButton', 'brandFullscreenButton'].map($);
 const video = $('visionVideo'), overlay = $('visionOverlay'), ctx = overlay.getContext('2d');
 const frame = document.createElement('canvas'), frameContext = frame.getContext('2d', { willReadFrequently: true });
 const assetRoot = new URL('../vendor/smart-vision/', import.meta.url).href;
-const trackers = { objects: new ObjectTracker(), faces: new ObjectTracker('F'), hands: new ObjectTracker('H', 900) };
+// Face samples are deliberately less frequent; keep a continuous face track
+// long enough to accumulate the three samples used by the age estimate.
+const trackers = { objects: new ObjectTracker(), faces: new ObjectTracker('F', 5000), hands: new ObjectTracker('H', 900) };
 const models = { objects: null, faces: null, hands: null };
+const enabled = (kind) => $(`${kind}Toggle`).checked;
+const selectedKinds = () => ['objects', 'hands', 'faces'].filter(enabled);
+const yieldToInterface = () => new Promise((resolve) => setTimeout(resolve, 0));
 const modelStates = { objects: 'Not loaded', faces: 'Not loaded', hands: 'Not loaded' };
 const countState = new StableValue(180), gestureState = new StableValue(200);
 let detections = { objects: [], faces: [], hands: [] };
 let stream = null, state = 'idle', epoch = 0, facingMode = 'user', devices = [], deviceId = null;
 let selectedId = null, lastFaceAt = 0, lastResultAt = 0, cycles = 0, fpsAt = performance.now();
 let loadPromise = null, runtimePromise = null, handSession = -1, shutdown = false, pumpTimer = null;
-let wasFullscreen = false, presentationMode = false, fullscreenExitedAt = -Infinity;
+let presentationMode = false;
 const fullscreenDocuments = () => {
     const documents = [document];
     try {
@@ -38,17 +43,23 @@ function setModel(kind, status) {
     refreshStatus();
 }
 function refreshStatus() {
-    const ready = Object.values(models).filter(Boolean).length;
-    const failed = Object.values(modelStates).some((value) => value.startsWith('Unavailable'));
+    const selected = selectedKinds();
+    const ready = selected.filter((kind) => models[kind]).length;
+    const failed = selected.some((kind) => modelStates[kind].startsWith('Unavailable'));
+    const loading = selected.some((kind) => modelStates[kind] === 'Loading…');
+    Object.keys(models).forEach((kind) => {
+        $(`${kind}Model`).textContent = enabled(kind) ? modelStates[kind] : 'Not enabled';
+        $(`${kind}Model`).classList.toggle('ready', enabled(kind) && Boolean(models[kind]));
+    });
     const status = $('systemStatus');
     let label = 'CAMERA OFF', tone = 'idle';
     if (state === 'starting') { label = 'CONNECTING'; tone = 'loading'; }
     if (state === 'paused') { label = 'AI PAUSED'; tone = 'paused'; }
-    if (state === 'running') { label = ready ? (failed ? 'AI ACTIVE · PARTIAL' : 'AI ACTIVE') : (loadPromise ? 'LOADING MODELS' : 'AI UNAVAILABLE'); tone = ready ? 'active' : 'loading'; }
+    if (state === 'running') { label = !selected.length ? 'PREVIEW ONLY' : loading ? 'LOADING SELECTED AI' : ready ? (failed ? 'AI ACTIVE · PARTIAL' : 'AI ACTIVE') : 'AI UNAVAILABLE'; tone = ready ? 'active' : 'loading'; }
     status.dataset.state = tone;
-    $('insightsStatus').textContent = state === 'running' ? (ready ? 'ACTIVE' : 'LOADING') : state === 'paused' ? 'PAUSED' : 'OFF';
+    $('insightsStatus').textContent = state === 'running' ? (!selected.length ? 'PREVIEW' : loading ? 'LOADING' : ready ? 'ACTIVE' : 'UNAVAILABLE') : state === 'paused' ? 'PAUSED' : 'OFF';
     status.replaceChildren(document.createElement('span'), document.createTextNode(` ${label}`));
-    $('trackingBadge').textContent = state === 'paused' ? 'DETECTION PAUSED' : state === 'running' ? (ready ? 'TRACKING ACTIVE' : 'MODELS LOADING') : 'TRACKING STANDBY';
+    $('trackingBadge').textContent = state === 'paused' ? 'DETECTION PAUSED' : state === 'running' ? (!selected.length ? 'PREVIEW ONLY' : ready ? 'TRACKING ACTIVE' : 'MODELS LOADING') : 'TRACKING STANDBY';
     const active = state === 'running' || state === 'paused';
     $('startButton').disabled = state === 'starting' || active;
     $('gateStart').disabled = state === 'starting';
@@ -76,12 +87,10 @@ function loadScript(url) {
 
 async function ensureModels() {
     if (loadPromise) return loadPromise;
-    const missing = Object.keys(models).filter((kind) => !models[kind]);
-    if (!missing.length) return;
-    missing.forEach((kind) => setModel(kind, 'Loading…'));
-    notify('Loading local AI models. First start may take a moment; your video is not uploaded.');
+    if (state !== 'running' || !selectedKinds().some((kind) => !models[kind])) return;
     loadPromise = (async () => {
-        const shared = runtimePromise ||= (async () => {
+        // Hands-only sessions do not need to load the TensorFlow runtime.
+        const shared = () => (runtimePromise ||= (async () => {
             await loadScript(`${assetRoot}face-api.js`);
             const tf = window.faceapi.tf;
             // COCO-SSD and face analysis share one TensorFlow runtime/backend.
@@ -94,15 +103,15 @@ async function ensureModels() {
                 await tf.ready();
             }
             return window.faceapi;
-        })().catch((error) => { runtimePromise = null; throw error; });
+        })().catch((error) => { runtimePromise = null; throw error; }));
         const jobs = {
             objects: async () => {
-                await shared;
+                await shared();
                 await loadScript(`${assetRoot}coco-ssd.min.js`);
                 return window.cocoSsd.load({ base: 'lite_mobilenet_v2', modelUrl: `${assetRoot}objects/model.json` });
             },
             faces: async () => {
-                const api = await shared;
+                const api = await shared();
                 await Promise.all([
                     api.nets.tinyFaceDetector.loadFromUri(`${assetRoot}face`),
                     api.nets.faceLandmark68TinyNet.loadFromUri(`${assetRoot}face`),
@@ -119,18 +128,28 @@ async function ensureModels() {
                 return hands;
             }
         };
-        // Always consume shared failures, including a hands-only retry.
-        shared.catch(() => {});
-        await Promise.all(missing.map(async (kind) => {
+        // Initialize one selected model at a time; stop queuing work when the
+        // camera stops. Yield between models so controls can respond.
+        const attempted = new Set();
+        while (state === 'running' && !shutdown) {
+            const kind = selectedKinds().find((name) => !models[name] && !attempted.has(name));
+            if (!kind) break;
+            attempted.add(kind);
+            setModel(kind, 'Loading…');
+            notify(`Preparing ${kind === 'faces' ? 'face and age analysis' : kind === 'hands' ? 'hand tracking' : 'object detection'}… Your camera stays on this device.`);
+            await yieldToInterface();
+            if (state !== 'running' || shutdown || !enabled(kind)) { setModel(kind, 'Not loaded'); continue; }
             try {
                 models[kind] = await jobs[kind](); setModel(kind, 'Ready');
                 document.querySelector(`[data-stage="${kind}"]`)?.classList.remove('failed');
             }
             catch (error) { console.warn(`Smart Vision ${kind}:`, error); setModel(kind, 'Unavailable · retry'); }
-        }));
-        const failed = Object.keys(models).filter((kind) => !models[kind]);
+            await yieldToInterface();
+        }
+        if (state !== 'running' || shutdown) return;
+        const failed = selectedKinds().filter((kind) => !models[kind]);
         if (failed.length) notify(`Could not load ${failed.join(', ')}. Other available models can continue. Stop and start the camera to retry.`, true);
-        else notify(`All models ready · ${window.tf.getBackend() === 'cpu' ? 'CPU processing may be slower. ' : ''}80 common object classes · up to 2 hands · approximate apparent age.`);
+        else notify(selectedKinds().length ? `Selected tools ready. ${window.tf?.getBackend() === 'cpu' ? 'CPU processing is slower. ' : ''}Enable fewer tools for smoother performance.` : 'Preview only. Select a tool above the camera to start analysis.');
     })();
     try { await loadPromise; } finally { loadPromise = null; refreshStatus(); }
 }
@@ -172,7 +191,7 @@ async function startCamera(requestedDevice = null) {
     try {
         const next = await navigator.mediaDevices.getUserMedia({ audio: false, video: {
             ...(requestedDevice ? { deviceId: { exact: requestedDevice } } : { facingMode: { ideal: facingMode } }),
-            width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30, max: 30 }
+            width: { ideal: 960 }, height: { ideal: 540 }, frameRate: { ideal: 24, max: 24 }
         } });
         if (session !== epoch || shutdown) { next.getTracks().forEach((track) => track.stop()); return; }
         stream = next;
@@ -188,7 +207,7 @@ async function startCamera(requestedDevice = null) {
         $('mirrorToggle').checked = facingMode === 'user';
         $('resolution').textContent = `${video.videoWidth} × ${video.videoHeight}`;
         $('feedCaption').textContent = 'Show an object, face, or hand · Select any detection to inspect it';
-        frame.width = Math.min(640, video.videoWidth);
+        frame.width = Math.min(480, video.videoWidth);
         frame.height = Math.round(frame.width * video.videoHeight / video.videoWidth);
         overlay.width = Math.min(1280, video.videoWidth); overlay.height = Math.round(overlay.width * video.videoHeight / video.videoWidth);
         fitCamera(); refreshStatus(); stage('camera', true);
@@ -235,8 +254,6 @@ function bindFullscreenEvents() {
 function syncFullscreen() {
     const native = isFullscreen();
     const active = native || presentationMode;
-    if (wasFullscreen && !native) fullscreenExitedAt = performance.now();
-    wasFullscreen = native;
     const label = active ? 'Restore Smart Vision' : 'Maximize Smart Vision';
     fullscreenButtons.forEach((button) => {
         button.setAttribute('aria-pressed', String(active));
@@ -287,7 +304,7 @@ async function toggleFullscreen() {
     }
 }
 function handleHands(results) {
-    if (handSession !== epoch || state !== 'running') return;
+    if (handSession !== epoch || state !== 'running' || !enabled('hands')) return;
     const hands = (results.multiHandLandmarks || []).map((points, index) => {
         const info = results.multiHandedness?.[index];
         // MediaPipe assumes selfie input. Our inference frame is unmirrored.
@@ -309,11 +326,12 @@ function modelFailure(kind, error) {
 
 async function pump() {
     const session = epoch;
+    const cycleStarted = performance.now();
     try {
-        if (!live(session) || video.readyState < 2 || !Object.values(models).some(Boolean) || loadPromise) return;
+        if (!live(session) || document.hidden || video.readyState < 2 || !selectedKinds().some((kind) => models[kind]) || loadPromise) return;
         frameContext.drawImage(video, 0, 0, frame.width, frame.height);
         stage('frame', true);
-        if (models.objects) {
+        if (enabled('objects') && models.objects) {
             stage('objects', true);
             try {
                 const items = await models.objects.detect(frame, 20, 0.45);
@@ -322,28 +340,31 @@ async function pump() {
             } catch (error) { if (live(session)) modelFailure('objects', error); }
             finally { stage('objects', false); }
         }
+        await yieldToInterface();
         if (!live(session)) return;
-        if (models.hands) {
+        if (enabled('hands') && models.hands) {
             stage('hands', true); handSession = session;
             try { await models.hands.send({ image: frame }); }
             catch (error) { if (live(session)) modelFailure('hands', error); }
             finally { stage('hands', false); }
         }
+        await yieldToInterface();
         if (!live(session)) return;
-        if (models.faces && performance.now() - lastFaceAt > 1000) {
+        if (enabled('faces') && models.faces && performance.now() - lastFaceAt > 1800) {
             stage('faces', true);
             try {
                 const api = models.faces;
                 const faces = await api.detectAllFaces(frame, new api.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.55 })).withFaceLandmarks(true).withAgeAndGender();
                 if (!live(session)) return;
                 // Discard gender output. Do not run identity/recognition models.
+                if (!faces.length) trackers.faces.reset();
                 detections.faces = trackers.faces.update(faces.map(({ detection, age }) => ({ label: 'Human face', score: detection.score, age, bbox: [detection.box.x / frame.width, detection.box.y / frame.height, detection.box.width / frame.width, detection.box.height / frame.height] })), performance.now());
                 lastFaceAt = performance.now();
             } catch (error) { if (live(session)) modelFailure('faces', error); }
             finally { stage('faces', false); }
         }
         if (!live(session)) return;
-        stage('fingers', Boolean(models.hands)); stage('gestures', Boolean(models.hands));
+        stage('fingers', enabled('hands') && Boolean(models.hands)); stage('gestures', enabled('hands') && Boolean(models.hands));
         updateGestures(); renderInsights(); drawOverlays(); stage('result', true);
         lastResultAt = performance.now(); cycles++;
         if (lastResultAt - fpsAt >= 1000) {
@@ -354,7 +375,10 @@ async function pump() {
     } catch (error) { console.warn('Smart Vision processing:', error); notify('A frame could not be processed. Retrying…', true); }
     finally {
         stage('frame', false);
-        if (!shutdown) pumpTimer = setTimeout(pump, state === 'running' ? 45 : 200);
+        // Leave breathing room after expensive frames instead of immediately
+        // saturating the UI thread again, especially on CPU/mobile devices.
+        const delay = state === 'running' ? Math.max(200, Math.min(750, (performance.now() - cycleStarted) / 2)) : 300;
+        if (!shutdown) pumpTimer = setTimeout(pump, delay);
     }
 }
 
@@ -392,9 +416,9 @@ function renderInsights() {
     $('personCount').textContent = detections.objects.filter((item) => item.label === 'person').length;
     $('faceCount').textContent = detections.faces.length; $('handCount').textContent = hands.length;
     $('fingerTotal').textContent = hands.length ? hands.reduce((sum, hand) => sum + hand.count, 0) : '—';
-    $('gestureSummary').textContent = hands.length ? hands.map((hand) => hand.gesture).join(' / ') : 'Waiting for a hand';
-    $('raisedNames').textContent = hands.length ? hands.map((hand) => `${hand.handedness}: ${hand.names.join(', ') || 'No raised fingers'}`).join(' · ') : 'Raise a finger to see its name.';
-    $('ageSummary').textContent = detections.faces.length ? detections.faces.map(apparentAge).join(' / ') : '—';
+    $('gestureSummary').textContent = !enabled('hands') ? 'Not enabled' : hands.length ? hands.map((hand) => hand.gesture).join(' / ') : 'Waiting for a hand';
+    $('raisedNames').textContent = !enabled('hands') ? 'Select Hands & gestures above the camera to explore.' : hands.length ? hands.map((hand) => `${hand.handedness}: ${hand.names.join(', ') || 'No raised fingers'}`).join(' · ') : 'Raise a finger to see its name.';
+    $('ageSummary').textContent = !enabled('faces') ? 'Off' : detections.faces.length ? detections.faces.map(apparentAge).join(' / ') : '—';
     const items = allItems(), list = $('detectionList');
     $('detectionTotal').textContent = items.length;
     list.querySelector('.empty-list')?.remove();
@@ -481,6 +505,7 @@ $('pauseButton').addEventListener('click', () => {
         video.play().catch(() => stopCamera('The camera could not resume. Please start again.'));
         stage('camera', true);
         $('feedCaption').textContent = 'Show an object, face, or hand · Select any detection to inspect it';
+        void ensureModels();
     }
     refreshStatus();
 });
@@ -493,16 +518,19 @@ $('switchButton').addEventListener('click', () => {
 fullscreenButtons.forEach((button) => button.addEventListener('click', toggleFullscreen));
 $('backButton').addEventListener('click', async () => {
     stopCamera();
-    try { await exitFullscreen(); } catch { /* Removing the frame also exits fullscreen. */ }
-    if (window.parent !== window) window.parent.postMessage({ type: 'vision-pen:close-smart-vision' }, location.origin);
-    else location.href = './index.html';
+    try { await exitFullscreen(); } catch { /* Navigation also exits fullscreen. */ }
+    location.href = '/vision-pen';
 });
 document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
     // Escape exits fullscreen first, without closing the camera studio.
     if (isFullscreen() || presentationMode) { event.preventDefault(); event.stopPropagation(); void toggleFullscreen(); }
-    else if (performance.now() - fullscreenExitedAt >= 350) $('backButton').click();
 });
+['objects', 'hands', 'faces'].forEach((kind) => $(`${kind}Toggle`).addEventListener('change', () => {
+    epoch++; resetResults(); refreshStatus();
+    notify(selectedKinds().length ? 'Only selected tools run. Enable fewer tools for smoother performance.' : 'Preview only. Select a tool above the camera to start analysis.');
+    if (state === 'running') { stage('camera', true); void ensureModels(); }
+}));
 ['landmarksToggle', 'confidenceToggle'].forEach((id) => $(id).addEventListener('change', () => { renderInsights(); drawOverlays(); }));
 $('mirrorToggle').addEventListener('change', () => { fitCamera(); drawOverlays(); });
 $('insightsToggle').addEventListener('change', () => { $('insights').hidden = !$('insightsToggle').checked; $('workspace').classList.toggle('no-insights', !$('insightsToggle').checked); fitCamera(); });
@@ -526,4 +554,5 @@ window.addEventListener('pageshow', (event) => { if (event.persisted) { shutdown
 ['gestureNumber', 'gestureResponse'].forEach((id) => $(id).addEventListener('animationend', () => { $(id).hidden = true; }));
 bindFullscreenEvents(); refreshStatus(); renderInsights(); syncFullscreen();
 pumpTimer = setTimeout(pump, 100);
-if (new URLSearchParams(location.search).get('autostart') === '1') void startCamera();
+// Navigation is deliberately lightweight. Camera access and AI initialization
+// start only after an explicit Start AI Camera click in this tab.

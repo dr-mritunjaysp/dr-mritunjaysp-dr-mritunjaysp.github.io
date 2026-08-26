@@ -153,7 +153,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.equal(response.status, 200);
   assert.match(html, /class="site-header"/);
   assert.match(html, /title="Vision Pen air-writing studio"/);
-  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-studio-layout"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-standalone-studio"/);
   assert.match(html, /class="site-footer"/);
 });
 
@@ -227,14 +227,14 @@ test("packages the responsive Vision Pen browser app", async () => {
   ]);
 
   assert.match(html, /VisionPen/);
-  assert.match(html, /\.\/static\/css\/style\.css\?v=20260814-smooth-board/);
+  assert.match(html, /\.\/static\/css\/style\.css\?v=20260826-standalone-studio/);
   assert.match(html, /data-board="black"/);
   assert.match(html, /data-board="white"/);
   assert.match(html, /\.\/static\/js\/app\.js/);
-  assert.match(html, /id="objectDetectionBtn"[^>]*aria-haspopup="dialog"/);
+  assert.match(html, /<a[^>]*id="objectDetectionBtn"[^>]*href="\.\/smart-vision\.html\?v=[^"]+"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
   assert.match(html, />Object Detection<\/span>/);
-  assert.match(appScript, /smartVisionDialog\.showModal\(\)/);
-  assert.match(appScript, /smart-vision\.html\?autostart=1/);
+  assert.match(appScript, /objectDetectionBtn\.addEventListener\('click', \(\) => stopCamera\(\)\)/);
+  assert.doesNotMatch(html + appScript, /smartVisionDialog|smartVisionFrame|autostart=1/);
   assert.doesNotMatch(appScript, /yolo-detect|yolo_enabled/);
   assert.match(appScript, /pointerdown/);
   assert.match(canvasEngine, /drawCurve/);

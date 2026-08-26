@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="#0c1317">
+    <meta name="theme-color" content="#f5f6f0">
     <meta name="description" content="Private, on-device object detection, hand gestures and approximate apparent-age estimates in your camera.">
     <title>Smart Vision · AI Camera Lab</title>
     <link rel="stylesheet" href="./static/vendor/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="./static/css/smart-vision.css?v=20260826-studio-layout">
+    <link rel="stylesheet" href="./static/css/smart-vision.css?v=20260826-standalone-studio">
 </head>
 <body>
 <div class="vision-app">
@@ -22,13 +22,14 @@
 
     <main>
         <div class="section-heading">
-            <div><span class="eyebrow">OBJECT DETECTION · LIVE WORKSPACE</span><h2>Your world, <span>in focus.</span></h2><p>Objects, gestures and visual insights. All from your camera, all on your device.</p></div>
-            <span class="system-status" id="systemStatus" role="status" data-state="idle"><span></span> CAMERA OFF</span>
+            <div><span class="eyebrow">01 / YOUR PERSONAL VISION STUDIO</span><h2>See more. <span>Discover more.</span></h2><p>A little curiosity. A new perspective. Explore the objects and gestures around you.</p></div>
+            <div class="workspace-status"><span class="system-status" id="systemStatus" role="status" data-state="idle"><span></span> CAMERA OFF</span><span class="session-note"><i class="fa-solid fa-lock" aria-hidden="true"></i> Your camera. Your device. Your privacy.</span></div>
         </div>
         <div class="vision-workspace" id="workspace">
             <section class="camera-column" aria-label="AI camera workspace">
               <div class="camera-card">
                 <div class="camera-toolbar"><div class="camera-title"><span class="camera-title-icon"><i class="fa-solid fa-video" aria-hidden="true"></i></span><div><h3>Camera workspace</h3><span>LIVE VIEW <span id="resolution">—</span></span></div></div><span id="fpsBadge">0 analysis FPS</span></div>
+                <fieldset class="analysis-options"><legend>Choose what to explore</legend><label><input id="objectsToggle" type="checkbox" checked><i class="fa-solid fa-cube" aria-hidden="true"></i> Objects</label><label><input id="handsToggle" type="checkbox"><i class="fa-solid fa-hand" aria-hidden="true"></i> Hands &amp; gestures</label><label><input id="facesToggle" type="checkbox"><i class="fa-solid fa-user" aria-hidden="true"></i> Faces &amp; age</label></fieldset>
                 <div class="camera-stage" id="cameraStage">
                     <div class="camera-image" id="cameraImage">
                         <video id="visionVideo" autoplay muted playsinline aria-label="Live device camera"></video>
@@ -38,7 +39,7 @@
                     <div class="camera-gate" id="visionGate">
                         <div class="viewfinder"><i class="fa-solid fa-camera" aria-hidden="true"></i></div>
                         <h3 id="gateTitle">Ready when you are.</h3>
-                        <p id="gateMessage">Show an object, a face or a hand. Your camera stays private; your insights appear here.</p>
+                        <p id="gateMessage">Start with an everyday object. Switch on hands or face analysis whenever you need them.</p>
                         <button class="button primary" id="gateStart"><i class="fa-solid fa-video" aria-hidden="true"></i> Start AI Camera</button>
                         <span class="gate-privacy"><i class="fa-solid fa-lock" aria-hidden="true"></i> No recording. No uploads. Just your camera.</span>
                     </div>
@@ -60,7 +61,7 @@
                     <label class="source-control">Source <select id="sourceMode"><option value="auto">Auto · unverified</option><option value="live">Live scene</option><option value="displayed">Displayed / printed image</option></select></label>
                 </div>
               </div>
-                <div class="notice" id="notice" role="status">Models load from this site on first use. Detection speed depends on your device.</div>
+                <div class="notice" id="notice" role="status">A lighter start: only selected tools load after you start the camera. Enable fewer tools for smoother performance.</div>
                 <details class="pipeline-section"><summary><span><i class="fa-solid fa-microchip" aria-hidden="true"></i> Behind the lens</span><span>Processing pipeline</span></summary><ol id="pipeline"><li data-stage="camera">Camera</li><li data-stage="frame">Frame Processing</li><li data-stage="objects">Object Detection</li><li data-stage="faces">Face Analysis</li><li data-stage="hands">Hand Landmarks</li><li data-stage="fingers">Finger Recognition</li><li data-stage="gestures">Gestures</li><li data-stage="result">AI Result</li></ol></details>
             </section>
 
@@ -79,6 +80,6 @@
         <footer class="lab-footer"><span><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Photos and screens can also produce detections. Automatic source labels are tentative; select the source when you know it.</span><a href="./static/vendor/smart-vision/README.md" target="_blank" rel="noopener">Models &amp; limitations <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></footer>
     </main>
 </div>
-<script type="module" src="./static/js/smartVision.js?v=20260826-studio-layout"></script>
+<script type="module" src="./static/js/smartVision.js?v=20260826-standalone-studio"></script>
 </body>
 </html>

@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cameraToggleBtn = byId('cameraToggleBtn');
     const flipCameraBtn = byId('flipCameraBtn');
     const objectDetectionBtn = byId('objectDetectionBtn');
-    const smartVisionDialog = byId('smartVisionDialog');
-    const smartVisionFrame = byId('smartVisionFrame');
     const toastRegion = byId('toastRegion');
     const undoBtn = byId('undoBtn');
     const redoBtn = byId('redoBtn');
@@ -292,12 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
         byId('gestureSub').textContent = sub;
     }
 
-    function openSmartVision() {
-        stopCamera();
-        smartVisionFrame.src = './smart-vision.html?autostart=1&v=20260826-studio-layout';
-        smartVisionDialog.showModal();
-    }
-
     async function downloadDrawing() {
         const image = canvasEngine.getExportImageBase64();
         const link = document.createElement('a');
@@ -354,14 +346,10 @@ document.addEventListener('DOMContentLoaded', () => {
         canvasEngine.setMirror(facingMode === 'user');
         await startCamera();
     });
-    objectDetectionBtn.addEventListener('click', openSmartVision);
-    smartVisionDialog.addEventListener('close', () => {
-        smartVisionFrame.src = 'about:blank';
-        objectDetectionBtn.focus();
-    });
-    window.addEventListener('message', (event) => {
-        if (event.origin === location.origin && event.source === smartVisionFrame.contentWindow && event.data?.type === 'vision-pen:close-smart-vision') smartVisionDialog.close();
-    });
+    // Keep native link navigation (including Ctrl/Cmd-click) and release the
+    // drawing camera so the separate Smart Vision tab can use the device.
+    objectDetectionBtn.addEventListener('click', () => stopCamera());
+    objectDetectionBtn.addEventListener('auxclick', (event) => { if (event.button === 1) stopCamera(); });
     byId('gestureGuideBtn').addEventListener('click', () => gestureModal.classList.add('open'));
     byId('closeModalBtn').addEventListener('click', () => gestureModal.classList.remove('open'));
     byId('gotItBtn').addEventListener('click', () => gestureModal.classList.remove('open'));

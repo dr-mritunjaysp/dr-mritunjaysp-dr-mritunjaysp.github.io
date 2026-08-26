@@ -126,12 +126,14 @@ test('real bundled object, face and age models share a runtime and release tenso
 });
 
 // A minimal DOM/media fixture tests lifecycle logic without a device or browser.
-async function controllerFixture(getUserMedia) {
+async function controllerFixture(getUserMedia, search = '', clock = performance) {
     class Element {
         constructor() { this.children=[]; this.style={}; this.dataset={}; this.events={}; this.checked=true; this.value='auto'; this.textContent=''; this.videoWidth=1280; this.videoHeight=720; this.clientWidth=800; this.clientHeight=500; this.readyState=4; this.classList={ toggle(){},add(){},remove(){} }; }
         addEventListener(name,fn) { this.events[name]=fn; }
         append(...nodes) { this.children.push(...nodes); }
         appendChild(node) { this.append(node); return node; }
+        get firstChild() { return this.children[0]; }
+        get lastChild() { return this.children.at(-1); }
         replaceChildren(...nodes) { this.children=nodes; }
         querySelector() { return null; }
         querySelectorAll() { return []; }
@@ -139,20 +141,82 @@ async function controllerFixture(getUserMedia) {
         click() { return this.events.click?.(); }
         remove() {}
         getBoundingClientRect() { return { width:800,height:500,left:0,top:0 }; }
-        getContext() { return { clearRect(){},drawImage(){} }; }
+        getContext() { return { clearRect(){},drawImage(){},strokeRect(){},measureText(){return{width:100};},fillRect(){},fillText(){} }; }
         async play() {}
         pause() {}
     }
-    const elements = new Map(), events = {}, media = getUserMedia || (async () => { throw Object.assign(new Error('Blocked'),{name:'NotAllowedError'}); });
-    const document = { documentElement:new Element(), getElementById(id) { if(!elements.has(id)) elements.set(id,new Element()); return elements.get(id); },createElement:()=>new Element(),createTextNode:(s)=>s,querySelector:()=>new Element(),querySelectorAll:()=>[],addEventListener:(name,fn)=>{events[name]=fn;},head:new Element() };
+    const elements = new Map(), events = {}, timers = [], media = getUserMedia || (async () => { throw Object.assign(new Error('Blocked'),{name:'NotAllowedError'}); });
+    const document = { documentElement:new Element(), getElementById(id) { if(!elements.has(id)) { const element=new Element(); if(['handsToggle','facesToggle'].includes(id)) element.checked=false; elements.set(id,element); } return elements.get(id); },createElement:()=>new Element(),createTextNode:(s)=>s,querySelector:()=>new Element(),querySelectorAll:()=>[],addEventListener:(name,fn)=>{events[name]=fn;},head:new Element() };
     const window = { addEventListener:(name,fn)=>{events[name]=fn;}, isSecureContext:true };
     window.parent=window; window.top=window;
-    const context = { core,document,window,navigator:{mediaDevices:{getUserMedia:media,enumerateDevices:async()=>[]}},location:{search:'',origin:'http://localhost'},URL,URLSearchParams,performance,console,setTimeout:()=>1,clearTimeout(){},ResizeObserver:class {observe(){}} };
+    const context = { core,document,window,navigator:{mediaDevices:{getUserMedia:media,enumerateDevices:async()=>[]}},location:{search,origin:'http://localhost'},URL,URLSearchParams,performance:clock,console,setTimeout:(fn,delay)=>{timers.push(delay);if(delay===0)queueMicrotask(fn);return timers.length;},clearTimeout(){},ResizeObserver:class {observe(){}} };
     const url = new URL('../public/vision-pen-studio/static/js/smartVision.js',import.meta.url);
     const source = (await readFile(url,'utf8')).replace(/^import[^\n]+/,`const { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } = core;`).replaceAll('import.meta.url',JSON.stringify(url.href));
-    vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,fitCamera,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},getEpoch:()=>epoch};`,context);
-    return {...context.api,elements,events,document,window};
+    vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,fitCamera,ensureModels,pump,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},setModels:(values)=>Object.assign(models,values),getEpoch:()=>epoch};`,context);
+    return {...context.api,elements,events,document,window,timers,location:context.location};
 }
+const fakeStream = () => { const track={stop(){},getSettings:()=>({deviceId:'camera1'})}; return {getTracks:()=>[track],getVideoTracks:()=>[track]}; };
+function installModelDoubles(app, loadObject = async () => ({detect:async()=>[]})) {
+    const loaded=[];
+    app.document.head.appendChild=(script)=>{loaded.push(new URL(script.src).pathname.split('/').pop());queueMicrotask(()=>script.onload());return script;};
+    app.window.faceapi={tf:{setBackend:async()=>true,ready:async()=>{},getBackend:()=> 'webgl'}};
+    app.window.cocoSsd={load:loadObject};
+    app.window.Hands=class {setOptions(){} onResults(){} async initialize(){loaded.push('hand model');} async close(){} async send(){}};
+    return loaded;
+}
+test('opening Smart Vision stays idle without camera prompts or model downloads, even with an old autostart URL', async () => {
+    let prompts=0;
+    const app=await controllerFixture(async()=>{prompts++;return fakeStream();},'?autostart=1');
+    await Promise.resolve();
+    assert.equal(prompts,0); assert.equal(app.getState(),'idle'); assert.equal(app.document.head.children.length,0);
+});
+test('only selected models load, with hand analysis available on demand', async () => {
+    const app=await controllerFixture(async()=>fakeStream());
+    const loaded=installModelDoubles(app);
+    await app.startCamera(); await app.ensureModels();
+    assert.deepEqual(loaded,['face-api.js','coco-ssd.min.js']);
+    assert.equal(app.elements.get('handsModel').textContent,'Not enabled');
+    app.elements.get('handsToggle').checked=true; app.elements.get('handsToggle').events.change();
+    await app.ensureModels();
+    assert.deepEqual(loaded,['face-api.js','coco-ssd.min.js','hands.js','hand model']);
+});
+test('stopping model initialization prevents remaining selected models from loading', async () => {
+    const app=await controllerFixture(async()=>fakeStream()); let finishObject,started;
+    const objectStarted=new Promise(resolve=>{started=resolve;});
+    const loaded=installModelDoubles(app,()=>{started();return new Promise(resolve=>{finishObject=resolve;});});
+    app.elements.get('handsToggle').checked=true; app.elements.get('facesToggle').checked=true;
+    await app.startCamera(); await objectStarted;
+    app.stopCamera(); finishObject({detect:async()=>[]}); await app.ensureModels();
+    assert.deepEqual(loaded,['face-api.js','coco-ssd.min.js']); assert.equal(app.getState(),'idle');
+});
+test('inference skips disabled tools, yields between stages, and leaves time for the interface', async () => {
+    const app=await controllerFixture(async()=>fakeStream()); let objectCalls=0,handCalls=0;
+    app.setModels({objects:{detect:async()=>{objectCalls++;return[];}},hands:{send:async()=>{handCalls++;}}});
+    await app.startCamera(); await app.pump();
+    assert.equal(objectCalls,1); assert.equal(handCalls,0);
+    assert.ok(app.timers.includes(0)); assert.ok(app.timers.at(-1)>=200);
+    app.elements.get('objectsToggle').checked=false; app.elements.get('objectsToggle').events.change();
+    await app.pump();
+    assert.equal(objectCalls,1); assert.equal(app.elements.get('insightsStatus').textContent,'PREVIEW');
+});
+test('Back to Vision Pen returns to the integrated route and releases the camera', async () => {
+    const app=await controllerFixture(async()=>fakeStream()); app.setReady(); await app.startCamera();
+    await app.elements.get('backButton').click();
+    assert.equal(app.location.href,'/vision-pen'); assert.equal(app.getState(),'idle');
+});
+test('slower face analysis still stabilizes age across multiple frames and resets after a missing face', async () => {
+    let now=0,age=20,present=true;
+    const app=await controllerFixture(async()=>fakeStream(),'',{now:()=>now});
+    app.elements.get('objectsToggle').checked=false; app.elements.get('facesToggle').checked=true;
+    app.setModels({faces:{TinyFaceDetectorOptions:class{},detectAllFaces:()=>({withFaceLandmarks:()=>({withAgeAndGender:async()=>present?[{age,detection:{score:.9,box:{x:20,y:20,width:100,height:100}}}]:[]})})}});
+    await app.startCamera();
+    for (const sample of [20,40,22]) { age=sample; now+=2200; await app.pump(); }
+    assert.equal(app.elements.get('ageSummary').textContent,'18–24');
+    assert.doesNotMatch(app.document.getElementById('notice').textContent,/could not be processed/);
+    present=false; now+=2200; await app.pump();
+    present=true; age=50; now+=2200; await app.pump();
+    assert.equal(app.elements.get('ageSummary').textContent,'Calibrating 1/3');
+});
 test('camera permission denial resets controls and shows recovery instructions', async () => {
     const app = await controllerFixture(); await app.startCamera();
     assert.equal(app.getState(),'idle'); assert.equal(app.elements.get('startButton').disabled,false);
