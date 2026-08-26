@@ -7,12 +7,12 @@
     <meta name="description" content="Private, on-device object detection, hand gestures and approximate apparent-age estimates in your camera.">
     <title>Smart Vision · AI Camera Lab</title>
     <link rel="stylesheet" href="./static/vendor/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="./static/css/smart-vision.css?v=20260826-standalone-studio">
+    <link rel="stylesheet" href="./static/css/smart-vision.css?v=20260826-tracking-age">
 </head>
 <body>
 <div class="vision-app">
     <header class="lab-header">
-        <div class="lab-brand"><button id="brandFullscreenButton" class="brand-mark" type="button" aria-label="Maximize camera view" aria-pressed="false" title="Maximize Smart Vision"><i id="brandFullscreenIcon" class="fa-solid fa-expand" aria-hidden="true"></i></button><div><h1>Smart Vision <span>AI</span></h1><p>THE COMPUTER VISION STUDIO</p></div></div>
+        <div class="lab-brand"><div><h1>Smart Vision <span>AI</span></h1><p>THE COMPUTER VISION STUDIO</p></div></div>
         <div class="private-badge"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Private by design</div>
         <div class="lab-header-actions">
             <button id="fullscreenButton" class="button" type="button" aria-label="Maximize Smart Vision" aria-pressed="false" title="Maximize Smart Vision"><i id="fullscreenIcon" class="fa-solid fa-expand" aria-hidden="true"></i><span id="fullscreenLabel">Maximize</span></button>
@@ -71,15 +71,16 @@
                     <div class="metrics"><div><i class="fa-solid fa-cube" aria-hidden="true"></i><strong id="objectCount">0</strong><span>Objects</span></div><div><i class="fa-solid fa-person" aria-hidden="true"></i><strong id="personCount">0</strong><span>People</span></div><div><i class="fa-solid fa-user" aria-hidden="true"></i><strong id="faceCount">0</strong><span>Faces</span></div><div><i class="fa-solid fa-hand" aria-hidden="true"></i><strong id="handCount">0</strong><span>Hands</span></div></div>
                 </section>
                 <section class="hand-summary"><h4><span class="section-icon"><i class="fa-solid fa-hand" aria-hidden="true"></i></span> Hands &amp; gestures</h4><div class="finger-total"><span>RAISED FINGERS</span><strong id="fingerTotal">—</strong><span>ACROSS BOTH HANDS</span></div><div class="insight-row"><span>Current gesture</span><strong id="gestureSummary">Waiting for a hand</strong></div><div id="raisedNames" class="raised-names">Raise a finger to see its name.</div></section>
-                <section class="age-summary"><div class="insight-row"><span>AI Estimated Apparent Age</span><strong id="ageSummary">—</strong></div><p>Face-aligned, multi-frame visual estimate—not actual age. Accuracy varies with lighting, pose and the individual. No age confidence score is provided by this model. Do not use for age verification.</p></section>
+                <section class="age-summary"><div class="insight-row"><span>Estimated age</span><strong id="ageSummary">—</strong></div><p id="ageHint" class="age-guidance" role="status">Enable Faces &amp; age to begin.</p><p>Approximate visual estimate, not your actual age. Several clear, front-facing readings are combined. This pretrained model can be wrong by several years; do not use it for age verification.</p></section>
                 <section class="selected-section"><h4>SELECTED DETECTION <span id="selectionType">DETAILS</span></h4><div id="selectionDetails" class="selection-details">Select a bounding box or an item below to inspect it.</div></section>
                 <section class="detections-section"><h4>IN THE FRAME <span id="detectionTotal">0</span></h4><div id="detectionList" class="detection-list"><p class="empty-list">Detections will appear here when the camera is active.</p></div></section>
                 <details class="model-section"><summary><span>Model status</span><span id="analysisRate">0 FPS</span></summary><div class="model-row"><span>COCO-SSD · 80 object classes</span><span id="objectsModel">Not loaded</span></div><div class="model-row"><span>MediaPipe · 21 hand points</span><span id="handsModel">Not loaded</span></div><div class="model-row"><span>Face detection + apparent age</span><span id="facesModel">Not loaded</span></div></details>
             </aside>
         </div>
         <footer class="lab-footer"><span><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Photos and screens can also produce detections. Automatic source labels are tentative; select the source when you know it.</span><a href="./static/vendor/smart-vision/README.md" target="_blank" rel="noopener">Models &amp; limitations <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></footer>
+        <div class="developer-credit">Designed and developed by <a href="/">Dr. Mritunjay Shall Peelam</a><span>SMART VISION · COMPUTER VISION STUDIO</span></div>
     </main>
 </div>
-<script type="module" src="./static/js/smartVision.js?v=20260826-standalone-studio"></script>
+<script type="module" src="./static/js/smartVision.js?v=20260826-tracking-age"></script>
 </body>
 </html>

@@ -45,6 +45,45 @@ export function ageRange(age) {
     return '65+';
 }
 
+/** Quality checks are guidance, not an age-accuracy confidence score. */
+export function faceQuality({ score, box }, points, width, height, texture) {
+    if (!Number.isFinite(score) || score < .75) return 'Hold still for a clearer face detection.';
+    if (Math.min(box.width, box.height) < 96) return 'Move closer so your face fills more of the camera.';
+    if (box.x < 1 || box.y < 1 || box.x + box.width > width - 1 || box.y + box.height > height - 1) return 'Keep your whole face inside the camera frame.';
+    if (!points || points.length < 68) return 'Face the camera so both eyes are visible.';
+    const center = (start) => points.slice(start, start + 6).reduce((sum, point) => ({ x: sum.x + point.x / 6, y: sum.y + point.y / 6 }), { x: 0, y: 0 });
+    const left = center(36), right = center(42), separation = Math.hypot(right.x - left.x, right.y - left.y);
+    if (!Number.isFinite(separation) || !Number.isFinite(points[30]?.x) || separation < 16 || Math.abs(right.y - left.y) / separation > .35 || Math.abs(points[30].x - (left.x + right.x) / 2) / separation > .3) return 'Look straight at the camera with your head level.';
+    if (texture?.brightness < 30) return 'Use brighter, even lighting on your face.';
+    if (texture?.brightness > 240) return 'Reduce glare or strong light on your face.';
+    if (texture?.sharpness < 8) return 'Hold still and let the camera focus.';
+    return '';
+}
+
+export function imageQuality({ data, width, height }) {
+    const gray = new Float32Array(width * height);
+    let brightness = 0, edges = 0, count = 0;
+    for (let i = 0; i < gray.length; i++) {
+        gray[i] = data[i * 4] * .299 + data[i * 4 + 1] * .587 + data[i * 4 + 2] * .114;
+        brightness += gray[i];
+    }
+    for (let y = 1; y < height - 1; y++) for (let x = 1; x < width - 1; x++) {
+        const i = y * width + x;
+        const laplacian = gray[i - 1] + gray[i + 1] + gray[i - width] + gray[i + width] - 4 * gray[i];
+        edges += laplacian * laplacian; count++;
+    }
+    return { brightness: brightness / (gray.length || 1), sharpness: edges / (count || 1) };
+}
+
+export function overlayScale(bufferWidth, displayWidth) {
+    return bufferWidth / Math.max(1, displayWidth || bufferWidth);
+}
+
+function boundedBox(box) {
+    const width = Math.min(1, Math.max(.001, box[2])), height = Math.min(1, Math.max(.001, box[3]));
+    return [Math.max(0, Math.min(1 - width, box[0])), Math.max(0, Math.min(1 - height, box[1])), width, height];
+}
+
 export function intersectionOverUnion(a, b) {
     const width = Math.max(0, Math.min(a[0] + a[2], b[0] + b[2]) - Math.max(a[0], b[0]));
     const height = Math.max(0, Math.min(a[1] + a[3], b[1] + b[3]) - Math.max(a[1], b[1]));
@@ -53,14 +92,22 @@ export function intersectionOverUnion(a, b) {
 }
 
 export class ObjectTracker {
-    constructor(prefix = '', ttl = 1500) { this.prefix = prefix; this.ttl = ttl; this.reset(); }
+    constructor(prefix = '', ttl = 1500, motion = false) { this.prefix = prefix; this.ttl = ttl; this.motion = motion; this.reset(); }
     reset() { this.tracks = []; this.nextId = 1; }
-    update(detections, now) {
-        this.tracks = this.tracks.filter((item) => now - item.lastSeen <= this.ttl);
+    project(track, now) {
+        const elapsed = this.motion ? Math.max(0, Math.min(250, now - track.lastSeen)) : 0;
+        return boundedBox(track.bbox.map((value, index) => value + (track.velocity?.[index] || 0) * elapsed));
+    }
+    visibleAt(now, maxAge = 650) {
+        return this.tracks.filter((track) => now - (track.receivedAt ?? track.lastSeen) <= maxAge).map((track) => ({ ...track, bbox: this.project(track, now), predicted: now - track.lastSeen > 250 }));
+    }
+    update(detections, now, receivedAt = now) {
+        this.tracks = this.tracks.filter((item) => now - (item.receivedAt ?? item.lastSeen) <= this.ttl);
+        detections = detections.filter((item) => item.bbox?.length === 4 && item.bbox.every(Number.isFinite) && item.bbox[2] > 0 && item.bbox[3] > 0).map((item) => ({ ...item, bbox: boundedBox(item.bbox) }));
         const candidates = [];
         detections.forEach((detection, di) => this.tracks.forEach((track, ti) => {
             if (detection.label !== track.label) return;
-            const a = track.bbox, b = detection.bbox;
+            const a = this.project(track, now), b = detection.bbox;
             const overlap = intersectionOverUnion(a, b);
             const shift = Math.hypot(a[0] + a[2] / 2 - b[0] - b[2] / 2, a[1] + a[3] / 2 - b[1] - b[3] / 2);
             const scale = Math.max(a[2], a[3], b[2], b[3], 0.05);
@@ -72,7 +119,14 @@ export class ObjectTracker {
         });
         return detections.map((detection, index) => {
             const previous = assigned.has(index) ? this.tracks[assigned.get(index)] : null;
-            const result = { ...detection, id: previous?.id || `${this.prefix}${String(this.nextId++).padStart(2, '0')}`, lastSeen: now };
+            const result = { ...detection, id: previous?.id || `${this.prefix}${String(this.nextId++).padStart(2, '0')}`, lastSeen: now, receivedAt };
+            if (this.motion && previous) {
+                const elapsed = Math.max(16, now - previous.lastSeen);
+                result.velocity = detection.bbox.map((value, index) => .65 * Math.max(-.003, Math.min(.003, (value - (previous.rawBox || previous.bbox)[index]) / elapsed)) + .35 * (previous.velocity?.[index] || 0));
+                result.rawBox = detection.bbox;
+                const predicted = this.project(previous, now);
+                result.bbox = boundedBox(detection.bbox.map((value, index) => .85 * value + .15 * predicted[index]));
+            }
             if (Number.isFinite(detection.age)) {
                 const samples = [...(previous?.ageSamples || []), detection.age].slice(-9);
                 const sorted = [...samples].sort((a, b) => a - b);
@@ -81,6 +135,9 @@ export class ObjectTracker {
                 result.ageSampleCount = samples.length;
                 // A rolling median rejects occasional extreme frame estimates.
                 result.age = sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+            } else if (previous?.ageSamples) {
+                result.ageSamples = previous.ageSamples;
+                result.ageSampleCount = previous.ageSampleCount;
             }
             if (previous) Object.assign(previous, result);
             else this.tracks.push(result);

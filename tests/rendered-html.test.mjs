@@ -153,7 +153,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.equal(response.status, 200);
   assert.match(html, /class="site-header"/);
   assert.match(html, /title="Vision Pen air-writing studio"/);
-  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-standalone-studio"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-tracking-age"/);
   assert.match(html, /class="site-footer"/);
 });
 
@@ -227,7 +227,7 @@ test("packages the responsive Vision Pen browser app", async () => {
   ]);
 
   assert.match(html, /VisionPen/);
-  assert.match(html, /\.\/static\/css\/style\.css\?v=20260826-standalone-studio/);
+  assert.match(html, /\.\/static\/css\/style\.css\?v=20260826-tracking-age/);
   assert.match(html, /data-board="black"/);
   assert.match(html, /data-board="white"/);
   assert.match(html, /\.\/static\/js\/app\.js/);

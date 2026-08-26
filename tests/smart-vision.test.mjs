@@ -4,7 +4,20 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import * as core from '../public/vision-pen-studio/static/js/smartVisionCore.mjs';
-const { analyzeHand, ageRange, ObjectTracker, sceneSource, StableValue, cameraError } = core;
+const { analyzeHand, ageRange, faceQuality, imageQuality, overlayScale, ObjectTracker, sceneSource, StableValue, cameraError } = core;
+
+function facePoints() {
+    const points=Array.from({length:68},()=>({x:70,y:70}));
+    for(let i=36;i<42;i++)points[i]={x:45,y:55};
+    for(let i=42;i<48;i++)points[i]={x:95,y:55};
+    points[30]={x:70,y:80};
+    return points;
+}
+function clearImage() {
+    const data=new Uint8ClampedArray(64*64*4);
+    for(let i=0;i<4096;i++){const value=100+(i%2)*60;data.set([value,value,value,255],i*4);}
+    return {data,width:64,height:64};
+}
 
 function handFixture(raised = []) {
     const points = Array.from({ length: 21 }, () => ({ x: .5, y: .6, z: 0 }));
@@ -59,6 +72,44 @@ test('smooths age estimates and handles all range boundaries without fabricated 
     assert.equal(second.age, 30); assert.equal(second.ageSampleCount, 2);
     const stable = tracker.update([{ label:'face',bbox:[.1,.1,.2,.2],age:22 }], 20)[0];
     assert.equal(stable.age, 22); assert.deepEqual(stable.ageSamples,[20,40,22]);
+});
+test('motion-aware association keeps IDs through a crossing and limits prediction after gaps', () => {
+    const tracker=new ObjectTracker('',1500,true), item=x=>({label:'cup',score:.9,bbox:[x,.2,.15,.2]});
+    const first=tracker.update([item(.1),item(.7)],0);
+    tracker.update([item(.2),item(.6)],100);
+    tracker.update([item(.32),item(.48)],200);
+    const crossing=tracker.update([item(.36),item(.44)],300);
+    assert.equal(crossing[0].id,first[1].id); assert.equal(crossing[1].id,first[0].id);
+    const projected=tracker.visibleAt(450).find(track=>track.id===first[0].id);
+    assert.ok(projected.bbox[0]>crossing[1].bbox[0]);
+    tracker.update([],500);
+    assert.equal(tracker.visibleAt(600).length,2);
+    assert.equal(tracker.visibleAt(1000).length,0);
+    for(const track of tracker.visibleAt(600)) assert.ok(track.bbox[0]>=0 && track.bbox[0]+track.bbox[2]<=1);
+    assert.equal(tracker.update([{label:'cup',bbox:[NaN,0,1,1]}],700).length,0);
+    const slow=new ObjectTracker('',1500,true);
+    const slowId=slow.update([item(.1)],0,2000)[0].id;
+    assert.equal(slow.visibleAt(2100).length,1);
+    assert.equal(slow.update([item(.15)],2200,4200)[0].id,slowId);
+    assert.equal(slow.visibleAt(4900).length,0);
+});
+test('overlay labels keep the same readable CSS size on mobile and desktop', () => {
+    for(const displayWidth of [240,360,800,1400]) {
+        const scale=overlayScale(1280,displayWidth);
+        assert.ok(Math.abs(12*scale*displayWidth/1280-12)<1e-8);
+    }
+});
+test('age quality checks reject small, turned, cropped, dim and blurry faces', () => {
+    const detection={score:.9,box:{x:20,y:20,width:100,height:140}}, points=facePoints(), texture=imageQuality(clearImage());
+    assert.equal(faceQuality(detection,points,640,480,texture),'');
+    assert.match(faceQuality({...detection,score:.6},points,640,480,texture),/clearer/);
+    assert.match(faceQuality({...detection,box:{...detection.box,width:50}},points,640,480,texture),/closer/);
+    assert.match(faceQuality({...detection,box:{...detection.box,x:-2}},points,640,480,texture),/whole face/);
+    points[30].x=100;
+    assert.match(faceQuality(detection,points,640,480,texture),/straight/);
+    assert.match(faceQuality(detection,facePoints(),640,480,{brightness:20,sharpness:100}),/lighting/);
+    assert.match(faceQuality(detection,facePoints(),640,480,{brightness:250,sharpness:100}),/glare/);
+    assert.match(faceQuality(detection,facePoints(),640,480,{brightness:120,sharpness:0}),/focus/);
 });
 test('marks automatic source inference as uncertain, with explicit user overrides', () => {
     const screen = { label:'laptop',bbox:[.1,.1,.8,.8] };
@@ -141,7 +192,7 @@ async function controllerFixture(getUserMedia, search = '', clock = performance)
         click() { return this.events.click?.(); }
         remove() {}
         getBoundingClientRect() { return { width:800,height:500,left:0,top:0 }; }
-        getContext() { return { clearRect(){},drawImage(){},strokeRect(){},measureText(){return{width:100};},fillRect(){},fillText(){} }; }
+        getContext() { return this.context ||= { boxes:[],texts:[],clearRect(){},drawImage(){},strokeRect(...box){this.boxes.push(box);},setLineDash(){},measureText(){return{width:100};},fillRect(){},fillText(text){this.texts.push(text);},getImageData:clearImage }; }
         async play() {}
         pause() {}
     }
@@ -149,11 +200,12 @@ async function controllerFixture(getUserMedia, search = '', clock = performance)
     const document = { documentElement:new Element(), getElementById(id) { if(!elements.has(id)) { const element=new Element(); if(['handsToggle','facesToggle'].includes(id)) element.checked=false; elements.set(id,element); } return elements.get(id); },createElement:()=>new Element(),createTextNode:(s)=>s,querySelector:()=>new Element(),querySelectorAll:()=>[],addEventListener:(name,fn)=>{events[name]=fn;},head:new Element() };
     const window = { addEventListener:(name,fn)=>{events[name]=fn;}, isSecureContext:true };
     window.parent=window; window.top=window;
-    const context = { core,document,window,navigator:{mediaDevices:{getUserMedia:media,enumerateDevices:async()=>[]}},location:{search,origin:'http://localhost'},URL,URLSearchParams,performance:clock,console,setTimeout:(fn,delay)=>{timers.push(delay);if(delay===0)queueMicrotask(fn);return timers.length;},clearTimeout(){},ResizeObserver:class {observe(){}} };
+    let animationId=0; const animations=new Map();
+    const context = { core,document,window,navigator:{mediaDevices:{getUserMedia:media,enumerateDevices:async()=>[]}},location:{search,origin:'http://localhost'},URL,URLSearchParams,performance:clock,console,setTimeout:(fn,delay)=>{timers.push(delay);if(delay===0)queueMicrotask(fn);return timers.length;},clearTimeout(){},requestAnimationFrame:(fn)=>{animations.set(++animationId,fn);return animationId;},cancelAnimationFrame:(id)=>animations.delete(id),ResizeObserver:class {observe(){}} };
     const url = new URL('../public/vision-pen-studio/static/js/smartVision.js',import.meta.url);
-    const source = (await readFile(url,'utf8')).replace(/^import[^\n]+/,`const { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } = core;`).replaceAll('import.meta.url',JSON.stringify(url.href));
-    vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,fitCamera,ensureModels,pump,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},setModels:(values)=>Object.assign(models,values),getEpoch:()=>epoch};`,context);
-    return {...context.api,elements,events,document,window,timers,location:context.location};
+    const source = (await readFile(url,'utf8')).replace(/^import[^\n]+/,`const { analyzeHand, faceQuality, imageQuality, overlayScale, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } = core;`).replaceAll('import.meta.url',JSON.stringify(url.href));
+    vm.runInNewContext(`${source}\nglobalThis.api={startCamera,stopCamera,fitCamera,ensureModels,pump,drawOverlays,getState:()=>state,setReady:()=>{models.objects={};models.faces={};models.hands={};},setModels:(values)=>Object.assign(models,values),getEpoch:()=>epoch};`,context);
+    return {...context.api,elements,events,document,window,timers,animations,location:context.location};
 }
 const fakeStream = () => { const track={stop(){},getSettings:()=>({deviceId:'camera1'})}; return {getTracks:()=>[track],getVideoTracks:()=>[track]}; };
 function installModelDoubles(app, loadObject = async () => ({detect:async()=>[]})) {
@@ -205,17 +257,33 @@ test('Back to Vision Pen returns to the integrated route and releases the camera
     assert.equal(app.location.href,'/vision-pen'); assert.equal(app.getState(),'idle');
 });
 test('slower face analysis still stabilizes age across multiple frames and resets after a missing face', async () => {
-    let now=0,age=20,present=true;
+    let now=0,age=20,present=true,boxWidth=100;
     const app=await controllerFixture(async()=>fakeStream(),'',{now:()=>now});
     app.elements.get('objectsToggle').checked=false; app.elements.get('facesToggle').checked=true;
-    app.setModels({faces:{TinyFaceDetectorOptions:class{},detectAllFaces:()=>({withFaceLandmarks:()=>({withAgeAndGender:async()=>present?[{age,detection:{score:.9,box:{x:20,y:20,width:100,height:100}}}]:[]})})}});
+    app.setModels({faces:{TinyFaceDetectorOptions:class{},detectAllFaces:()=>({withFaceLandmarks:()=>({withAgeAndGender:async()=>present?[{age,landmarks:{positions:facePoints()},detection:{score:.9,box:{x:20,y:20,width:boxWidth,height:100}}}]:[]})})}});
     await app.startCamera();
     for (const sample of [20,40,22]) { age=sample; now+=2200; await app.pump(); }
-    assert.equal(app.elements.get('ageSummary').textContent,'18–24');
+    assert.equal(app.elements.get('ageSummary').textContent,'≈ 22 years');
     assert.doesNotMatch(app.document.getElementById('notice').textContent,/could not be processed/);
+    boxWidth=50; now+=2200; await app.pump();
+    assert.equal(app.elements.get('ageSummary').textContent,'—');
+    assert.match(app.elements.get('ageHint').textContent,/closer/);
     present=false; now+=2200; await app.pump();
-    present=true; age=50; now+=2200; await app.pump();
-    assert.equal(app.elements.get('ageSummary').textContent,'Calibrating 1/3');
+    present=true; boxWidth=100; age=50; now+=2200; await app.pump();
+    assert.equal(app.elements.get('ageSummary').textContent,'Measuring 1/3');
+});
+test('object boxes render before slower models and stay aligned with mirrored video', async () => {
+    let now=100;
+    const app=await controllerFixture(async()=>fakeStream(),'',{now:()=>now});
+    const overlay=app.elements.get('visionOverlay'), context=overlay.getContext();
+    app.elements.get('handsToggle').checked=true;
+    app.setModels({objects:{detect:async()=>{now+=2000;return[{class:'cup',score:.9,bbox:[48,27,96,54]}];}},hands:{send:async()=>{assert.ok(context.boxes.length>0);}}});
+    await app.startCamera(); overlay.clientWidth=320; await app.pump();
+    assert.ok(Math.abs(context.boxes[0][0]-.7*1280)<1e-8);
+    assert.equal(context.font,'600 48px system-ui');
+    app.elements.get('mirrorToggle').checked=false; app.drawOverlays();
+    assert.ok(Math.abs(context.boxes.at(-1)[0]-.1*1280)<1e-8);
+    assert.equal(app.animations.size,1); app.stopCamera(); assert.equal(app.animations.size,0);
 });
 test('camera permission denial resets controls and shows recovery instructions', async () => {
     const app = await controllerFixture(); await app.startCamera();
@@ -258,24 +326,21 @@ test('camera fitting stays within desktop, tablet and mobile content boxes', asy
     }
 });
 
-test('header icon and fullscreen button stay synchronized without stopping the camera', async () => {
+test('the remaining fullscreen button toggles without stopping the camera', async () => {
     let stops=0;
     const track={stop:()=>stops++,getSettings:()=>({deviceId:'camera1'})};
     const app=await controllerFixture(async()=>({getTracks:()=>[track],getVideoTracks:()=>[track]}));
     app.setReady(); await app.startCamera();
     app.document.documentElement.requestFullscreen=async()=>{app.document.fullscreenElement=app.document.documentElement;app.events.fullscreenchange();};
     app.document.exitFullscreen=async()=>{app.document.fullscreenElement=null;app.events.fullscreenchange();};
-    await app.elements.get('brandFullscreenButton').click();
+    await app.elements.get('fullscreenButton').click();
     assert.equal(app.elements.get('fullscreenLabel').textContent,'Restore');
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'true');
-    assert.equal(app.elements.get('brandFullscreenButton')['aria-label'],'Restore camera view');
-    assert.equal(app.elements.get('brandFullscreenButton')['aria-pressed'],'true');
-    assert.equal(app.elements.get('brandFullscreenIcon').className,'fa-solid fa-compress');
+    assert.equal(app.elements.get('fullscreenIcon').className,'fa-solid fa-compress');
     await app.elements.get('fullscreenButton').click();
     assert.equal(app.elements.get('fullscreenLabel').textContent,'Maximize');
-    assert.equal(app.elements.get('brandFullscreenButton')['aria-label'],'Maximize camera view');
-    assert.equal(app.elements.get('brandFullscreenButton')['aria-pressed'],'false');
-    assert.equal(app.elements.get('brandFullscreenIcon').className,'fa-solid fa-expand');
+    assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'false');
+    assert.equal(app.elements.get('fullscreenIcon').className,'fa-solid fa-expand');
     assert.equal(app.getState(),'running'); assert.equal(stops,0);
     // Browsers can report fullscreen exit before delivering Escape.
     app.events.keydown({key:'Escape'});
@@ -297,27 +362,24 @@ test('Escape leaves fullscreen before leaving the studio and handles external ex
 });
 test('unsupported fullscreen uses a working in-page maximize fallback', async () => {
     const app=await controllerFixture();
-    await app.elements.get('brandFullscreenButton').click();
+    await app.elements.get('fullscreenButton').click();
     assert.match(app.elements.get('notice').textContent,/Maximized inside Vision Pen/);
     assert.equal(app.elements.get('fullscreenLabel').textContent,'Restore');
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'true');
-    await app.elements.get('brandFullscreenButton').click();
+    await app.elements.get('fullscreenButton').click();
     assert.equal(app.elements.get('fullscreenLabel').textContent,'Maximize');
     assert.equal(app.elements.get('fullscreenButton').disabled,false);
     assert.equal(app.elements.get('fullscreenButton')['aria-pressed'],'false');
-    assert.equal(app.elements.get('brandFullscreenButton').disabled,false);
 });
-test('fullscreen controls ignore repeated requests while either button is busy', async () => {
+test('fullscreen ignores repeated requests while the button is busy', async () => {
     const app=await controllerFixture(); let resolve,requests=0;
     app.document.documentElement.requestFullscreen=()=>{requests++;return new Promise((done)=>{resolve=done;});};
-    const entering=app.elements.get('brandFullscreenButton').click();
+    const entering=app.elements.get('fullscreenButton').click();
     assert.equal(app.elements.get('fullscreenButton').disabled,true);
-    assert.equal(app.elements.get('brandFullscreenButton').disabled,true);
     await app.elements.get('fullscreenButton').click();
     assert.equal(requests,1);
     resolve(); await entering;
     assert.equal(app.elements.get('fullscreenButton').disabled,false);
-    assert.equal(app.elements.get('brandFullscreenButton').disabled,false);
 });
 test('rejected browser fullscreen falls back to in-page maximize', async () => {
     const app=await controllerFixture();

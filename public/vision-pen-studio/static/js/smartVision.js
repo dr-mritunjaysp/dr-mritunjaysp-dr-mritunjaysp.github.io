@@ -1,13 +1,16 @@
-import { analyzeHand, ageRange, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } from './smartVisionCore.mjs';
+import { analyzeHand, faceQuality, imageQuality, overlayScale, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } from './smartVisionCore.mjs?v=20260826-tracking-age';
 
 const $ = (id) => document.getElementById(id);
-const fullscreenButtons = ['fullscreenButton', 'brandFullscreenButton'].map($);
+const fullscreenButtons = [$('fullscreenButton')];
 const video = $('visionVideo'), overlay = $('visionOverlay'), ctx = overlay.getContext('2d');
 const frame = document.createElement('canvas'), frameContext = frame.getContext('2d', { willReadFrequently: true });
+const faceFrame = document.createElement('canvas'), faceFrameContext = faceFrame.getContext('2d', { willReadFrequently: true });
+const qualityFrame = document.createElement('canvas'), qualityContext = qualityFrame.getContext('2d', { willReadFrequently: true });
+qualityFrame.width = qualityFrame.height = 64;
 const assetRoot = new URL('../vendor/smart-vision/', import.meta.url).href;
 // Face samples are deliberately less frequent; keep a continuous face track
 // long enough to accumulate the three samples used by the age estimate.
-const trackers = { objects: new ObjectTracker(), faces: new ObjectTracker('F', 5000), hands: new ObjectTracker('H', 900) };
+const trackers = { objects: new ObjectTracker('', 1500, true), faces: new ObjectTracker('F', 5000), hands: new ObjectTracker('H', 900) };
 const models = { objects: null, faces: null, hands: null };
 const enabled = (kind) => $(`${kind}Toggle`).checked;
 const selectedKinds = () => ['objects', 'hands', 'faces'].filter(enabled);
@@ -18,6 +21,7 @@ let detections = { objects: [], faces: [], hands: [] };
 let stream = null, state = 'idle', epoch = 0, facingMode = 'user', devices = [], deviceId = null;
 let selectedId = null, lastFaceAt = 0, lastResultAt = 0, cycles = 0, fpsAt = performance.now();
 let loadPromise = null, runtimePromise = null, handSession = -1, shutdown = false, pumpTimer = null;
+let overlayTimer = null, lastOverlayAt = 0, objectLatency = 0;
 let presentationMode = false;
 const fullscreenDocuments = () => {
     const documents = [document];
@@ -159,6 +163,7 @@ function resetResults() {
     Object.values(trackers).forEach((tracker) => tracker.reset());
     countState.reset(); gestureState.reset(); selectedId = null; lastFaceAt = 0;
     cycles = 0; fpsAt = performance.now(); lastResultAt = 0;
+    objectLatency = 0;
     $('gestureNumber').hidden = true; $('gestureResponse').hidden = true;
     $('fpsBadge').textContent = '0 analysis FPS';
     $('analysisRate').textContent = '0 FPS';
@@ -170,6 +175,7 @@ function releaseStream() {
     stream = null; video.srcObject = null;
 }
 function stopCamera(message = 'Your camera is off. Start again whenever you are ready.') {
+    cancelAnimationFrame(overlayTimer); overlayTimer = null;
     epoch++; state = 'idle'; releaseStream(); resetResults();
     $('visionGate').hidden = false;
     $('gateTitle').textContent = 'Camera stopped'; $('gateMessage').textContent = message;
@@ -209,8 +215,11 @@ async function startCamera(requestedDevice = null) {
         $('feedCaption').textContent = 'Show an object, face, or hand · Select any detection to inspect it';
         frame.width = Math.min(480, video.videoWidth);
         frame.height = Math.round(frame.width * video.videoHeight / video.videoWidth);
+        faceFrame.width = Math.min(960, video.videoWidth);
+        faceFrame.height = Math.round(faceFrame.width * video.videoHeight / video.videoWidth);
         overlay.width = Math.min(1280, video.videoWidth); overlay.height = Math.round(overlay.width * video.videoHeight / video.videoWidth);
         fitCamera(); refreshStatus(); stage('camera', true);
+        startOverlayRendering();
         void ensureModels();
         try { devices = (await navigator.mediaDevices.enumerateDevices()).filter((item) => item.kind === 'videoinput'); } catch { devices = []; }
         if (session === epoch) refreshStatus();
@@ -260,9 +269,8 @@ function syncFullscreen() {
         button.title = label;
     });
     $('fullscreenButton').setAttribute('aria-label', label);
-    $('brandFullscreenButton').setAttribute('aria-label', active ? 'Restore camera view' : 'Maximize camera view');
     $('fullscreenLabel').textContent = active ? 'Restore' : 'Maximize';
-    ['fullscreenIcon', 'brandFullscreenIcon'].forEach((id) => {
+    ['fullscreenIcon'].forEach((id) => {
         $(id).className = active ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
     });
     document.documentElement.classList.toggle('is-fullscreen', native);
@@ -336,7 +344,9 @@ async function pump() {
             try {
                 const items = await models.objects.detect(frame, 20, 0.45);
                 if (!live(session)) return;
-                detections.objects = trackers.objects.update(items.map((item) => ({ label: item.class, score: item.score, bbox: [item.bbox[0] / frame.width, item.bbox[1] / frame.height, item.bbox[2] / frame.width, item.bbox[3] / frame.height] })), performance.now());
+                objectLatency = performance.now() - cycleStarted;
+                detections.objects = trackers.objects.update(items.map((item) => ({ label: item.class, score: item.score, bbox: [item.bbox[0] / frame.width, item.bbox[1] / frame.height, item.bbox[2] / frame.width, item.bbox[3] / frame.height] })), cycleStarted, performance.now());
+                renderInsights(); drawOverlays();
             } catch (error) { if (live(session)) modelFailure('objects', error); }
             finally { stage('objects', false); }
         }
@@ -354,11 +364,17 @@ async function pump() {
             stage('faces', true);
             try {
                 const api = models.faces;
-                const faces = await api.detectAllFaces(frame, new api.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.55 })).withFaceLandmarks(true).withAgeAndGender();
+                faceFrameContext.drawImage(video, 0, 0, faceFrame.width, faceFrame.height);
+                const faces = await api.detectAllFaces(faceFrame, new api.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.65 })).withFaceLandmarks(true).withAgeAndGender();
                 if (!live(session)) return;
                 // Discard gender output. Do not run identity/recognition models.
                 if (!faces.length) trackers.faces.reset();
-                detections.faces = trackers.faces.update(faces.map(({ detection, age }) => ({ label: 'Human face', score: detection.score, age, bbox: [detection.box.x / frame.width, detection.box.y / frame.height, detection.box.width / frame.width, detection.box.height / frame.height] })), performance.now());
+                detections.faces = trackers.faces.update(faces.map(({ detection, age, landmarks }) => {
+                    const box = detection.box;
+                    qualityContext.drawImage(faceFrame, box.x, box.y, box.width, box.height, 0, 0, 64, 64);
+                    const quality = faceQuality(detection, landmarks?.positions, faceFrame.width, faceFrame.height, imageQuality(qualityContext.getImageData(0, 0, 64, 64)));
+                    return { label: 'Human face', score: detection.score, age: quality || age < 0 || age > 100 ? NaN : age, ageQuality: quality, bbox: [box.x / faceFrame.width, box.y / faceFrame.height, box.width / faceFrame.width, box.height / faceFrame.height] };
+                }), performance.now());
                 lastFaceAt = performance.now();
             } catch (error) { if (live(session)) modelFailure('faces', error); }
             finally { stage('faces', false); }
@@ -380,6 +396,21 @@ async function pump() {
         const delay = state === 'running' ? Math.max(200, Math.min(750, (performance.now() - cycleStarted) / 2)) : 300;
         if (!shutdown) pumpTimer = setTimeout(pump, delay);
     }
+}
+
+function overlayItems(now = performance.now()) {
+    const objects = enabled('objects') && models.objects ? (state === 'paused' ? detections.objects : trackers.objects.visibleAt(now, Math.min(1600, Math.max(650, objectLatency * 2)))) : [];
+    return [...objects.map((item) => ({ ...item, kind: 'objects' })), ...allItems().filter((item) => item.kind !== 'objects')];
+}
+function startOverlayRendering() {
+    if (overlayTimer !== null) return;
+    const paint = (now) => {
+        overlayTimer = null;
+        if (state !== 'running' || document.hidden || shutdown) return;
+        if (now - lastOverlayAt >= 32) { drawOverlays(now); lastOverlayAt = now; }
+        overlayTimer = requestAnimationFrame(paint);
+    };
+    overlayTimer = requestAnimationFrame(paint);
 }
 
 function animate(element) {
@@ -409,7 +440,10 @@ function updateGestures() {
 }
 function allItems() { return Object.entries(detections).flatMap(([kind, items]) => items.map((item) => ({ ...item, kind }))); }
 function confidence(score) { return Number.isFinite(score) ? `${(score * 100).toFixed(1)}%` : 'Unavailable'; }
-function apparentAge(face) { return (face.ageSampleCount || 0) < 3 ? `Calibrating ${face.ageSampleCount || 1}/3` : ageRange(face.age); }
+function apparentAge(face) {
+    if (face.ageQuality || !Number.isFinite(face.age)) return '—';
+    return (face.ageSampleCount || 0) < 3 ? `Measuring ${face.ageSampleCount || 1}/3` : `≈ ${Math.round(face.age)} years`;
+}
 function renderInsights() {
     const hands = detections.hands;
     $('objectCount').textContent = detections.objects.length;
@@ -419,6 +453,7 @@ function renderInsights() {
     $('gestureSummary').textContent = !enabled('hands') ? 'Not enabled' : hands.length ? hands.map((hand) => hand.gesture).join(' / ') : 'Waiting for a hand';
     $('raisedNames').textContent = !enabled('hands') ? 'Select Hands & gestures above the camera to explore.' : hands.length ? hands.map((hand) => `${hand.handedness}: ${hand.names.join(', ') || 'No raised fingers'}`).join(' · ') : 'Raise a finger to see its name.';
     $('ageSummary').textContent = !enabled('faces') ? 'Off' : detections.faces.length ? detections.faces.map(apparentAge).join(' / ') : '—';
+    $('ageHint').textContent = !enabled('faces') ? 'Enable Faces & age to begin.' : detections.faces.length ? detections.faces.map((face) => face.ageQuality || (!Number.isFinite(face.age) ? 'No reliable age estimate on this frame.' : face.ageSampleCount < 3 ? 'Hold a clear, front-facing pose for three readings.' : `${face.ageSampleCount} clear readings combined · approximate age.`)).join(' ') : 'Look straight at the camera in good, even lighting.';
     const items = allItems(), list = $('detectionList');
     $('detectionTotal').textContent = items.length;
     list.querySelector('.empty-list')?.remove();
@@ -438,7 +473,7 @@ function renderInsights() {
     });
     if (!items.length) {
         const empty = document.createElement('p'); empty.className = 'empty-list';
-        empty.textContent = state === 'running' ? 'No confident detections yet. Try a clear, well-lit view.' : 'Detections will appear here when the camera is active.';
+        empty.textContent = state === 'running' ? 'No confident detections yet. Object mode recognizes 80 categories: try a bottle, book, phone, cup or person.' : 'Detections will appear here when the camera is active.';
         list.appendChild(empty);
     }
     renderSelection(items.find((item) => item.id === selectedId));
@@ -449,25 +484,28 @@ function renderSelection(item) {
     if (!item) { target.textContent = selectedId ? 'This detection is no longer visible.' : 'Select a bounding box or an item below to inspect it.'; return; }
     const rows = [['Type', item.label], ['Tracking ID', `#${item.id}`]];
     if ($('confidenceToggle').checked) rows.push([item.kind === 'hands' ? 'Handedness confidence' : 'Detection confidence', confidence(item.score)]);
-    if (item.kind === 'faces') rows.push(['AI Estimated Apparent Age', (item.ageSampleCount || 0) < 3 ? apparentAge(item) : `${apparentAge(item)} years`], ['Stabilization', `${item.ageSampleCount || 1}/3+ aligned frames`], ['Age confidence', 'Not provided by model']);
+    if (item.kind === 'faces') rows.push(['Estimated age', apparentAge(item)], ['Quality guidance', item.ageQuality || 'Clear, front-facing sample'], ['Stabilization', `${item.ageSampleCount || 0} accepted frames`], ['Age confidence', 'Not provided by model']);
     if (item.kind === 'hands') rows.push(['Hand', item.handedness], ['Raised fingers', `${item.count} · ${item.names.join(', ') || 'None'}`], ['Gesture', item.gesture], ['Finger state', 'Landmark geometry estimate']);
     rows.push(['Source', sceneSource(item, detections.objects, $('sourceMode').value)]);
     const dl = document.createElement('dl');
     rows.forEach(([label, value]) => { const row = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = label; dd.textContent = value; row.append(dt, dd); dl.append(row); });
     target.append(dl);
 }
-function drawOverlays() {
+function drawOverlays(now = performance.now()) {
     ctx.clearRect(0, 0, overlay.width, overlay.height);
     const mirror = $('mirrorToggle').checked, width = overlay.width, height = overlay.height;
-    const scale = Math.max(1, width / 800);
+    const scale = overlayScale(width, overlay.clientWidth);
     ctx.font = `600 ${12 * scale}px system-ui`;
     const point = (p) => [(mirror ? 1 - p.x : p.x) * width, p.y * height];
-    allItems().forEach((item) => {
+    overlayItems(now).forEach((item) => {
         const color = colors[item.kind], box = item.bbox;
         const x = (mirror ? 1 - box[0] - box[2] : box[0]) * width, y = box[1] * height;
         ctx.strokeStyle = color; ctx.lineWidth = (item.id === selectedId ? 3 : 1.5) * scale;
+        ctx.setLineDash(item.predicted ? [5 * scale, 4 * scale] : []);
         ctx.strokeRect(x, y, box[2] * width, box[3] * height);
+        ctx.setLineDash([]);
         let label = `${item.label.toUpperCase()} #${item.id}`;
+        if (item.predicted) label += ' · TRACKING';
         if ($('confidenceToggle').checked) label += ` | ${confidence(item.score)}`;
         if (item.kind === 'faces') label += ` | EST. AGE ${apparentAge(item)}`;
         if (item.kind === 'hands') label += ` | ${item.count} FINGERS | ${item.gesture.toUpperCase()}`;
@@ -502,6 +540,7 @@ $('pauseButton').addEventListener('click', () => {
         $('feedCaption').textContent = 'Detection paused · Camera remains on · Stop Camera releases it';
     } else if (state === 'paused') {
         state = 'running'; resetResults();
+        startOverlayRendering();
         video.play().catch(() => stopCamera('The camera could not resume. Please start again.'));
         stage('camera', true);
         $('feedCaption').textContent = 'Show an object, face, or hand · Select any detection to inspect it';
@@ -542,7 +581,7 @@ overlay.addEventListener('click', (event) => {
     const rect = overlay.getBoundingClientRect();
     const x = $('mirrorToggle').checked ? 1 - (event.clientX - rect.left) / rect.width : (event.clientX - rect.left) / rect.width;
     const y = (event.clientY - rect.top) / rect.height;
-    const hits = allItems().filter(({ bbox: b }) => x >= b[0] && x <= b[0] + b[2] && y >= b[1] && y <= b[1] + b[3]).sort((a, b) => a.bbox[2] * a.bbox[3] - b.bbox[2] * b.bbox[3]);
+    const hits = overlayItems().filter(({ bbox: b }) => x >= b[0] && x <= b[0] + b[2] && y >= b[1] && y <= b[1] + b[3]).sort((a, b) => a.bbox[2] * a.bbox[3] - b.bbox[2] * b.bbox[3]);
     selectedId = hits[0]?.id || null; renderInsights(); drawOverlays();
 });
 new ResizeObserver(fitCamera).observe($('cameraStage'));
