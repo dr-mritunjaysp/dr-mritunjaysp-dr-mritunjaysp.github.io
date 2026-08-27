@@ -157,8 +157,8 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.match(html, /class="site-footer"/);
 });
 
-test("shows Filter Verse only as a submenu placeholder above Vision Pen", async () => {
-  const response = await render("/");
+test("opens the menu-only Filter Verse shell above Vision Pen", async () => {
+  const response = await render("/filterverse");
   const html = await response.text();
   const source = await readFile(
     new URL("../app/PortfolioApp.tsx", import.meta.url),
@@ -166,8 +166,11 @@ test("shows Filter Verse only as a submenu placeholder above Vision Pen", async 
   );
 
   assert.equal(response.status, 200);
-  assert.match(source, /aria-disabled="true"[\s\S]*Filter Verse[\s\S]*href="\/vision-pen"/);
-  assert.doesNotMatch(source, /href="\/filterverse"/);
+  assert.match(source, /href="\/filterverse"[\s\S]*Filter Verse[\s\S]*href="\/vision-pen"/);
+  for (const label of ["Overview", "Image Upload", "Filter Explorer", "Live Lab", "Compare Filters", "Mind Map", "Mathematics", "Numerical Lab", "Custom Kernel", "Pipeline", "Image Analysis", "Learning Center"]) {
+    assert.match(html, new RegExp(label));
+  }
+  assert.match(html, /No filter tools or processing features have been added yet/);
   assert.doesNotMatch(html, /Image Processing Filter Laboratory/);
 });
 

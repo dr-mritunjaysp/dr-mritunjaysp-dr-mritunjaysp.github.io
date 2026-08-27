@@ -1,5 +1,14 @@
 import { PortfolioApp } from "../PortfolioApp";
 
+export function generateMetadata({ params }: { params: Promise<{ section: string }> }) {
+  return params.then(({ section }) => section === "filterverse"
+    ? {
+        title: "Filter Verse · Image Processing Workspace",
+        description: "A responsive image processing workspace ready for new tools and learning experiences.",
+      }
+    : {});
+}
+
 export function generateStaticParams() {
   return [
     "blog",
@@ -7,6 +16,7 @@ export function generateStaticParams() {
     "projects",
     "sorting-visualizer",
     "vision-pen",
+    "filterverse",
     "inkora",
     "pen-app",
     "penapp",

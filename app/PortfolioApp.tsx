@@ -54,6 +54,7 @@ import { SortingVisualizer } from "./sorting/SortingVisualizer";
 import { InkoraApp } from "./inkora/InkoraApp";
 import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
 import { VisionPenPage } from "./vision-pen/VisionPenPage";
+import { FilterVerseShell } from "./filterverse/FilterVerseShell";
 
 type SectionKey =
   | "home"
@@ -62,6 +63,7 @@ type SectionKey =
   | "projects"
   | "sorting-visualizer"
   | "vision-pen"
+  | "filterverse"
   | "inkora"
   | "pen-app"
   | "penapp"
@@ -108,6 +110,7 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
+  { label: "Filter Verse", href: "/filterverse", key: "filterverse" },
   { label: "Vision Pen", href: "/vision-pen", key: "vision-pen" },
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
@@ -655,9 +658,18 @@ function Header({
             </button>
             {moreOpen && (
               <div className="more-menu" role="menu">
-                <a role="menuitem" aria-disabled="true" tabIndex={0}>
+                <Link
+                  href="/filterverse"
+                  role="menuitem"
+                  className={section === "filterverse" ? "active" : ""}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
                   Filter Verse
-                </a>
+                </Link>
                 <Link
                   href="/vision-pen"
                   role="menuitem"
@@ -683,7 +695,7 @@ function Header({
                 >
                   Scholar Resume
                 </a>
-                {moreNav.slice(1).map((item) => (
+                {moreNav.slice(2).map((item) => (
                   <Link
                     href={item.href}
                     key={item.key}
@@ -4003,6 +4015,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "vision-pen":
       content = <VisionPenPage />;
+      break;
+    case "filterverse":
+      content = <FilterVerseShell />;
       break;
     case "inkora":
     case "pen-app":
