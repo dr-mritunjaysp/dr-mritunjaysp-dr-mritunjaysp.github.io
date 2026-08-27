@@ -64,7 +64,7 @@
 
 .filter-verse-layout {
   display: grid;
-  grid-template-columns: minmax(240px, 270px) minmax(0, 1fr);
+  grid-template-columns: minmax(256px, 288px) minmax(0, 1fr);
   align-items: start;
 }
 

@@ -157,7 +157,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.match(html, /class="site-footer"/);
 });
 
-test("opens the single-menu Computer Vision shell above Vision Pen", async () => {
+test("opens the single Sampling and Quantization menu above Vision Pen", async () => {
   const response = await render("/filterverse");
   const html = await response.text();
   const source = await readFile(
@@ -168,10 +168,10 @@ test("opens the single-menu Computer Vision shell above Vision Pen", async () =>
   assert.equal(response.status, 200);
   assert.match(source, /href="\/filterverse"[\s\S]*Filter Verse[\s\S]*href="\/vision-pen"/);
   assert.match(html, /Computer Vision home/);
-  assert.match(html, /What is Computer Vision/);
+  assert.match(html, /Sampling and Quantization/);
   assert.match(html, /This menu is kept ready for your next instruction/);
   assert.match(html, /No content added/);
-  for (const removedMenu of ["Overview", "Image Upload", "Filter Explorer", "Applications &amp; Ethics", "Image Formation", "Resolution", "Histograms", "Histogram Matching", "Spatial Filtering", "Learning Center"]) {
+  for (const removedMenu of ["What is Computer Vision", "Overview", "Image Upload", "Filter Explorer", "Applications &amp; Ethics", "Image Formation", "Resolution", "Histograms", "Histogram Matching", "Spatial Filtering", "Learning Center"]) {
     assert.doesNotMatch(html, new RegExp(removedMenu));
   }
   assert.doesNotMatch(html, /217 slides distilled/);

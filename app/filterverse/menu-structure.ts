@@ -1,3 +1,3 @@
 export const menuItems = [
-  ["what-is-computer-vision", "What is Computer Vision", "Start here"],
+  ["sampling-and-quantization", "Sampling and Quantization", "Start here"],
 ] as const;
