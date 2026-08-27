@@ -157,7 +157,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.match(html, /class="site-footer"/);
 });
 
-test("opens the menu-only Filter Verse shell above Vision Pen", async () => {
+test("opens the single-menu Computer Vision shell above Vision Pen", async () => {
   const response = await render("/filterverse");
   const html = await response.text();
   const source = await readFile(
@@ -167,14 +167,13 @@ test("opens the menu-only Filter Verse shell above Vision Pen", async () => {
 
   assert.equal(response.status, 200);
   assert.match(source, /href="\/filterverse"[\s\S]*Filter Verse[\s\S]*href="\/vision-pen"/);
-  for (const label of ["Overview", "Image Upload", "Filter Explorer", "Live Lab", "Compare Filters", "Mind Map", "Mathematics", "Numerical Lab", "Custom Kernel", "Pipeline", "Image Analysis", "Learning Center"]) {
-    assert.match(html, new RegExp(label));
-  }
-  for (const lesson of ["Computer Vision", "Applications &amp; Ethics", "Image Formation", "Digital Image Model", "Resolution", "Sampling &amp; Quantization", "Image Enhancement", "Point Operations", "Histograms", "Histogram Equalization", "Histogram Matching", "Spatial Filtering"]) {
-    assert.match(html, new RegExp(lesson));
-  }
+  assert.match(html, /Computer Vision home/);
+  assert.match(html, /What is Computer Vision/);
   assert.match(html, /This menu is kept ready for your next instruction/);
   assert.match(html, /No content added/);
+  for (const removedMenu of ["Overview", "Image Upload", "Filter Explorer", "Applications &amp; Ethics", "Image Formation", "Resolution", "Histograms", "Histogram Matching", "Spatial Filtering", "Learning Center"]) {
+    assert.doesNotMatch(html, new RegExp(removedMenu));
+  }
   assert.doesNotMatch(html, /217 slides distilled/);
   assert.doesNotMatch(html, /From pixels to visual intelligence/);
   assert.doesNotMatch(html, /Core formulas/);

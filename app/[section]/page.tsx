@@ -3,8 +3,8 @@ import { PortfolioApp } from "../PortfolioApp";
 export function generateMetadata({ params }: { params: Promise<{ section: string }> }) {
   return params.then(({ section }) => section === "filterverse"
     ? {
-        title: "Filter Verse · Image Processing Workspace",
-        description: "A responsive image processing workspace ready for new tools and learning experiences.",
+        title: "Computer Vision · Image Processing Workspace",
+        description: "A responsive Computer Vision workspace ready for new tools and learning experiences.",
       }
     : {});
 }

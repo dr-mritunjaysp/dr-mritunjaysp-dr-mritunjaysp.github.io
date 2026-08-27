@@ -41,6 +41,7 @@
   font-size: clamp(1.12rem, 2vw, 1.42rem);
   line-height: 1;
   letter-spacing: -0.025em;
+  word-spacing: 0.12em;
 }
 
 .filter-verse-brand small {
@@ -140,6 +141,7 @@
 
 .filter-verse-nav button strong {
   font-size: 0.82rem;
+  word-spacing: 0.08em;
 }
 
 .filter-verse-nav button small {
@@ -167,10 +169,6 @@
 
 .filter-verse-nav button.active .filter-verse-menu-number {
   color: var(--fv-purple);
-}
-
-.filter-verse-mobile-menu {
-  display: none;
 }
 
 .filter-verse-stage {
@@ -243,9 +241,10 @@
 
 .fv-empty-stage h1 {
   margin: 26px 0 12px;
-  font-size: clamp(2.65rem, 6vw, 5.5rem);
+  font-size: clamp(1.75rem, 2.7vw, 2.2rem);
   line-height: 0.98;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.035em;
+  word-spacing: 0.1em;
 }
 
 .fv-empty-stage > p {
@@ -286,34 +285,21 @@
   }
 
   .filter-verse-nav {
-    display: none;
-  }
-
-  .filter-verse-mobile-menu {
-    display: grid;
-    gap: 7px;
+    position: static;
+    max-height: none;
     padding: 14px 18px;
+    border-right: 0;
     border-bottom: 1px solid var(--fv-line);
     background: rgba(255, 255, 255, 0.58);
+    overflow: visible;
   }
 
-  .filter-verse-mobile-menu label {
-    color: var(--fv-purple-dark);
-    font-size: 0.64rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+  .filter-verse-nav-group > p {
+    margin-left: 1px;
   }
 
-  .filter-verse-mobile-menu select {
-    width: 100%;
-    padding: 12px 42px 12px 13px;
-    border: 1px solid rgba(117, 81, 213, 0.22);
-    border-radius: 13px;
-    color: var(--fv-ink);
-    background: #fff;
-    font-size: 0.86rem;
-    font-weight: 700;
+  .filter-verse-nav button {
+    max-width: 390px;
   }
 
   .filter-verse-stage {
@@ -340,7 +326,7 @@
   }
 
   .fv-empty-stage h1 {
-    font-size: clamp(2.55rem, 13vw, 4rem);
+    font-size: clamp(1.65rem, 7vw, 2rem);
   }
 }
 
