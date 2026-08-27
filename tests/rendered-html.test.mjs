@@ -157,15 +157,11 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.match(html, /class="site-footer"/);
 });
 
-test("opens the Unit 1 Filter Verse learning studio above Vision Pen", async () => {
+test("opens the menu-only Filter Verse shell above Vision Pen", async () => {
   const response = await render("/filterverse");
   const html = await response.text();
   const source = await readFile(
     new URL("../app/PortfolioApp.tsx", import.meta.url),
-    "utf8",
-  );
-  const lessonSource = await readFile(
-    new URL("../app/filterverse/unit1-content.ts", import.meta.url),
     "utf8",
   );
 
@@ -177,12 +173,11 @@ test("opens the Unit 1 Filter Verse learning studio above Vision Pen", async () 
   for (const lesson of ["Computer Vision", "Applications &amp; Ethics", "Image Formation", "Digital Image Model", "Resolution", "Sampling &amp; Quantization", "Image Enhancement", "Point Operations", "Histograms", "Histogram Equalization", "Histogram Matching", "Spatial Filtering"]) {
     assert.match(html, new RegExp(lesson));
   }
-  assert.match(html, /217 slides distilled/);
-  assert.match(html, /From pixels to visual intelligence/);
-  assert.match(html, /Original web-first explanations rather than pasted slide text/);
-  assert.match(lessonSource, /sampling frequency ≥ 2 × highest signal frequency/);
-  assert.match(lessonSource, /z = G⁻¹\[T\(r\)\]/);
-  assert.match(lessonSource, /Rotate, then slide/);
+  assert.match(html, /This menu is kept ready for your next instruction/);
+  assert.match(html, /No content added/);
+  assert.doesNotMatch(html, /217 slides distilled/);
+  assert.doesNotMatch(html, /From pixels to visual intelligence/);
+  assert.doesNotMatch(html, /Core formulas/);
   assert.doesNotMatch(html, /Image Processing Filter Laboratory/);
 });
 
