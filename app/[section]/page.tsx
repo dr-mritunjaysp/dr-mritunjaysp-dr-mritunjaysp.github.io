@@ -1,13 +1,4 @@
 import { PortfolioApp } from "../PortfolioApp";
-import type { Metadata } from "next";
-
-export async function generateMetadata({params}:{params:Promise<{section:string}>}):Promise<Metadata>{
-  const {section}=await params;
-  if(section!=="filterverse")return {};
-  const title="FilterVerse · Image Processing Filter Laboratory";
-  const description="Explore image processing with local image upload, live filters, visual comparisons, editable kernels, Fourier spectra, and interactive lessons.";
-  return {title,description,openGraph:{title,description,url:"/filterverse",images:[]},twitter:{card:"summary",title,description,images:[]}};
-}
 
 export function generateStaticParams() {
   return [
@@ -16,7 +7,6 @@ export function generateStaticParams() {
     "projects",
     "sorting-visualizer",
     "vision-pen",
-    "filterverse",
     "inkora",
     "pen-app",
     "penapp",
