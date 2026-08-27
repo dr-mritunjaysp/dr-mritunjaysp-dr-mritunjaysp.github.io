@@ -169,8 +169,12 @@ test("opens the single Sampling and Quantization menu above Vision Pen", async (
   assert.match(source, /href="\/filterverse"[\s\S]*Filter Verse[\s\S]*href="\/vision-pen"/);
   assert.match(html, /Computer Vision home/);
   assert.match(html, /Sampling and Quantization/);
-  assert.match(html, /This menu is kept ready for your next instruction/);
-  assert.match(html, /No content added/);
+  assert.match(html, /Processing logic/);
+  assert.match(html, /Upload an image and see the result/);
+  assert.match(html, /type="file"/);
+  assert.match(html, /image\/png,image\/jpeg,image\/webp/);
+  assert.doesNotMatch(html, /This menu is kept ready for your next instruction/);
+  assert.doesNotMatch(html, /No content added/);
   for (const removedMenu of ["What is Computer Vision", "Overview", "Image Upload", "Filter Explorer", "Applications &amp; Ethics", "Image Formation", "Resolution", "Histograms", "Histogram Matching", "Spatial Filtering", "Learning Center"]) {
     assert.doesNotMatch(html, new RegExp(removedMenu));
   }
