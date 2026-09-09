@@ -12,9 +12,41 @@ function angle(a, b, c) {
 export function analyzeHand(points, handedness = 'Unknown', score = null) {
     if (points?.length !== 21) return null;
     const palm = Math.max(distance(points[0], points[9]), 0.001);
+    const palmCenter = [0, 5, 9, 13, 17].reduce((center, index) => ({
+        x: center.x + points[index].x / 5,
+        y: center.y + points[index].y / 5,
+        z: center.z + (points[index].z || 0) / 5,
+    }), { x: 0, y: 0, z: 0 });
+    const fingerRaised = [5, 9, 13, 17].map((base) => {
+        const pipAngle = angle(points[base], points[base + 1], points[base + 2]);
+        const dipAngle = angle(points[base + 1], points[base + 2], points[base + 3]);
+        const overallAngle = angle(points[base], points[base + 1], points[base + 3]);
+        const straight = (pipAngle > 135 && dipAngle > 140) || overallAngle > 158;
+        const beyondJoint = distance(points[base + 3], points[0]) > distance(points[base + 1], points[0]) * 1.06;
+        const beyondPalm = distance(points[base + 3], palmCenter) > distance(points[base + 2], palmCenter) * 1.03;
+        return straight && beyondJoint && beyondPalm;
+    });
+    const palmWidth = Math.max(distance(points[5], points[17]), 0.001);
+    const acrossPalm = {
+        x: (points[5].x - points[17].x) / palmWidth,
+        y: (points[5].y - points[17].y) / palmWidth,
+        z: ((points[5].z || 0) - (points[17].z || 0)) / palmWidth,
+    };
+    const thumbSide = (points[4].x - points[5].x) * acrossPalm.x
+        + (points[4].y - points[5].y) * acrossPalm.y
+        + ((points[4].z || 0) - (points[5].z || 0)) * acrossPalm.z;
+    const thumbMcpAngle = angle(points[1], points[2], points[3]);
+    const thumbIpAngle = angle(points[2], points[3], points[4]);
+    const thumbProgress = distance(points[4], palmCenter) > distance(points[3], palmCenter) * 1.04;
+    const thumbSpread = distance(points[4], points[5]) > Math.max(palm * 0.42, distance(points[3], points[5]) * 1.02);
+    const thumbOutsidePalm = thumbSide > palmWidth * 0.02;
+    const thumbStraight = thumbMcpAngle > 115 && thumbIpAngle > 125;
+    // A relaxed thumb often bends toward the camera. If all four fingers are clearly open,
+    // accept the softer thumb angles while still requiring it to sit outside the palm.
+    const relaxedOpenPalmThumb = fingerRaised.every(Boolean) && thumbMcpAngle > 95 && thumbIpAngle > 105;
     const raised = [
-        angle(points[1], points[2], points[3]) > 145 && angle(points[2], points[3], points[4]) > 150 && distance(points[4], points[5]) > palm * 0.65,
-        ...[5, 9, 13, 17].map((base) => angle(points[base], points[base + 1], points[base + 3]) > 155 && distance(points[base + 3], points[0]) > distance(points[base + 1], points[0]) * 1.12)
+        (thumbStraight || relaxedOpenPalmThumb) && thumbProgress && thumbSpread && thumbOutsidePalm,
+        ...fingerRaised,
     ];
     const pinch = distance(points[4], points[8]) < palm * 0.32;
     // A touching thumb/index pair is bent, not two additional raised fingers.

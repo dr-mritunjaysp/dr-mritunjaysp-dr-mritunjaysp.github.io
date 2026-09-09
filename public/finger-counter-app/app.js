@@ -4,7 +4,7 @@ const NUMBER_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Sev
 const $ = (id) => document.getElementById(id);
 const stage = $("counterStage");
 const video = $("cameraVideo");
-const countState = new StableValue(240);
+const countState = new StableValue(320);
 
 let stream = null;
 let hands = null;
@@ -13,6 +13,8 @@ let running = false;
 let loopTimer = null;
 let animationTimer = null;
 let fireworksTimer = null;
+let fireworksLoopTimer = null;
+let lastHandsAt = 0;
 
 function setStatus(text, live = false) {
   const status = $("cameraStatus");
@@ -42,13 +44,16 @@ function launchFireworks(count) {
   const field = $("fireworkField");
   const fragment = document.createDocumentFragment();
   const origins = [
-    { x: 27, y: 36 },
-    { x: 73, y: 39 },
-    { x: 50, y: 68 },
+    { x: 24, y: 30 },
+    { x: 76, y: 32 },
+    { x: 22, y: 69 },
+    { x: 78, y: 68 },
   ];
   const palette = [32, 46, 174, 194, 266, 328];
+  const burstRadius = Math.max(58, Math.min(field.clientWidth, field.clientHeight) * 0.14);
 
   clearTimeout(fireworksTimer);
+  clearTimeout(fireworksLoopTimer);
   field.replaceChildren();
 
   origins.forEach((origin, burstIndex) => {
@@ -60,9 +65,9 @@ function launchFireworks(count) {
     core.style.setProperty("--hue", String(palette[(count + burstIndex) % palette.length]));
     fragment.appendChild(core);
 
-    for (let index = 0; index < 14; index += 1) {
-      const angle = (Math.PI * 2 * index) / 14 + burstIndex * 0.18;
-      const distance = 58 + (index % 3) * 18;
+    for (let index = 0; index < 18; index += 1) {
+      const angle = (Math.PI * 2 * index) / 18 + burstIndex * 0.16;
+      const distance = burstRadius * (0.88 + (index % 3) * 0.24);
       const particle = document.createElement("i");
       particle.className = "firework-particle";
       particle.style.setProperty("--x", `${origin.x}%`);
@@ -77,7 +82,10 @@ function launchFireworks(count) {
   });
 
   field.appendChild(fragment);
-  fireworksTimer = setTimeout(() => field.replaceChildren(), 1450);
+  fireworksTimer = setTimeout(() => field.replaceChildren(), 1850);
+  fireworksLoopTimer = setTimeout(() => {
+    if (running && stage.dataset.count === String(count)) launchFireworks(count);
+  }, 2700);
 }
 
 function showCount(count, handCount) {
@@ -92,6 +100,7 @@ function showCount(count, handCount) {
 
 function clearCount() {
   clearTimeout(fireworksTimer);
+  clearTimeout(fireworksLoopTimer);
   $("fireworkField").replaceChildren();
   delete stage.dataset.count;
   $("countNumber").textContent = "";
@@ -110,9 +119,11 @@ function onResults(results) {
   const total = detectedHands.reduce((sum, hand) => sum + hand.count, 0);
   const now = performance.now();
 
-  if (countState.update(detectedHands.length ? total : null, now)) {
-    if (detectedHands.length) showCount(total, detectedHands.length);
-    else clearCount();
+  if (detectedHands.length) {
+    lastHandsAt = now;
+    if (countState.update(total, now)) showCount(total, detectedHands.length);
+  } else if (now - lastHandsAt >= 800 && countState.update(null, now)) {
+    clearCount();
   }
 }
 
@@ -176,6 +187,7 @@ async function startCamera() {
     await video.play();
     running = true;
     countState.reset();
+    lastHandsAt = performance.now();
     $("cameraGate").hidden = true;
     $("countDisplay").hidden = false;
     $("cameraPreview").hidden = false;
@@ -202,6 +214,7 @@ function stopCamera() {
   stream = null;
   video.srcObject = null;
   countState.reset();
+  lastHandsAt = 0;
   clearCount();
   $("cameraGate").hidden = false;
   $("countDisplay").hidden = true;

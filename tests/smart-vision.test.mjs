@@ -52,6 +52,29 @@ test('counts rotated fingers and handles the OK pinch without counting touching 
     assert.equal(analyzeHand(points).gesture, 'OK');
     assert.equal(analyzeHand(points).count, 3);
 });
+test('recognizes a naturally bent thumb on an open palm without inventing one on a four-finger pose', () => {
+    const relaxedPalm = handFixture([0,1,2,3,4]);
+    relaxedPalm[3] = { x:.24, y:.62, z:-.015 };
+    relaxedPalm[4] = { x:.14, y:.66, z:-.03 };
+    assert.equal(analyzeHand(relaxedPalm, 'Right', .98).count, 5);
+    assert.equal(analyzeHand(relaxedPalm, 'Right', .98).gesture, 'Open Palm');
+    const mirroredPalm = relaxedPalm.map((point) => ({ ...point, x:1-point.x }));
+    assert.equal(analyzeHand(mirroredPalm, 'Left', .98).count, 5);
+    const compactPalm = handFixture([1,2,3,4]);
+    [[.44,.75],[.39,.69],[.33,.64],[.27,.58]].forEach(([x,y], index) => { compactPalm[index + 1] = { x,y,z:0 }; });
+    const variants = [
+        compactPalm,
+        compactPalm.map((point) => ({ ...point, x:1-point.x })),
+        compactPalm.map((point) => ({ ...point, x:point.y, y:1-point.x })),
+        compactPalm.map((point) => ({ ...point, x:1-point.x, y:1-point.y })),
+        compactPalm.map((point) => ({ ...point, x:.08 + point.x*.78, y:.09 + point.y*.78 })),
+    ];
+    for (const points of variants) {
+        assert.equal(analyzeHand(points, 'Right', .98).count, 5);
+        assert.equal(analyzeHand(points, 'Left', .98).count, 5);
+    }
+    assert.equal(analyzeHand(handFixture([1,2,3,4]), 'Right', .98).count, 4);
+});
 test('tracks movement, reordered objects and brief gaps without reusing IDs', () => {
     const tracker = new ObjectTracker();
     const detection = (x, label = 'bottle') => ({ label, bbox: [x,.2,.15,.4], score:.9 });
