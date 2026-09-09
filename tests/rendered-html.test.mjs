@@ -219,6 +219,10 @@ test("keeps the large Inkora installer outside the Sites artifact", async () => 
     readFile(new URL("../dist/downloads/Inkora-Setup-1.0.0-x64.exe", import.meta.url)),
     { code: "ENOENT" },
   );
+  await assert.rejects(
+    readFile(new URL("../dist/client/downloads/Inkora-Setup-1.0.0-x64.exe", import.meta.url)),
+    { code: "ENOENT" },
+  );
 });
 
 test("redirects the previous Vision Pen URL to the integrated page", async () => {
