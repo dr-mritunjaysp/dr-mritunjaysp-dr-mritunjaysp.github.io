@@ -356,10 +356,11 @@ button { -webkit-tap-highlight-color: transparent; }
 
 .firework-field {
   position: absolute;
-  z-index: 2;
-  inset: 7%;
+  z-index: 4;
+  inset: 2%;
   overflow: hidden;
   border-radius: inherit;
+  mix-blend-mode: screen;
   pointer-events: none;
 }
 
@@ -374,21 +375,21 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 
 .firework-particle {
-  width: 4px;
-  height: 14px;
+  width: 6px;
+  height: 20px;
   border-radius: 999px;
   background: linear-gradient(to bottom, hsl(var(--hue) 96% 71%), hsl(var(--hue) 90% 54% / 0.12));
-  box-shadow: 0 0 9px hsl(var(--hue) 95% 64% / 0.72);
-  animation: firework-burst 920ms var(--delay) cubic-bezier(0.15, 0.72, 0.25, 1) both;
+  box-shadow: 0 0 12px hsl(var(--hue) 95% 64% / 0.9), 0 0 24px hsl(var(--hue) 95% 58% / 0.38);
+  animation: firework-burst 1350ms var(--delay) cubic-bezier(0.15, 0.72, 0.25, 1) both;
 }
 
 .firework-core {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border: 2px solid hsl(var(--hue) 94% 66% / 0.8);
   border-radius: 50%;
   box-shadow: 0 0 18px hsl(var(--hue) 95% 64% / 0.6);
-  animation: firework-ring 780ms var(--delay) ease-out both;
+  animation: firework-ring 1000ms var(--delay) ease-out both;
 }
 
 .number-stack {
@@ -402,27 +403,33 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 
 .number-stack strong {
+  --digit-width: 0.86;
   display: block;
   width: 100%;
   color: var(--result-start);
-  background: linear-gradient(145deg, var(--result-start) 12%, #5fc7ef 48%, var(--result-end) 92%);
+  background: linear-gradient(145deg, #fff0a2 0%, var(--result-start) 18%, #5fc7ef 48%, var(--result-end) 79%, #ff9b55 100%);
+  background-size: 210% 210%;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 13px 30px rgba(35, 155, 190, 0.16));
-  font-size: min(72cqw, 70cqh, 25rem);
+  font-size: min(64cqw, 63cqh, 21rem);
   font-weight: 820;
   line-height: 0.68;
   letter-spacing: -0.075em;
   text-align: center;
+  transform: scaleX(var(--digit-width));
   white-space: nowrap;
 }
+
+.number-stack strong:not(:empty) { animation: number-fire-glow 2.2s ease-in-out infinite; }
 
 .number-stack strong:empty { display: none; }
 .number-stack strong:empty + span { margin-top: 0; }
 
 .counter-stage[data-count="10"] .number-stack strong {
-  font-size: min(50cqw, 55cqh, 19rem);
+  --digit-width: 0.82;
+  font-size: min(44cqw, 49cqh, 16rem);
   letter-spacing: -0.07em;
 }
 
@@ -536,9 +543,22 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 
 @keyframes number-pop {
-  0% { opacity: 0; filter: blur(15px) drop-shadow(0 0 0 transparent); transform: scale(0.68) translateY(12px); }
-  58% { opacity: 1; filter: blur(0) drop-shadow(0 13px 34px rgba(40, 172, 199, 0.2)); transform: scale(1.035) translateY(0); }
-  100% { opacity: 1; filter: blur(0) drop-shadow(0 13px 30px rgba(35, 155, 190, 0.16)); transform: scale(1) translateY(0); }
+  0% { opacity: 0; filter: blur(15px) drop-shadow(0 0 0 transparent); transform: translateY(12px) scale(0.68) scaleX(var(--digit-width)); }
+  58% { opacity: 1; filter: blur(0) drop-shadow(0 13px 34px rgba(40, 172, 199, 0.2)); transform: translateY(0) scale(1.035) scaleX(var(--digit-width)); }
+  100% { opacity: 1; filter: blur(0) drop-shadow(0 13px 30px rgba(35, 155, 190, 0.16)); transform: translateY(0) scaleX(var(--digit-width)); }
+}
+
+@keyframes number-fire-glow {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 10px 28px rgba(35, 155, 190, 0.2)) drop-shadow(0 4px 18px rgba(255, 137, 66, 0.16));
+    transform: translateY(0) scaleX(var(--digit-width));
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 15px 34px rgba(35, 190, 207, 0.28)) drop-shadow(0 2px 26px rgba(255, 129, 55, 0.34));
+    transform: translateY(-3px) scaleX(var(--digit-width));
+  }
 }
 
 @keyframes word-rise {
