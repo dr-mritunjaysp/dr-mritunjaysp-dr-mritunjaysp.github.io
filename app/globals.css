@@ -3807,10 +3807,16 @@ body::before {
 }
 
 .more-menu {
-  max-height: none;
-  overflow: visible;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  max-height: min(34rem, calc(100vh - 5.75rem));
+  max-height: min(34rem, calc(100dvh - 5.75rem - env(safe-area-inset-bottom, 0px)));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--accent) color-mix(in srgb, var(--accent) 10%, transparent);
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: auto;
   border: 1.5px solid transparent;
   border-radius: 0.85rem;
   background:
@@ -3823,7 +3829,25 @@ body::before {
 }
 
 .more-menu::-webkit-scrollbar {
-  display: none;
+  display: block;
+  width: 0.65rem;
+}
+
+.more-menu::-webkit-scrollbar-track {
+  margin-block: 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.more-menu::-webkit-scrollbar-thumb {
+  min-height: 3rem;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #06b6d4, #2563eb, #8b5cf6) padding-box;
+}
+
+.more-menu::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #22d3ee, #3b82f6, #a78bfa) padding-box;
 }
 
 .more-menu a {
@@ -4502,6 +4526,32 @@ body::before {
 
   .nav-links {
     top: calc(100% + 0.45rem);
+    max-height: calc(100dvh - 5rem) !important;
+    scrollbar-color: var(--accent) color-mix(in srgb, var(--accent) 10%, transparent);
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    width: 0.6rem;
+  }
+
+  .nav-links::-webkit-scrollbar-track {
+    margin-block: 0.55rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  .nav-links::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #06b6d4, #2563eb, #8b5cf6) padding-box;
+  }
+
+  .more-menu {
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
   }
 
   .nav-links > a,

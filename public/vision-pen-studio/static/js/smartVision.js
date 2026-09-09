@@ -1,4 +1,4 @@
-import { analyzeHand, faceQuality, imageQuality, overlayScale, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } from './smartVisionCore.mjs?v=20260826-tracking-age';
+import { analyzeHand, faceQuality, imageQuality, overlayScale, cameraError, CHAINS, ObjectTracker, sceneSource, StableValue } from './smartVisionCore.mjs?v=20260909-hand-precision';
 
 const $ = (id) => document.getElementById(id);
 const fullscreenButtons = [$('fullscreenButton')];
@@ -317,7 +317,7 @@ function handleHands(results) {
         const info = results.multiHandedness?.[index];
         // MediaPipe assumes selfie input. Our inference frame is unmirrored.
         const label = info?.label === 'Left' ? 'Right' : info?.label === 'Right' ? 'Left' : 'Unknown';
-        return analyzeHand(points, label, info?.score ?? null);
+        return analyzeHand(points, label, info?.score ?? null, results.multiHandWorldLandmarks?.[index]);
     }).filter(Boolean);
     detections.hands = trackers.hands.update(hands, performance.now());
 }

@@ -9,46 +9,63 @@ function angle(a, b, c) {
     return denominator ? Math.acos(Math.max(-1, Math.min(1, ab.reduce((n, v, i) => n + v * cb[i], 0) / denominator))) * 180 / Math.PI : 0;
 }
 
-export function analyzeHand(points, handedness = 'Unknown', score = null) {
+export function analyzeHand(points, handedness = 'Unknown', score = null, worldPoints = points) {
     if (points?.length !== 21) return null;
-    const palm = Math.max(distance(points[0], points[9]), 0.001);
+    const geometryPoints = worldPoints?.length === 21 && worldPoints.every((point) =>
+        Number.isFinite(point?.x) && Number.isFinite(point?.y)
+        && (point.z == null || Number.isFinite(point.z))
+    ) ? worldPoints : points;
+    const landmark = (index) => geometryPoints[index];
+    const palm = Math.max(distance(landmark(0), landmark(9)), 0.001);
     const palmCenter = [0, 5, 9, 13, 17].reduce((center, index) => ({
-        x: center.x + points[index].x / 5,
-        y: center.y + points[index].y / 5,
-        z: center.z + (points[index].z || 0) / 5,
+        x: center.x + landmark(index).x / 5,
+        y: center.y + landmark(index).y / 5,
+        z: center.z + (landmark(index).z || 0) / 5,
     }), { x: 0, y: 0, z: 0 });
     const fingerRaised = [5, 9, 13, 17].map((base) => {
-        const pipAngle = angle(points[base], points[base + 1], points[base + 2]);
-        const dipAngle = angle(points[base + 1], points[base + 2], points[base + 3]);
-        const overallAngle = angle(points[base], points[base + 1], points[base + 3]);
+        const pipAngle = angle(landmark(base), landmark(base + 1), landmark(base + 2));
+        const dipAngle = angle(landmark(base + 1), landmark(base + 2), landmark(base + 3));
+        const overallAngle = angle(landmark(base), landmark(base + 1), landmark(base + 3));
         const straight = (pipAngle > 135 && dipAngle > 140) || overallAngle > 158;
-        const beyondJoint = distance(points[base + 3], points[0]) > distance(points[base + 1], points[0]) * 1.06;
-        const beyondPalm = distance(points[base + 3], palmCenter) > distance(points[base + 2], palmCenter) * 1.03;
+        const beyondJoint = distance(landmark(base + 3), landmark(0)) > distance(landmark(base + 1), landmark(0)) * 1.06;
+        const beyondPalm = distance(landmark(base + 3), palmCenter) > distance(landmark(base + 2), palmCenter) * 1.03;
         return straight && beyondJoint && beyondPalm;
     });
-    const palmWidth = Math.max(distance(points[5], points[17]), 0.001);
+    const palmWidth = Math.max(distance(landmark(5), landmark(17)), 0.001);
     const acrossPalm = {
-        x: (points[5].x - points[17].x) / palmWidth,
-        y: (points[5].y - points[17].y) / palmWidth,
-        z: ((points[5].z || 0) - (points[17].z || 0)) / palmWidth,
+        x: (landmark(5).x - landmark(17).x) / palmWidth,
+        y: (landmark(5).y - landmark(17).y) / palmWidth,
+        z: ((landmark(5).z || 0) - (landmark(17).z || 0)) / palmWidth,
     };
-    const thumbSide = (points[4].x - points[5].x) * acrossPalm.x
-        + (points[4].y - points[5].y) * acrossPalm.y
-        + ((points[4].z || 0) - (points[5].z || 0)) * acrossPalm.z;
-    const thumbMcpAngle = angle(points[1], points[2], points[3]);
-    const thumbIpAngle = angle(points[2], points[3], points[4]);
-    const thumbProgress = distance(points[4], palmCenter) > distance(points[3], palmCenter) * 1.04;
-    const thumbSpread = distance(points[4], points[5]) > Math.max(palm * 0.42, distance(points[3], points[5]) * 1.02);
-    const thumbOutsidePalm = thumbSide > palmWidth * 0.02;
+    const thumbSide = (landmark(4).x - landmark(5).x) * acrossPalm.x
+        + (landmark(4).y - landmark(5).y) * acrossPalm.y
+        + ((landmark(4).z || 0) - (landmark(5).z || 0)) * acrossPalm.z;
+    const thumbMcpAngle = angle(landmark(1), landmark(2), landmark(3));
+    const thumbIpAngle = angle(landmark(2), landmark(3), landmark(4));
     const thumbStraight = thumbMcpAngle > 115 && thumbIpAngle > 125;
-    // A relaxed thumb often bends toward the camera. If all four fingers are clearly open,
-    // accept the softer thumb angles while still requiring it to sit outside the palm.
     const relaxedOpenPalmThumb = fingerRaised.every(Boolean) && thumbMcpAngle > 95 && thumbIpAngle > 105;
+    const thumbChainLength = distance(landmark(1), landmark(2))
+        + distance(landmark(2), landmark(3))
+        + distance(landmark(3), landmark(4));
+    const thumbLinearity = distance(landmark(1), landmark(4)) / Math.max(thumbChainLength, 0.001);
+    const thumbRadialGain = (distance(landmark(4), palmCenter) - distance(landmark(3), palmCenter)) / palm;
+    const thumbSpreadRatio = distance(landmark(4), landmark(5)) / palm;
+    const thumbOutwardRatio = thumbSide / palmWidth;
+    const thumbDepthRatio = Math.abs((landmark(4).z || 0) - (landmark(2).z || 0)) / palm;
+    const thumbShapeOpen = thumbLinearity > 0.76 || thumbStraight || relaxedOpenPalmThumb;
+    // A thumb aimed toward the camera can look inside the palm in 2D. Depth can rescue that
+    // pose, but only while the tip has not crossed far enough to be a folded thumb.
+    const thumbProjectionOpen = thumbOutwardRatio > 0.01
+        || (thumbOutwardRatio > -0.12 && thumbDepthRatio > 0.08);
+    const thumbRaised = thumbShapeOpen
+        && thumbRadialGain > 0.015
+        && thumbSpreadRatio > 0.34
+        && thumbProjectionOpen;
     const raised = [
-        (thumbStraight || relaxedOpenPalmThumb) && thumbProgress && thumbSpread && thumbOutsidePalm,
+        thumbRaised,
         ...fingerRaised,
     ];
-    const pinch = distance(points[4], points[8]) < palm * 0.32;
+    const pinch = distance(landmark(4), landmark(8)) < palm * 0.32;
     // A touching thumb/index pair is bent, not two additional raised fingers.
     if (pinch) { raised[0] = false; raised[1] = false; }
     const names = FINGERS.filter((_, index) => raised[index]);
@@ -200,6 +217,26 @@ export class StableValue {
         if (value !== this.candidate) { this.candidate = value; this.since = now; }
         if (value !== this.value && now - this.since >= this.holdMs) { this.value = value; return true; }
         return false;
+    }
+}
+
+/** Majority voting rejects one-frame missed fingers before stability timing begins. */
+export class RollingMode {
+    constructor(size = 5) { this.size = Math.max(1, Math.round(size)); this.reset(); }
+    reset() { this.samples = []; this.value = undefined; }
+    update(value) {
+        if (!Number.isFinite(value)) { this.reset(); return value; }
+        this.samples.push(value);
+        if (this.samples.length > this.size) this.samples.shift();
+        const votes = new Map();
+        this.samples.forEach((sample) => votes.set(sample, (votes.get(sample) || 0) + 1));
+        let winner = votes.has(this.value) ? this.value : this.samples[0];
+        let winnerVotes = votes.get(winner) || 0;
+        votes.forEach((count, candidate) => {
+            if (count > winnerVotes) { winner = candidate; winnerVotes = count; }
+        });
+        this.value = winner;
+        return winner;
     }
 }
 

@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import * as core from '../public/vision-pen-studio/static/js/smartVisionCore.mjs';
-const { analyzeHand, ageRange, faceQuality, imageQuality, overlayScale, ObjectTracker, sceneSource, StableValue, cameraError } = core;
+const { analyzeHand, ageRange, faceQuality, imageQuality, overlayScale, ObjectTracker, RollingMode, sceneSource, StableValue, cameraError } = core;
 
 function facePoints() {
     const points=Array.from({length:68},()=>({x:70,y:70}));
@@ -52,7 +52,18 @@ test('counts rotated fingers and handles the OK pinch without counting touching 
     assert.equal(analyzeHand(points).gesture, 'OK');
     assert.equal(analyzeHand(points).count, 3);
 });
-test('recognizes a naturally bent thumb on an open palm without inventing one on a four-finger pose', () => {
+test('recognizes compact and foreshortened open thumbs without inventing one on a four-finger pose', () => {
+    const withThumb = (points, thumb) => {
+        const result = points.map((point) => ({ ...point }));
+        thumb.forEach(([x,y,z], index) => { result[index + 1] = { x,y,z }; });
+        return result;
+    };
+    const mirrorX = (points) => points.map((point) => ({ ...point, x:1-point.x }));
+    const rotate90 = (points) => points.map((point) => ({ ...point, x:point.y, y:1-point.x }));
+    const compactThumb = [[.44,.75,0],[.39,.69,0],[.33,.64,0],[.27,.58,0]];
+    const foreshortenedThumb = [[.46,.75,0],[.43,.69,-.01],[.415,.625,-.044],[.405,.56,-.11]];
+    const foldedAcrossPalm = [[.44,.75,0],[.40,.69,0],[.46,.64,0],[.54,.60,0]];
+    const tuckedBesideIndex = [[.44,.75,0],[.40,.69,0],[.405,.635,0],[.41,.59,0]];
     const relaxedPalm = handFixture([0,1,2,3,4]);
     relaxedPalm[3] = { x:.24, y:.62, z:-.015 };
     relaxedPalm[4] = { x:.14, y:.66, z:-.03 };
@@ -60,20 +71,43 @@ test('recognizes a naturally bent thumb on an open palm without inventing one on
     assert.equal(analyzeHand(relaxedPalm, 'Right', .98).gesture, 'Open Palm');
     const mirroredPalm = relaxedPalm.map((point) => ({ ...point, x:1-point.x }));
     assert.equal(analyzeHand(mirroredPalm, 'Left', .98).count, 5);
-    const compactPalm = handFixture([1,2,3,4]);
-    [[.44,.75],[.39,.69],[.33,.64],[.27,.58]].forEach(([x,y], index) => { compactPalm[index + 1] = { x,y,z:0 }; });
-    const variants = [
-        compactPalm,
-        compactPalm.map((point) => ({ ...point, x:1-point.x })),
-        compactPalm.map((point) => ({ ...point, x:point.y, y:1-point.x })),
-        compactPalm.map((point) => ({ ...point, x:1-point.x, y:1-point.y })),
-        compactPalm.map((point) => ({ ...point, x:.08 + point.x*.78, y:.09 + point.y*.78 })),
-    ];
-    for (const points of variants) {
-        assert.equal(analyzeHand(points, 'Right', .98).count, 5);
-        assert.equal(analyzeHand(points, 'Left', .98).count, 5);
+    for (const thumb of [compactThumb, foreshortenedThumb]) {
+        const palm = withThumb(handFixture([1,2,3,4]), thumb);
+        const variants = [
+            palm,
+            mirrorX(palm),
+            rotate90(palm),
+            palm.map((point) => ({ ...point, x:1-point.x, y:1-point.y })),
+            palm.map((point) => ({ ...point, x:.08+point.x*.78, y:.09+point.y*.78, z:point.z*.78 })),
+        ];
+        for (const points of variants) {
+            assert.equal(analyzeHand(points, 'Right', .98).count, 5);
+            assert.equal(analyzeHand(points, 'Left', .98).count, 5);
+            assert.equal(analyzeHand(points).gesture, 'Open Palm');
+        }
     }
-    assert.equal(analyzeHand(handFixture([1,2,3,4]), 'Right', .98).count, 4);
+
+    for (const thumb of [foldedAcrossPalm, tuckedBesideIndex]) {
+        const palm = withThumb(handFixture([1,2,3,4]), thumb);
+        for (const points of [palm, mirrorX(palm), rotate90(palm)]) {
+            const result = analyzeHand(points, 'Right', .98);
+            assert.equal(result.count, 4);
+            assert.equal(result.raised[0], false);
+        }
+    }
+
+    const projectedPalm = withThumb(handFixture([1,2,3,4]), tuckedBesideIndex);
+    const openWorldPalm = withThumb(handFixture([1,2,3,4]), foreshortenedThumb)
+        .map((point) => ({ x:(point.x-.5)*.18, y:(point.y-.6)*.18, z:point.z*.18 }));
+    const imageOnly = analyzeHand(projectedPalm, 'Right', .98);
+    const worldAware = analyzeHand(projectedPalm, 'Right', .98, openWorldPalm);
+    assert.equal(imageOnly.count, 4);
+    assert.equal(worldAware.count, 5);
+    assert.deepEqual(worldAware.bbox, imageOnly.bbox);
+
+    const right = analyzeHand(withThumb(handFixture([1,2,3,4]), foreshortenedThumb), 'Right', .98);
+    const left = analyzeHand(mirrorX(withThumb(handFixture([1,2,3,4]), compactThumb)), 'Left', .98);
+    assert.equal(right.count + left.count, 10);
 });
 test('tracks movement, reordered objects and brief gaps without reusing IDs', () => {
     const tracker = new ObjectTracker();
@@ -149,6 +183,15 @@ test('debounces gesture changes and does not restart the animation for a held co
     assert.equal(stable.update(1,1580),false); assert.equal(stable.update(2,1700),false);
     assert.equal(stable.update(2,1900),true); assert.equal(stable.update(2,2500),false);
     assert.equal(stable.update(null,3000),false); assert.equal(stable.update(null,3200),true);
+});
+test('uses rolling consensus to ignore brief missed-finger frames', () => {
+    const consensus = new RollingMode(5);
+    const noisyPalm = [5,5,4,5,4,5,5].map((count) => consensus.update(count));
+    assert.equal(noisyPalm.at(-1), 5);
+    assert.equal(consensus.update(4), 5);
+    assert.equal(consensus.update(4), 4);
+    consensus.reset();
+    assert.equal(consensus.update(2), 2);
 });
 test('provides actionable permission, camera and insecure-context errors', () => {
     assert.match(cameraError({name:'NotAllowedError'}),/permission was blocked/);

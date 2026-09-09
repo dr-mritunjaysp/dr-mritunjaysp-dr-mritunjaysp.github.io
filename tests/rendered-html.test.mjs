@@ -88,6 +88,14 @@ test("keeps the implementation independent from the retired theme", async () => 
     portfolio,
     /href="\/resumebuilder"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"[\s\S]*Scholar Resume/,
   );
+  assert.match(styles, /max-height:\s*min\(34rem,\s*calc\(100dvh\s*-\s*5\.75rem/);
+  assert.match(styles, /overflow-y:\s*auto/);
+  assert.match(styles, /overscroll-behavior:\s*contain/);
+  assert.match(styles, /scrollbar-gutter:\s*stable/);
+  assert.match(styles, /scrollbar-width:\s*thin/);
+  assert.match(styles, /\.more-menu::-webkit-scrollbar-thumb\s*\{/);
+  assert.match(styles, /\.nav-links::-webkit-scrollbar-thumb\s*\{/);
+  assert.doesNotMatch(styles, /\.more-menu::-webkit-scrollbar\s*\{[^}]*display:\s*none/s);
   assert.doesNotMatch(portfolio, />\s*Resume Builder\s*</);
   assert.doesNotMatch(combined, /al-folio|jekyll|liquid|react-loading-skeleton/i);
 });
@@ -153,7 +161,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.equal(response.status, 200);
   assert.match(html, /class="site-header"/);
   assert.match(html, /title="Vision Pen air-writing studio"/);
-  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-tracking-age"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260909-hand-precision"/);
   assert.match(html, /class="site-footer"/);
 });
 
@@ -195,7 +203,7 @@ test("renders and packages the animated Finger Counter", async () => {
 
   assert.equal(response.status, 200);
   assert.match(html, /title="Animated finger counter"/);
-  assert.match(html, /src="\/finger-counter-app\/index\.html\?v=20260909-accurate-fire"/);
+  assert.match(html, /src="\/finger-counter-app\/index\.html\?v=20260909-hand-precision"/);
   assert.match(counterHtml, /Raise it\. See it\./);
   assert.match(counterHtml, /camera frames stay in this browser/i);
   assert.match(counterScript, /maxNumHands:\s*2/);
@@ -203,6 +211,9 @@ test("renders and packages the animated Finger Counter", async () => {
   assert.match(counterScript, /requestFullscreen/);
   assert.match(counterScript, /launchFireworks/);
   assert.match(counterScript, /fireworksLoopTimer/);
+  assert.match(counterScript, /multiHandWorldLandmarks/);
+  assert.match(counterScript, /RollingMode/);
+  assert.match(counterScript, /smartVisionCore\.mjs\?v=20260909-hand-precision/);
   assert.match(counterStyles, /@keyframes number-pop/);
   assert.match(counterStyles, /@keyframes firework-burst/);
   assert.match(counterStyles, /@media \(max-width: 700px\)/);

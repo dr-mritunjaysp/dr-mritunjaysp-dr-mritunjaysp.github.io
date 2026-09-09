@@ -1,10 +1,11 @@
-import { analyzeHand, cameraError, StableValue } from "../vision-pen-studio/static/js/smartVisionCore.mjs";
+import { analyzeHand, cameraError, RollingMode, StableValue } from "../vision-pen-studio/static/js/smartVisionCore.mjs?v=20260909-hand-precision";
 
 const NUMBER_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
 const $ = (id) => document.getElementById(id);
 const stage = $("counterStage");
 const video = $("cameraVideo");
-const countState = new StableValue(320);
+const countConsensus = new RollingMode(5);
+const countState = new StableValue(220);
 
 let stream = null;
 let hands = null;
@@ -112,17 +113,25 @@ function clearCount() {
 function onResults(results) {
   if (!running) return;
   const landmarks = results.multiHandLandmarks || [];
+  const worldLandmarks = results.multiHandWorldLandmarks || [];
   const labels = results.multiHandedness || [];
   const detectedHands = landmarks
-    .map((points, index) => analyzeHand(points, labels[index]?.label || "Unknown", labels[index]?.score ?? null))
+    .map((points, index) => analyzeHand(
+      points,
+      labels[index]?.label || "Unknown",
+      labels[index]?.score ?? null,
+      worldLandmarks[index],
+    ))
     .filter(Boolean);
   const total = detectedHands.reduce((sum, hand) => sum + hand.count, 0);
   const now = performance.now();
 
   if (detectedHands.length) {
     lastHandsAt = now;
-    if (countState.update(total, now)) showCount(total, detectedHands.length);
+    const consensusTotal = countConsensus.update(total);
+    if (countState.update(consensusTotal, now)) showCount(consensusTotal, detectedHands.length);
   } else if (now - lastHandsAt >= 800 && countState.update(null, now)) {
+    countConsensus.reset();
     clearCount();
   }
 }
@@ -186,6 +195,7 @@ async function startCamera() {
     video.srcObject = stream;
     await video.play();
     running = true;
+    countConsensus.reset();
     countState.reset();
     lastHandsAt = performance.now();
     $("cameraGate").hidden = true;
@@ -213,6 +223,7 @@ function stopCamera() {
   stream?.getTracks().forEach((track) => track.stop());
   stream = null;
   video.srcObject = null;
+  countConsensus.reset();
   countState.reset();
   lastHandsAt = 0;
   clearCount();
