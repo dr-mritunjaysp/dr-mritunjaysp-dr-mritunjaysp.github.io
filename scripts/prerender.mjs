@@ -43,6 +43,25 @@ async function prerender() {
   ];
 
   const distDir = path.join(projectRoot, "dist");
+  const localInstallerPath = path.join(
+    projectRoot,
+    "public",
+    "downloads",
+    "Inkora-Setup-1.0.0-x64.exe",
+  );
+  const packagedInstallerPath = path.join(
+    distDir,
+    "downloads",
+    "Inkora-Setup-1.0.0-x64.exe",
+  );
+  const clientInstallerPath = path.join(
+    distDir,
+    "client",
+    "downloads",
+    "Inkora-Setup-1.0.0-x64.exe",
+  );
+
+  fs.rmSync(clientInstallerPath, { force: true });
 
   // Copy dist/client contents into dist/
   const clientDir = path.join(distDir, "client");
@@ -53,16 +72,6 @@ async function prerender() {
 
   // Copy public/ files into dist/
   const publicDir = path.join(projectRoot, "public");
-  const localInstallerPath = path.join(
-    publicDir,
-    "downloads",
-    "Inkora-Setup-1.0.0-x64.exe",
-  );
-  const packagedInstallerPath = path.join(
-    distDir,
-    "downloads",
-    "Inkora-Setup-1.0.0-x64.exe",
-  );
   fs.rmSync(packagedInstallerPath, { force: true });
   if (fs.existsSync(publicDir)) {
     fs.cpSync(publicDir, distDir, {
