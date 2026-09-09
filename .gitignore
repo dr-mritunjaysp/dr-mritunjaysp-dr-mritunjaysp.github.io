@@ -45,3 +45,4 @@ next-env.d.ts
 /outputs/
 /work/
 .firebase/  
+/public/downloads/Inkora-Setup-1.0.0-x64.exe

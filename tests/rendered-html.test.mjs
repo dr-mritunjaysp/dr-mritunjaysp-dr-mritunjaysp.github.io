@@ -205,6 +205,22 @@ test("renders and packages the animated Finger Counter", async () => {
   assert.match(counterStyles, /@media \(max-width: 700px\)/);
 });
 
+test("keeps the large Inkora installer outside the Sites artifact", async () => {
+  const [portfolio, inkora, installer] = await Promise.all([
+    readFile(new URL("../app/PortfolioApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/inkora/InkoraApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/inkora/installer.ts", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(portfolio, /href=\{INKORA_INSTALLER_URL\}/);
+  assert.match(inkora, /link\.href = INKORA_INSTALLER_URL/);
+  assert.match(installer, /raw\.githubusercontent\.com/);
+  await assert.rejects(
+    readFile(new URL("../dist/downloads/Inkora-Setup-1.0.0-x64.exe", import.meta.url)),
+    { code: "ENOENT" },
+  );
+});
+
 test("redirects the previous Vision Pen URL to the integrated page", async () => {
   const response = await render("/vision-pen/index.html");
 

@@ -52,6 +52,7 @@ import {
 } from "./scholar-data";
 import { SortingVisualizer } from "./sorting/SortingVisualizer";
 import { InkoraApp } from "./inkora/InkoraApp";
+import { INKORA_INSTALLER_URL } from "./inkora/installer";
 import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
 import { VisionPenPage } from "./vision-pen/VisionPenPage";
 import { FilterVerseShell } from "./filterverse/FilterVerseShell";
@@ -2774,7 +2775,7 @@ function ProjectsPage() {
             </Link>
             <a
               className="btn-sort-secondary"
-              href="/downloads/Inkora-Setup-1.0.0-x64.exe"
+              href={INKORA_INSTALLER_URL}
               download="Inkora-Setup-1.0.0-x64.exe"
               style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.86rem", padding: "8px 14px" }}
             >

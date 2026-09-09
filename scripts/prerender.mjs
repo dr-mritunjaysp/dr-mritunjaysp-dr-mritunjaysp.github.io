@@ -53,8 +53,22 @@ async function prerender() {
 
   // Copy public/ files into dist/
   const publicDir = path.join(projectRoot, "public");
+  const localInstallerPath = path.join(
+    publicDir,
+    "downloads",
+    "Inkora-Setup-1.0.0-x64.exe",
+  );
+  const packagedInstallerPath = path.join(
+    distDir,
+    "downloads",
+    "Inkora-Setup-1.0.0-x64.exe",
+  );
+  fs.rmSync(packagedInstallerPath, { force: true });
   if (fs.existsSync(publicDir)) {
-    fs.cpSync(publicDir, distDir, { recursive: true });
+    fs.cpSync(publicDir, distDir, {
+      recursive: true,
+      filter: (source) => path.resolve(source) !== path.resolve(localInstallerPath),
+    });
     console.log("Copied public/ assets into dist/");
   }
 
