@@ -12,6 +12,7 @@ let processing = false;
 let running = false;
 let loopTimer = null;
 let animationTimer = null;
+let fireworksTimer = null;
 
 function setStatus(text, live = false) {
   const status = $("cameraStatus");
@@ -37,18 +38,63 @@ function replayCountAnimation() {
   animationTimer = setTimeout(() => stage.classList.remove("is-revealing"), 1250);
 }
 
+function launchFireworks(count) {
+  const field = $("fireworkField");
+  const fragment = document.createDocumentFragment();
+  const origins = [
+    { x: 27, y: 36 },
+    { x: 73, y: 39 },
+    { x: 50, y: 68 },
+  ];
+  const palette = [32, 46, 174, 194, 266, 328];
+
+  clearTimeout(fireworksTimer);
+  field.replaceChildren();
+
+  origins.forEach((origin, burstIndex) => {
+    const core = document.createElement("i");
+    core.className = "firework-core";
+    core.style.setProperty("--x", `${origin.x}%`);
+    core.style.setProperty("--y", `${origin.y}%`);
+    core.style.setProperty("--delay", `${burstIndex * 90}ms`);
+    core.style.setProperty("--hue", String(palette[(count + burstIndex) % palette.length]));
+    fragment.appendChild(core);
+
+    for (let index = 0; index < 14; index += 1) {
+      const angle = (Math.PI * 2 * index) / 14 + burstIndex * 0.18;
+      const distance = 58 + (index % 3) * 18;
+      const particle = document.createElement("i");
+      particle.className = "firework-particle";
+      particle.style.setProperty("--x", `${origin.x}%`);
+      particle.style.setProperty("--y", `${origin.y}%`);
+      particle.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+      particle.style.setProperty("--dy", `${Math.sin(angle) * distance}px`);
+      particle.style.setProperty("--rotate", `${(angle * 180) / Math.PI + 90}deg`);
+      particle.style.setProperty("--delay", `${burstIndex * 90 + (index % 2) * 28}ms`);
+      particle.style.setProperty("--hue", String(palette[(count + burstIndex + index) % palette.length]));
+      fragment.appendChild(particle);
+    }
+  });
+
+  field.appendChild(fragment);
+  fireworksTimer = setTimeout(() => field.replaceChildren(), 1450);
+}
+
 function showCount(count, handCount) {
   stage.dataset.count = String(count);
   $("countNumber").textContent = String(count);
   $("countWord").textContent = NUMBER_WORDS[count] || String(count);
   $("trackingLabel").textContent = `${handCount} ${handCount === 1 ? "hand" : "hands"} detected`;
   $("countHint").textContent = count === 0 ? "Closed fist" : `${count} raised ${count === 1 ? "finger" : "fingers"}`;
+  launchFireworks(count);
   replayCountAnimation();
 }
 
 function clearCount() {
+  clearTimeout(fireworksTimer);
+  $("fireworkField").replaceChildren();
   delete stage.dataset.count;
-  $("countNumber").textContent = "—";
+  $("countNumber").textContent = "";
   $("countWord").textContent = "Waiting";
   $("trackingLabel").textContent = "Show your hand to the camera";
   $("countHint").textContent = "Raise one or both hands";
