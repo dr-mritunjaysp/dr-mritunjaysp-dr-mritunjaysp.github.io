@@ -195,7 +195,7 @@ test("renders and packages the animated Finger Counter", async () => {
 
   assert.equal(response.status, 200);
   assert.match(html, /title="Animated finger counter"/);
-  assert.match(html, /src="\/finger-counter-app\/index\.html\?v=20260909-firework-ui"/);
+  assert.match(html, /src="\/finger-counter-app\/index\.html\?v=20260909-firework-fit"/);
   assert.match(counterHtml, /Raise it\. See it\./);
   assert.match(counterHtml, /camera frames stay in this browser/i);
   assert.match(counterScript, /maxNumHands:\s*2/);
@@ -206,6 +206,7 @@ test("renders and packages the animated Finger Counter", async () => {
   assert.match(counterStyles, /@keyframes firework-burst/);
   assert.match(counterStyles, /@media \(max-width: 700px\)/);
   assert.match(counterStyles, /background-clip:\s*text/);
+  assert.match(counterStyles, /\.number-stack\s+strong\s*\{[^}]*width:\s*100%/s);
   assert.match(counterStyles, /100dvh/);
 });
 

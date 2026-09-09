@@ -394,31 +394,33 @@ button { -webkit-tap-highlight-color: transparent; }
   position: relative;
   z-index: 3;
   display: grid;
+  width: min(64%, 380px);
   margin-top: 12px;
   place-items: center;
   text-align: center;
 }
 
 .number-stack strong {
+  display: block;
+  width: 100%;
   color: var(--result-start);
   background: linear-gradient(145deg, var(--result-start) 12%, #5fc7ef 48%, var(--result-end) 92%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 13px 30px rgba(35, 155, 190, 0.16));
-  max-width: min(54%, 330px);
   font-size: clamp(8.5rem, 27vh, 17rem);
   font-weight: 820;
   line-height: 0.72;
   letter-spacing: -0.095em;
-  text-indent: -0.06em;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .number-stack strong:empty { display: none; }
 .number-stack strong:empty + span { margin-top: 0; }
 
 .counter-stage[data-count="10"] .number-stack strong {
-  max-width: min(62%, 380px);
   font-size: clamp(7rem, 22vh, 13rem);
   letter-spacing: -0.11em;
 }
@@ -659,9 +661,9 @@ button { -webkit-tap-highlight-color: transparent; }
 
   .result-panel::after { inset: 7px; border-radius: 22px; }
   .tracking-label { top: 24px; font-size: 0.62rem; letter-spacing: 0.14em; }
-  .number-stack { margin-top: 4px; }
-  .number-stack strong { max-width: 52%; font-size: clamp(7.4rem, 29vh, 12.5rem); }
-  .counter-stage[data-count="10"] .number-stack strong { max-width: 62%; font-size: clamp(6rem, 23vh, 9.5rem); }
+  .number-stack { width: min(70%, 260px); margin-top: 4px; }
+  .number-stack strong { font-size: clamp(7.4rem, 29vh, 12.5rem); }
+  .counter-stage[data-count="10"] .number-stack strong { font-size: clamp(6rem, 23vh, 9.5rem); }
   .number-stack span { margin-top: 20px; font-size: clamp(1rem, 7vw, 1.5rem); letter-spacing: 0.17em; }
   .number-orbit { width: min(76vw, 330px); }
   .result-footer { bottom: 20px; min-height: 30px; padding: 0 11px; }
@@ -693,8 +695,9 @@ button { -webkit-tap-highlight-color: transparent; }
   .count-display { padding: 70px 150px 10px 14px; }
   .result-panel { width: min(58vw, 560px); height: calc(100dvh - 82px); min-height: 0; border-radius: 28px; }
   .tracking-label { top: 17px; }
-  .number-stack strong { max-width: 48%; font-size: min(33vh, 10.5rem); }
-  .counter-stage[data-count="10"] .number-stack strong { max-width: 58%; font-size: min(27vh, 8rem); }
+  .number-stack { width: min(58%, 320px); }
+  .number-stack strong { font-size: min(33vh, 10.5rem); }
+  .counter-stage[data-count="10"] .number-stack strong { font-size: min(27vh, 8rem); }
   .number-stack span { margin-top: 12px; font-size: 1.05rem; }
   .result-footer { bottom: 15px; }
   .camera-preview { right: 14px; bottom: 14px; width: 124px; }
