@@ -195,7 +195,7 @@ test("renders and packages the animated Finger Counter", async () => {
 
   assert.equal(response.status, 200);
   assert.match(html, /title="Animated finger counter"/);
-  assert.match(html, /src="\/finger-counter-app\/index\.html\?v=20260909-animated-count"/);
+  assert.match(html, /src="\/finger-counter-app\/index\.html\?v=20260909-polished-ui"/);
   assert.match(counterHtml, /Raise it\. See it\./);
   assert.match(counterHtml, /camera frames stay in this browser/i);
   assert.match(counterScript, /maxNumHands:\s*2/);
@@ -203,6 +203,8 @@ test("renders and packages the animated Finger Counter", async () => {
   assert.match(counterScript, /requestFullscreen/);
   assert.match(counterStyles, /@keyframes number-pop/);
   assert.match(counterStyles, /@media \(max-width: 700px\)/);
+  assert.match(counterStyles, /background-clip:\s*text/);
+  assert.match(counterStyles, /100dvh/);
 });
 
 test("keeps the large Inkora installer outside the Sites artifact", async () => {

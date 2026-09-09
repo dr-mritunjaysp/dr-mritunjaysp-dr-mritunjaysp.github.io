@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#05070d">
+    <meta name="theme-color" content="#07111f">
     <meta name="description" content="Count raised fingers with private, on-device hand tracking and a full-screen animated number.">
     <title>Finger Counter</title>
-    <link rel="stylesheet" href="./style.css?v=20260909-animated-count">
+    <link rel="stylesheet" href="./style.css?v=20260909-polished-ui">
     <script src="../vision-pen-studio/static/vendor/mediapipe-hands/hands.js"></script>
   </head>
   <body>
@@ -16,7 +16,7 @@
 
       <header class="counter-header">
         <a class="counter-brand" href="/finger-counter" aria-label="Finger Counter home">
-          <span class="brand-mark" aria-hidden="true">01</span>
+          <span class="brand-mark" aria-hidden="true">FC</span>
           <span><strong>Finger Counter</strong><small>Private on-device hand tracking</small></span>
         </a>
         <div class="counter-actions">
@@ -38,23 +38,28 @@
       </section>
 
       <section class="count-display" id="countDisplay" aria-label="Detected finger count" hidden>
-        <p class="tracking-label" id="trackingLabel">Show your hand to the camera</p>
-        <div class="number-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
-        <div class="number-stack" aria-live="polite" aria-atomic="true">
-          <strong id="countNumber">—</strong>
-          <span id="countWord">Waiting</span>
+        <div class="result-panel">
+          <p class="tracking-label" id="trackingLabel">Show your hand to the camera</p>
+          <div class="number-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="number-stack" aria-live="polite" aria-atomic="true">
+            <strong id="countNumber">—</strong>
+            <span id="countWord">Waiting</span>
+          </div>
+          <div class="result-footer">
+            <i aria-hidden="true"></i>
+            <p class="count-hint" id="countHint">Raise one or both hands</p>
+          </div>
         </div>
-        <p class="count-hint" id="countHint">Raise one or both hands</p>
       </section>
 
       <aside class="camera-preview" id="cameraPreview" hidden aria-label="Live mirrored camera preview">
         <video id="cameraVideo" autoplay muted playsinline></video>
         <div class="preview-shade" aria-hidden="true"></div>
-        <span>Live preview</span>
+        <span><i aria-hidden="true"></i>Live preview</span>
       </aside>
 
       <p class="error-message" id="errorMessage" role="alert" hidden></p>
     </main>
-    <script type="module" src="./app.js?v=20260909-animated-count"></script>
+    <script type="module" src="./app.js?v=20260909-polished-ui"></script>
   </body>
 </html>

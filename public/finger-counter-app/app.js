@@ -38,6 +38,7 @@ function replayCountAnimation() {
 }
 
 function showCount(count, handCount) {
+  stage.dataset.count = String(count);
   $("countNumber").textContent = String(count);
   $("countWord").textContent = NUMBER_WORDS[count] || String(count);
   $("trackingLabel").textContent = `${handCount} ${handCount === 1 ? "hand" : "hands"} detected`;
@@ -46,6 +47,7 @@ function showCount(count, handCount) {
 }
 
 function clearCount() {
+  delete stage.dataset.count;
   $("countNumber").textContent = "—";
   $("countWord").textContent = "Waiting";
   $("trackingLabel").textContent = "Show your hand to the camera";
