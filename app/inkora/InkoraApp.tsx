@@ -27,6 +27,7 @@ import {
   Layers,
 } from "lucide-react";
 import { InkSurfaceCanvas } from "./InkSurfaceCanvas";
+import { INKORA_INSTALLER_URL } from "./installer";
 
 const featureCards = [
   {
@@ -100,7 +101,7 @@ export function InkoraApp() {
     setDownloadCount((prev) => prev + 1);
 
     const link = document.createElement("a");
-    link.href = "/downloads/Inkora-Setup-1.0.0-x64.exe";
+    link.href = INKORA_INSTALLER_URL;
     link.download = "Inkora-Setup-1.0.0-x64.exe";
     document.body.appendChild(link);
     link.click();

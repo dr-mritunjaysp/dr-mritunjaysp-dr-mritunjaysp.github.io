@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#05070d">
+    <meta name="description" content="Count raised fingers with private, on-device hand tracking and a full-screen animated number.">
+    <title>Finger Counter</title>
+    <link rel="stylesheet" href="./style.css?v=20260909-animated-count">
+    <script src="../vision-pen-studio/static/vendor/mediapipe-hands/hands.js"></script>
+  </head>
+  <body>
+    <main class="counter-stage" id="counterStage">
+      <div class="ambient-grid" aria-hidden="true"></div>
+      <div class="count-flash" aria-hidden="true"></div>
+
+      <header class="counter-header">
+        <a class="counter-brand" href="/finger-counter" aria-label="Finger Counter home">
+          <span class="brand-mark" aria-hidden="true">01</span>
+          <span><strong>Finger Counter</strong><small>Private on-device hand tracking</small></span>
+        </a>
+        <div class="counter-actions">
+          <span class="camera-status" id="cameraStatus"><i aria-hidden="true"></i><span>Camera off</span></span>
+          <button class="ghost-button" id="fullscreenButton" type="button">Full screen</button>
+          <button class="ghost-button stop-button" id="stopButton" type="button" hidden>Stop</button>
+        </div>
+      </header>
+
+      <section class="camera-gate" id="cameraGate" aria-labelledby="gateTitle">
+        <span class="gate-icon" aria-hidden="true">✋</span>
+        <p class="eyebrow">Show a number with your hand</p>
+        <h1 id="gateTitle">Raise it. See it.</h1>
+        <p>Raise fingers on one or both hands. Your total will burst onto the screen as an animated number.</p>
+        <button class="start-button" id="startButton" type="button">
+          <span>Start camera</span><i aria-hidden="true">→</i>
+        </button>
+        <small>Camera frames stay in this browser and are never uploaded.</small>
+      </section>
+
+      <section class="count-display" id="countDisplay" aria-label="Detected finger count" hidden>
+        <p class="tracking-label" id="trackingLabel">Show your hand to the camera</p>
+        <div class="number-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="number-stack" aria-live="polite" aria-atomic="true">
+          <strong id="countNumber">—</strong>
+          <span id="countWord">Waiting</span>
+        </div>
+        <p class="count-hint" id="countHint">Raise one or both hands</p>
+      </section>
+
+      <aside class="camera-preview" id="cameraPreview" hidden aria-label="Live mirrored camera preview">
+        <video id="cameraVideo" autoplay muted playsinline></video>
+        <div class="preview-shade" aria-hidden="true"></div>
+        <span>Live preview</span>
+      </aside>
+
+      <p class="error-message" id="errorMessage" role="alert" hidden></p>
+    </main>
+    <script type="module" src="./app.js?v=20260909-animated-count"></script>
+  </body>
+</html>

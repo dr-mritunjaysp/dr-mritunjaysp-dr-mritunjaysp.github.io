@@ -52,8 +52,11 @@ import {
 } from "./scholar-data";
 import { SortingVisualizer } from "./sorting/SortingVisualizer";
 import { InkoraApp } from "./inkora/InkoraApp";
+import { INKORA_INSTALLER_URL } from "./inkora/installer";
 import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
 import { VisionPenPage } from "./vision-pen/VisionPenPage";
+import { FilterVerseShell } from "./filterverse/FilterVerseShell";
+import { FingerCounterPage } from "./finger-counter/FingerCounterPage";
 
 type SectionKey =
   | "home"
@@ -62,6 +65,8 @@ type SectionKey =
   | "projects"
   | "sorting-visualizer"
   | "vision-pen"
+  | "filterverse"
+  | "finger-counter"
   | "inkora"
   | "pen-app"
   | "penapp"
@@ -108,6 +113,8 @@ const primaryNav = [
 ] as const;
 
 const moreNav = [
+  { label: "Filter Verse", href: "/filterverse", key: "filterverse" },
+  { label: "Finger Counter", href: "/finger-counter", key: "finger-counter" },
   { label: "Vision Pen", href: "/vision-pen", key: "vision-pen" },
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
@@ -656,6 +663,30 @@ function Header({
             {moreOpen && (
               <div className="more-menu" role="menu">
                 <Link
+                  href="/filterverse"
+                  role="menuitem"
+                  className={section === "filterverse" ? "active" : ""}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
+                  Filter Verse
+                </Link>
+                <Link
+                  href="/finger-counter"
+                  role="menuitem"
+                  className={section === "finger-counter" ? "active" : ""}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
+                  Finger Counter
+                </Link>
+                <Link
                   href="/vision-pen"
                   role="menuitem"
                   className={section === "vision-pen" ? "active" : ""}
@@ -680,7 +711,7 @@ function Header({
                 >
                   Scholar Resume
                 </a>
-                {moreNav.slice(1).map((item) => (
+                {moreNav.slice(3).map((item) => (
                   <Link
                     href={item.href}
                     key={item.key}
@@ -2744,7 +2775,7 @@ function ProjectsPage() {
             </Link>
             <a
               className="btn-sort-secondary"
-              href="/downloads/Inkora-Setup-1.0.0-x64.exe"
+              href={INKORA_INSTALLER_URL}
               download="Inkora-Setup-1.0.0-x64.exe"
               style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.86rem", padding: "8px 14px" }}
             >
@@ -4000,6 +4031,12 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "vision-pen":
       content = <VisionPenPage />;
+      break;
+    case "filterverse":
+      content = <FilterVerseShell />;
+      break;
+    case "finger-counter":
+      content = <FingerCounterPage />;
       break;
     case "inkora":
     case "pen-app":

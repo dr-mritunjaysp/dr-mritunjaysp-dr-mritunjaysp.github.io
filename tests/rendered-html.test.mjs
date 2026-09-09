@@ -153,8 +153,72 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.equal(response.status, 200);
   assert.match(html, /class="site-header"/);
   assert.match(html, /title="Vision Pen air-writing studio"/);
-  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260814-smooth-board"/);
+  assert.match(html, /src="\/vision-pen-studio\/index\.html\?v=20260826-tracking-age"/);
   assert.match(html, /class="site-footer"/);
+});
+
+test("opens Filter Verse and Finger Counter above Vision Pen", async () => {
+  const response = await render("/filterverse");
+  const html = await response.text();
+  const source = await readFile(
+    new URL("../app/PortfolioApp.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.equal(response.status, 200);
+  assert.match(source, /href="\/filterverse"[\s\S]*Filter Verse[\s\S]*href="\/finger-counter"[\s\S]*Finger Counter[\s\S]*href="\/vision-pen"/);
+  assert.match(html, /Computer Vision home/);
+  assert.match(html, /Sampling and Quantization/);
+  assert.match(html, /Processing logic/);
+  assert.match(html, /Upload an image and see the result/);
+  assert.match(html, /type="file"/);
+  assert.match(html, /image\/png,image\/jpeg,image\/webp/);
+  assert.doesNotMatch(html, /This menu is kept ready for your next instruction/);
+  assert.doesNotMatch(html, /No content added/);
+  for (const removedMenu of ["What is Computer Vision", "Overview", "Image Upload", "Filter Explorer", "Applications &amp; Ethics", "Image Formation", "Resolution", "Histograms", "Histogram Matching", "Spatial Filtering", "Learning Center"]) {
+    assert.doesNotMatch(html, new RegExp(removedMenu));
+  }
+  assert.doesNotMatch(html, /217 slides distilled/);
+  assert.doesNotMatch(html, /From pixels to visual intelligence/);
+  assert.doesNotMatch(html, /Core formulas/);
+  assert.doesNotMatch(html, /Image Processing Filter Laboratory/);
+});
+
+test("renders and packages the animated Finger Counter", async () => {
+  const response = await render("/finger-counter");
+  const html = await response.text();
+  const [counterHtml, counterScript, counterStyles] = await Promise.all([
+    readFile(new URL("../dist/finger-counter-app/index.html", import.meta.url), "utf8"),
+    readFile(new URL("../dist/finger-counter-app/app.js", import.meta.url), "utf8"),
+    readFile(new URL("../dist/finger-counter-app/style.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.equal(response.status, 200);
+  assert.match(html, /title="Animated finger counter"/);
+  assert.match(html, /src="\/finger-counter-app\/index\.html\?v=20260909-animated-count"/);
+  assert.match(counterHtml, /Raise it\. See it\./);
+  assert.match(counterHtml, /camera frames stay in this browser/i);
+  assert.match(counterScript, /maxNumHands:\s*2/);
+  assert.match(counterScript, /NUMBER_WORDS/);
+  assert.match(counterScript, /requestFullscreen/);
+  assert.match(counterStyles, /@keyframes number-pop/);
+  assert.match(counterStyles, /@media \(max-width: 700px\)/);
+});
+
+test("keeps the large Inkora installer outside the Sites artifact", async () => {
+  const [portfolio, inkora, installer] = await Promise.all([
+    readFile(new URL("../app/PortfolioApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/inkora/InkoraApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/inkora/installer.ts", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(portfolio, /href=\{INKORA_INSTALLER_URL\}/);
+  assert.match(inkora, /link\.href = INKORA_INSTALLER_URL/);
+  assert.match(installer, /raw\.githubusercontent\.com/);
+  await assert.rejects(
+    readFile(new URL("../dist/downloads/Inkora-Setup-1.0.0-x64.exe", import.meta.url)),
+    { code: "ENOENT" },
+  );
 });
 
 test("redirects the previous Vision Pen URL to the integrated page", async () => {
@@ -227,11 +291,15 @@ test("packages the responsive Vision Pen browser app", async () => {
   ]);
 
   assert.match(html, /VisionPen/);
-  assert.match(html, /\.\/static\/css\/style\.css\?v=20260814-smooth-board/);
+  assert.match(html, /\.\/static\/css\/style\.css\?v=20260826-tracking-age/);
   assert.match(html, /data-board="black"/);
   assert.match(html, /data-board="white"/);
   assert.match(html, /\.\/static\/js\/app\.js/);
-  assert.match(appScript, /yolo_enabled: false/);
+  assert.match(html, /<a[^>]*id="objectDetectionBtn"[^>]*href="\.\/smart-vision\.html\?v=[^"]+"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+  assert.match(html, />Object Detection<\/span>/);
+  assert.match(appScript, /objectDetectionBtn\.addEventListener\('click', \(\) => stopCamera\(\)\)/);
+  assert.doesNotMatch(html + appScript, /smartVisionDialog|smartVisionFrame|autostart=1/);
+  assert.doesNotMatch(appScript, /yolo-detect|yolo_enabled/);
   assert.match(appScript, /pointerdown/);
   assert.match(canvasEngine, /drawCurve/);
   assert.match(canvasEngine, /maxSpacing/);
@@ -241,4 +309,11 @@ test("packages the responsive Vision Pen browser app", async () => {
   assert.match(styles, /\.control-dock\s*\{[^}]*overflow:\s*hidden/s);
   assert.match(styles, /grid-template-areas:\s*"board board"\s*"tools colours"\s*"stroke options"/s);
   assert.match(styles, /\.tool-btn i\s*\{[^}]*font-size:\s*0\.7rem/s);
+
+  // Static builds must ship our current camera app, never a sibling checkout.
+  for (const asset of ["index.html", "smart-vision.html", "static/css/smart-vision.css", "static/js/smartVision.js", "static/js/smartVisionCore.mjs", "static/vendor/smart-vision/face/age_gender_model.bin"]) {
+    const source = await readFile(new URL(`../public/vision-pen-studio/${asset}`, import.meta.url));
+    const packaged = await readFile(new URL(`../dist/vision-pen-studio/${asset}`, import.meta.url));
+    assert.deepEqual(packaged, source, asset);
+  }
 });

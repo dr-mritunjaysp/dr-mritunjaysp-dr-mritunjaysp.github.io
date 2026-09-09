@@ -22,6 +22,8 @@ async function prerender() {
     "/projects",
     "/sorting-visualizer",
     "/vision-pen",
+    "/filterverse",
+    "/finger-counter",
     "/inkora",
     "/pen-app",
     "/penapp",
@@ -51,8 +53,22 @@ async function prerender() {
 
   // Copy public/ files into dist/
   const publicDir = path.join(projectRoot, "public");
+  const localInstallerPath = path.join(
+    publicDir,
+    "downloads",
+    "Inkora-Setup-1.0.0-x64.exe",
+  );
+  const packagedInstallerPath = path.join(
+    distDir,
+    "downloads",
+    "Inkora-Setup-1.0.0-x64.exe",
+  );
+  fs.rmSync(packagedInstallerPath, { force: true });
   if (fs.existsSync(publicDir)) {
-    fs.cpSync(publicDir, distDir, { recursive: true });
+    fs.cpSync(publicDir, distDir, {
+      recursive: true,
+      filter: (source) => path.resolve(source) !== path.resolve(localInstallerPath),
+    });
     console.log("Copied public/ assets into dist/");
   }
 
@@ -105,24 +121,15 @@ async function prerender() {
     console.warn("WARNING: Resume Builder build not found at", publicResumeBuilder);
   }
 
-  // Package Vision Pen as a standalone browser app. Local builds refresh from
-  // the sibling source project; hosted/CI builds use the checked-in public copy.
-  const visionPenProject = path.resolve(projectRoot, "..", "Vision Pen");
+  // The checked-in app is the source of truth for local, Docker and CI builds.
+  // Never overwrite portfolio changes with an unrelated sibling checkout.
   const publicVisionPen = path.join(projectRoot, "public", "vision-pen-studio");
   const visionPenTarget = path.join(distDir, "vision-pen-studio");
-  const visionPenStatic = path.join(visionPenProject, "static");
-  const visionPenTemplate = path.join(visionPenProject, "templates", "index.html");
-
-  if (fs.existsSync(visionPenStatic) && fs.existsSync(visionPenTemplate)) {
-    fs.mkdirSync(visionPenTarget, { recursive: true });
-    fs.cpSync(visionPenStatic, path.join(visionPenTarget, "static"), { recursive: true });
-    fs.copyFileSync(visionPenTemplate, path.join(visionPenTarget, "index.html"));
-    console.log("Copied Vision Pen app from the sibling project into dist/vision-pen-studio/");
-  } else if (fs.existsSync(publicVisionPen)) {
+  if (fs.existsSync(publicVisionPen)) {
     fs.cpSync(publicVisionPen, visionPenTarget, { recursive: true });
     console.log("Copied the checked-in Vision Pen app into dist/vision-pen-studio/");
   } else {
-    console.warn("WARNING: Vision Pen app not found at", visionPenProject);
+    throw new Error(`Vision Pen app not found at ${publicVisionPen}`);
   }
 
   console.log("Static pre-rendering completed successfully!");

@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./static/vendor/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="./static/css/style.css?v=20260814-smooth-board">
+    <link rel="stylesheet" href="./static/css/style.css?v=20260826-tracking-age">
 
     <script src="./static/vendor/mediapipe-hands/hands.js"></script>
 </head>
@@ -37,10 +37,11 @@
             </div>
 
             <div class="header-actions">
-                <button class="icon-btn highlight-btn" id="yoloScanBtn" type="button" title="Scan the current view for objects" disabled>
+                <a class="icon-btn highlight-btn" id="objectDetectionBtn" href="./smart-vision.html?v=20260826-tracking-age" target="_blank" rel="noopener noreferrer" title="Open Object Detection in a new tab" aria-label="Object Detection (opens in a new tab)">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span class="btn-text-sm">Object scan</span>
-                </button>
+                    <span class="btn-text-sm">Object Detection</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                </a>
                 <button class="icon-btn" id="gestureGuideBtn" type="button" title="Open gesture guide" aria-label="Open gesture guide">
                     <i class="fa-solid fa-hand"></i>
                 </button>
@@ -86,14 +87,6 @@
                         <span class="gesture-sub" id="gestureSub">Start the camera when you are ready</span>
                     </div>
                 </div>
-
-                <aside class="yolo-result-card" id="yoloResultCard" aria-live="polite">
-                    <div class="yolo-card-header">
-                        <span><i class="fa-solid fa-eye"></i> AI object scan</span>
-                        <button class="yolo-close-btn" id="closeYoloCardBtn" type="button" aria-label="Close scan results">&times;</button>
-                    </div>
-                    <div class="yolo-card-body" id="yoloCardContent">Preparing scan…</div>
-                </aside>
 
                 <nav class="floating-quick-actions" aria-label="Drawing actions">
                     <button class="action-circle-btn danger" id="clearCanvasBtn" type="button" title="Clear canvas">
@@ -205,6 +198,6 @@
 
     <script src="./static/js/canvasEngine.js?v=20260814-smooth-board"></script>
     <script src="./static/js/handTracker.js?v=20260814-smooth-board"></script>
-    <script src="./static/js/app.js?v=20260814-smooth-board"></script>
+    <script src="./static/js/app.js?v=20260826-tracking-age"></script>
 </body>
 </html>
