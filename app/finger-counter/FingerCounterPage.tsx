@@ -4,7 +4,7 @@ export function FingerCounterPage() {
       <div className="finger-counter-frame-shell">
         <iframe
           className="finger-counter-frame"
-          src="/finger-counter-app/index.html?v=20260909-animated-count"
+          src="/finger-counter-app/index.html?v=20260909-polished-ui"
           title="Animated finger counter"
           allow="camera; fullscreen"
           allowFullScreen
