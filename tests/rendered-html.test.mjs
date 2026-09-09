@@ -157,7 +157,7 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.match(html, /class="site-footer"/);
 });
 
-test("opens the single Sampling and Quantization menu above Vision Pen", async () => {
+test("opens Filter Verse and Finger Counter above Vision Pen", async () => {
   const response = await render("/filterverse");
   const html = await response.text();
   const source = await readFile(
@@ -166,7 +166,7 @@ test("opens the single Sampling and Quantization menu above Vision Pen", async (
   );
 
   assert.equal(response.status, 200);
-  assert.match(source, /href="\/filterverse"[\s\S]*Filter Verse[\s\S]*href="\/vision-pen"/);
+  assert.match(source, /href="\/filterverse"[\s\S]*Filter Verse[\s\S]*href="\/finger-counter"[\s\S]*Finger Counter[\s\S]*href="\/vision-pen"/);
   assert.match(html, /Computer Vision home/);
   assert.match(html, /Sampling and Quantization/);
   assert.match(html, /Processing logic/);
@@ -182,6 +182,27 @@ test("opens the single Sampling and Quantization menu above Vision Pen", async (
   assert.doesNotMatch(html, /From pixels to visual intelligence/);
   assert.doesNotMatch(html, /Core formulas/);
   assert.doesNotMatch(html, /Image Processing Filter Laboratory/);
+});
+
+test("renders and packages the animated Finger Counter", async () => {
+  const response = await render("/finger-counter");
+  const html = await response.text();
+  const [counterHtml, counterScript, counterStyles] = await Promise.all([
+    readFile(new URL("../dist/finger-counter-app/index.html", import.meta.url), "utf8"),
+    readFile(new URL("../dist/finger-counter-app/app.js", import.meta.url), "utf8"),
+    readFile(new URL("../dist/finger-counter-app/style.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.equal(response.status, 200);
+  assert.match(html, /title="Animated finger counter"/);
+  assert.match(html, /src="\/finger-counter-app\/index\.html\?v=20260909-animated-count"/);
+  assert.match(counterHtml, /Raise it\. See it\./);
+  assert.match(counterHtml, /camera frames stay in this browser/i);
+  assert.match(counterScript, /maxNumHands:\s*2/);
+  assert.match(counterScript, /NUMBER_WORDS/);
+  assert.match(counterScript, /requestFullscreen/);
+  assert.match(counterStyles, /@keyframes number-pop/);
+  assert.match(counterStyles, /@media \(max-width: 700px\)/);
 });
 
 test("redirects the previous Vision Pen URL to the integrated page", async () => {

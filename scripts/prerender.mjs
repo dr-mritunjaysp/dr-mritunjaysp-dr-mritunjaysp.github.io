@@ -23,6 +23,7 @@ async function prerender() {
     "/sorting-visualizer",
     "/vision-pen",
     "/filterverse",
+    "/finger-counter",
     "/inkora",
     "/pen-app",
     "/penapp",

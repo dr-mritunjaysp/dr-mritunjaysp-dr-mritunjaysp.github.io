@@ -55,6 +55,7 @@ import { InkoraApp } from "./inkora/InkoraApp";
 import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
 import { VisionPenPage } from "./vision-pen/VisionPenPage";
 import { FilterVerseShell } from "./filterverse/FilterVerseShell";
+import { FingerCounterPage } from "./finger-counter/FingerCounterPage";
 
 type SectionKey =
   | "home"
@@ -64,6 +65,7 @@ type SectionKey =
   | "sorting-visualizer"
   | "vision-pen"
   | "filterverse"
+  | "finger-counter"
   | "inkora"
   | "pen-app"
   | "penapp"
@@ -111,6 +113,7 @@ const primaryNav = [
 
 const moreNav = [
   { label: "Filter Verse", href: "/filterverse", key: "filterverse" },
+  { label: "Finger Counter", href: "/finger-counter", key: "finger-counter" },
   { label: "Vision Pen", href: "/vision-pen", key: "vision-pen" },
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
@@ -671,6 +674,18 @@ function Header({
                   Filter Verse
                 </Link>
                 <Link
+                  href="/finger-counter"
+                  role="menuitem"
+                  className={section === "finger-counter" ? "active" : ""}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
+                  Finger Counter
+                </Link>
+                <Link
                   href="/vision-pen"
                   role="menuitem"
                   className={section === "vision-pen" ? "active" : ""}
@@ -695,7 +710,7 @@ function Header({
                 >
                   Scholar Resume
                 </a>
-                {moreNav.slice(2).map((item) => (
+                {moreNav.slice(3).map((item) => (
                   <Link
                     href={item.href}
                     key={item.key}
@@ -4018,6 +4033,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "filterverse":
       content = <FilterVerseShell />;
+      break;
+    case "finger-counter":
+      content = <FingerCounterPage />;
       break;
     case "inkora":
     case "pen-app":
