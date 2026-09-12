@@ -95,34 +95,68 @@ export interface ScholarMetrics {
   i10_index?: number;
 }
 
+const SCHOLAR_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
+const SCHOLAR_RETRY_INTERVAL_MS = 5 * 60 * 1000;
+const SCHOLAR_SNAPSHOT_URL =
+  "https://raw.githubusercontent.com/dr-mritunjaysp/" +
+  "dr-mritunjaysp-dr-mritunjaysp.github.io/main/public/data/google-scholar.json";
+
 let scholarApiRequest: Promise<ScholarSnapshot | null> | null = null;
+let scholarApiSnapshot: ScholarSnapshot | null = null;
+let scholarApiAttemptedAt = 0;
 
 function fetchScholarApi(): Promise<ScholarSnapshot | null> {
   if (scholarApiRequest) return scholarApiRequest;
 
-  scholarApiRequest = fetch("/api/scholar", {
-    cache: "no-store",
-    headers: { Accept: "application/json" },
-  })
-    .then(async (response) => {
-      if (
-        !response.ok ||
-        !response.headers.get("content-type")?.includes("application/json")
-      ) {
-        return null;
+  const now = Date.now();
+  const refreshAfter = scholarApiSnapshot
+    ? SCHOLAR_REFRESH_INTERVAL_MS
+    : SCHOLAR_RETRY_INTERVAL_MS;
+  if (now - scholarApiAttemptedAt < refreshAfter) {
+    return Promise.resolve(scholarApiSnapshot);
+  }
+  scholarApiAttemptedAt = now;
+
+  const hourVersion = Math.floor(now / SCHOLAR_REFRESH_INTERVAL_MS);
+  const candidates = [
+    `${SCHOLAR_SNAPSHOT_URL}?v=${hourVersion}`,
+    `/data/google-scholar.json?v=${hourVersion}`,
+    "/api/scholar",
+  ];
+
+  scholarApiRequest = (async () => {
+    for (const candidate of candidates) {
+      try {
+        const response = await fetch(candidate, {
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+        });
+        if (
+          !response.ok ||
+          !response.headers.get("content-type")?.includes("application/json")
+        ) {
+          continue;
+        }
+        const value = (await response.json()) as Partial<ScholarSnapshot>;
+        if (
+          !Number.isFinite(value.total_citations) ||
+          !Number.isFinite(value.h_index) ||
+          !Number.isFinite(value.i10_index) ||
+          !Array.isArray(value.papers) ||
+          value.papers.length === 0
+        ) {
+          continue;
+        }
+        scholarApiSnapshot = value as ScholarSnapshot;
+        return scholarApiSnapshot;
+      } catch {
+        // Try the bundled snapshot and server API before retaining stale data.
       }
-      const value = (await response.json()) as Partial<ScholarSnapshot>;
-      if (
-        !Number.isFinite(value.total_citations) ||
-        !Number.isFinite(value.h_index) ||
-        !Number.isFinite(value.i10_index) ||
-        !Array.isArray(value.papers)
-      ) {
-        return null;
-      }
-      return value as ScholarSnapshot;
-    })
-    .catch(() => null);
+    }
+    return scholarApiSnapshot;
+  })().finally(() => {
+    scholarApiRequest = null;
+  });
 
   return scholarApiRequest;
 }
@@ -309,10 +343,18 @@ export function subscribeScholarMetrics(cb: (m: ScholarMetrics) => void): () => 
 
   let unsub: (() => void) | undefined;
   let destroyed = false;
+  let bestMetrics: Required<ScholarMetrics> = {
+    total_citations: CACHED_SCHOLAR_SNAPSHOT.total_citations,
+    h_index: CACHED_SCHOLAR_SNAPSHOT.h_index,
+    i10_index: CACHED_SCHOLAR_SNAPSHOT.i10_index,
+  };
 
-  const extractMetrics = (d: any, useVerifiedFloor = true) => {
-    if (!d) return;
-    const src = d.author_metrics || d;
+  const extractMetrics = (value: unknown, useVerifiedFloor = true) => {
+    if (!value || typeof value !== "object") return;
+    const record = value as Record<string, unknown>;
+    const src = record.author_metrics && typeof record.author_metrics === "object"
+      ? record.author_metrics as Record<string, unknown>
+      : record;
     const total_citations = Math.max(
       useVerifiedFloor ? CACHED_SCHOLAR_SNAPSHOT.total_citations : 0,
       parseCounterValue(src.total_citations ?? src.citations ?? src.citation_count),
@@ -325,20 +367,23 @@ export function subscribeScholarMetrics(cb: (m: ScholarMetrics) => void): () => 
       useVerifiedFloor ? CACHED_SCHOLAR_SNAPSHOT.i10_index : 0,
       parseCounterValue(src.i10_index ?? src.i10index),
     );
-    if (total_citations > 0 || h_index > 0 || i10_index > 0) {
-      cb({ total_citations, h_index, i10_index });
-    }
+    bestMetrics = {
+      total_citations: Math.max(bestMetrics.total_citations, total_citations),
+      h_index: Math.max(bestMetrics.h_index, h_index),
+      i10_index: Math.max(bestMetrics.i10_index, i10_index),
+    };
+    cb(bestMetrics);
   };
 
-  cb({
-    total_citations: CACHED_SCHOLAR_SNAPSHOT.total_citations,
-    h_index: CACHED_SCHOLAR_SNAPSHOT.h_index,
-    i10_index: CACHED_SCHOLAR_SNAPSHOT.i10_index,
-  });
+  cb(bestMetrics);
 
-  void fetchScholarApi().then((snapshot) => {
-    if (!destroyed && snapshot) extractMetrics(snapshot, false);
-  });
+  const refreshScholar = () => {
+    void fetchScholarApi().then((snapshot) => {
+      if (!destroyed && snapshot) extractMetrics(snapshot, false);
+    });
+  };
+  refreshScholar();
+  const refreshTimer = window.setInterval(refreshScholar, SCHOLAR_REFRESH_INTERVAL_MS);
 
   // Immediate REST fetch for instantaneous live rendering
   fetch("https://portfolio-6a1b9-default-rtdb.firebaseio.com/visitor-counter/scholar-metrics/current.json")
@@ -365,6 +410,7 @@ export function subscribeScholarMetrics(cb: (m: ScholarMetrics) => void): () => 
 
   return () => {
     destroyed = true;
+    window.clearInterval(refreshTimer);
     unsub?.();
   };
 }
@@ -403,15 +449,29 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
 
   let unsub: (() => void) | undefined;
   let destroyed = false;
+  let bestCitationMap = { ...DEFAULT_PUBLICATION_CITATIONS };
 
-  const handlePubData = (d: any) => {
-    if (!d || typeof d !== "object") return;
+  const publishCitationMap = (updates: Record<string, number>) => {
+    bestCitationMap = mergeCitationMaps(bestCitationMap, updates);
+    cb(bestCitationMap);
+  };
+
+  const handlePubData = (value: unknown) => {
+    if (!value || typeof value !== "object") return;
+    const record = value as Record<string, unknown>;
     const map: Record<string, number> = {};
-    const items = d.publications || d.articles || d;
+    const items = record.publications || record.articles || record;
     if (Array.isArray(items)) {
-      items.forEach((item: any) => {
-        if (item.title && (item.citations !== undefined || item.num_citations !== undefined)) {
-          map[item.title] = parseCounterValue(item.citations ?? item.num_citations);
+      items.forEach((item) => {
+        if (!item || typeof item !== "object") return;
+        const publication = item as Record<string, unknown>;
+        if (
+          typeof publication.title === "string" &&
+          (publication.citations !== undefined || publication.num_citations !== undefined)
+        ) {
+          map[publication.title] = parseCounterValue(
+            publication.citations ?? publication.num_citations,
+          );
         }
       });
     } else if (typeof items === "object") {
@@ -424,7 +484,7 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
             }
           });
         } else if (val && typeof val === "object" && "citations" in val) {
-          const parsed = parseCounterValue((val as any).citations);
+          const parsed = parseCounterValue((val as Record<string, unknown>).citations);
           map[key] = parsed;
           Object.keys(DEFAULT_PUBLICATION_CITATIONS).forEach((origTitle) => {
             if (sanitizeFirebaseKey(origTitle) === key) {
@@ -435,23 +495,22 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
       });
     }
     if (Object.keys(map).length > 0) {
-      cb(mergeCitationMaps(DEFAULT_PUBLICATION_CITATIONS, map));
+      publishCitationMap(map);
     }
   };
 
   // Immediate initial callback with defaults
-  cb(DEFAULT_PUBLICATION_CITATIONS);
+  cb(bestCitationMap);
 
-  void fetchScholarApi().then((snapshot) => {
-    if (!destroyed && snapshot) {
-      cb(
-        mergeCitationMaps(
-          DEFAULT_PUBLICATION_CITATIONS,
-          papersToCitationMap(snapshot.papers),
-        ),
-      );
-    }
-  });
+  const refreshScholar = () => {
+    void fetchScholarApi().then((snapshot) => {
+      if (!destroyed && snapshot) {
+        publishCitationMap(papersToCitationMap(snapshot.papers));
+      }
+    });
+  };
+  refreshScholar();
+  const refreshTimer = window.setInterval(refreshScholar, SCHOLAR_REFRESH_INTERVAL_MS);
 
   // Fetch from Firebase RTDB
   fetch("https://portfolio-6a1b9-default-rtdb.firebaseio.com/visitor-counter/publication-citations.json")
@@ -471,10 +530,7 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
         pubRef,
         (snap) => {
           try {
-            if (!snap.exists()) {
-              cb(DEFAULT_PUBLICATION_CITATIONS);
-              return;
-            }
+            if (!snap.exists()) return;
             handlePubData(snap.val());
           } catch (e) {
             console.warn("Error processing publication citations:", e);
@@ -487,6 +543,7 @@ export function subscribePublicationCitations(cb: (m: Record<string, number>) =>
 
   return () => {
     destroyed = true;
+    window.clearInterval(refreshTimer);
     unsub?.();
   };
 }

@@ -43,11 +43,11 @@ const scholarPaper = (
  * Google Scholar is reachable and it remains a safe static-hosting fallback.
  */
 export const CACHED_SCHOLAR_SNAPSHOT: ScholarSnapshot = {
-  total_citations: 622,
+  total_citations: 640,
   h_index: 14,
   i10_index: 17,
   profile_url: GOOGLE_SCHOLAR_PROFILE_URL,
-  fetched_at: "2026-08-25T10:41:48.523Z",
+  fetched_at: "2026-09-12T05:31:39.459Z",
   source: "cached",
   papers: [
     scholarPaper(
@@ -59,7 +59,7 @@ export const CACHED_SCHOLAR_SNAPSHOT: ScholarSnapshot = {
     ),
     scholarPaper(
       "Metaverse for education: Developments, challenges, and future direction",
-      68,
+      71,
       "2025",
       "kNdYIx-mwKoC",
       "6379278039350305310",
@@ -73,28 +73,28 @@ export const CACHED_SCHOLAR_SNAPSHOT: ScholarSnapshot = {
     ),
     scholarPaper(
       "A review on emergency vehicle management for intelligent transportation systems",
-      58,
+      61,
       "2024",
       "_FxGoFyzp5QC",
       "13729872689521760260",
     ),
     scholarPaper(
       "Unlocking the potential of interconnected blockchains: A comprehensive study of Cosmos blockchain interoperability",
-      52,
+      55,
       "2024",
       "roLk4NBRz8UC",
       "466942265117435416",
     ),
     scholarPaper(
       "Future of connectivity: A comprehensive review of innovations and challenges in 7G smart networks",
-      47,
+      49,
       "2025",
       "KlAtU1dfN6UC",
       "7172045923725479815",
     ),
     scholarPaper(
       "DemocracyGuard: Blockchain-based secure voting framework for digital democracy",
-      39,
+      40,
       "2025",
       "ufrVoPGSRksC",
       "12403159287003757603",
@@ -115,21 +115,21 @@ export const CACHED_SCHOLAR_SNAPSHOT: ScholarSnapshot = {
     ),
     scholarPaper(
       "A comprehensive survey on data converters for IoT applications: Scope, issues and future directions",
-      27,
+      29,
       "2025",
       "0EnyYjriUFMC",
       "7821640531072506724",
     ),
     scholarPaper(
       "V-Track: Blockchain-enabled IoT system for reliable vehicle location verification",
-      22,
+      23,
       "2024",
       "WF5omc3nYNoC",
       "5921717216089011881",
     ),
     scholarPaper(
       "Blockchain-enabled vehicle lifecycle management with predictive maintenance using federated learning",
-      17,
+      19,
       "2024",
       "LkGwnXOMwfcC",
       "10900713872302634975",
@@ -143,7 +143,7 @@ export const CACHED_SCHOLAR_SNAPSHOT: ScholarSnapshot = {
     ),
     scholarPaper(
       "Blockchain-enabled intrusion detection systems for real-time vehicle monitoring",
-      14,
+      15,
       "2025",
       "4TOpqqG69KYC",
       "3672807562139699312",

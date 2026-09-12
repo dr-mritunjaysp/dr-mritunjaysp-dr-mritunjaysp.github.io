@@ -1,0 +1,43 @@
+name: Update Google Scholar citations
+
+on:
+  schedule:
+    # Run once every hour, offset from the busiest start-of-hour window.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: google-scholar-citations
+  cancel-in-progress: false
+
+jobs:
+  refresh-scholar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Read Google Scholar profile
+        run: node scripts/update-google-scholar.mjs
+
+      - name: Publish citation changes
+        shell: bash
+        run: |
+          if git diff --quiet -- public/data/google-scholar.json; then
+            echo "Google Scholar citation data is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/google-scholar.json
+          git commit -m "Update Google Scholar citations"
+          git push

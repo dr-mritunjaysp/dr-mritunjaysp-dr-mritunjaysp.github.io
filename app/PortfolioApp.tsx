@@ -166,7 +166,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Mehul Gera, Vinay Chamola, and Sherali Zeadally",
     venue: "IEEE Transactions on Intelligent Transportation Systems",
     year: 2024,
-    citations: 58,
+    citations: 61,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 8.4"],
     abstract:
       "Emergency vehicle management (EVM) is vital for minimizing response times during life-threatening medical, fire, and security crises in smart cities. Intelligent Transportation Systems (ITS) leverage real-time traffic signal preemption, dynamic route optimization, vehicle-to-everything (V2X) communications, and edge-fog computing to streamline EV transit. This paper presents an exhaustive survey of EVM frameworks, covering traffic management algorithms, priority signal preemptions, sensor fusion, and multi-agent reinforcement learning. We categorize existing implementations based on communication protocols, centralized versus decentralized control architectures, and evaluate resilience against traffic congestion, communication latency, and cybersecurity vulnerabilities.",
@@ -178,7 +178,7 @@ const publications: Publication[] = [
       "Vinay Chamola, Mritunjay Shall Peelam, Uday Mittal, and collaborators",
     venue: "Computer Applications in Engineering Education",
     year: 2025,
-    citations: 68,
+    citations: 71,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 2.2"],
     abstract:
       "The integration of the Metaverse into educational paradigms offers immersive, interactive, and spatial learning environments that transcend physical boundaries. By unifying Virtual Reality (VR), Augmented Reality (AR), Extended Reality (XR), Artificial Intelligence (AI), and Internet of Things (IoT) sensors, the educational Metaverse enables real-time experiential simulations, digital twin laboratories, and personalized learning pathways. This paper provides a structured review of technological developments in educational metaverse platforms, analyzing pedagogical frameworks, architectural components, and user interaction mechanisms. We examine technical bottlenecks including high rendering latency, privacy preservation, hardware accessibility, and cognitive overload, providing strategic directions for sustainable adoption.",
@@ -190,7 +190,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Brijesh Kumar Chaurasia, Aditya Kumar Sharma, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Access",
     year: 2024,
-    citations: 52,
+    citations: 55,
     tags: ["Q2 Journal", "SCIE Indexed", "Impact Factor: 3.6"],
     abstract:
       "Interoperability remains a fundamental bottleneck in the blockchain ecosystem, where siloed ledgers struggle to communicate, share state, or execute cross-chain transactions securely. The Cosmos network addresses this via Tendermint BFT consensus and the Inter-Blockchain Communication (IBC) protocol. This paper presents a thorough empirical and architectural study of Cosmos blockchain interoperability. We evaluate Tendermint core mechanics, IBC packet relaying, sovereign hub-and-spoke topologies, and cross-chain token transfer dynamics. Furthermore, we benchmark transaction throughput, latency, security models against double-spending and eclipse attacks, highlighting key trade-offs in building scalable multi-chain decentralized finance (DeFi) and enterprise platforms.",
@@ -213,7 +213,7 @@ const publications: Publication[] = [
       "Vinay Chamola, Mritunjay Shall Peelam, Mohsen Guizani, and Dusit Niyato",
     venue: "IEEE Open Journal of the Communications Society",
     year: 2025,
-    citations: 47,
+    citations: 49,
     tags: ["Q1 Journal", "ESCI Indexed", "Impact Factor: 6.1"],
     abstract:
       "While 5G deployment matures and 6G research takes shape, the vision of 7G smart networks emerges to address hyper-connected environments requiring sub-millisecond latency, terabit-per-second data rates, and autonomous self-evolving intelligence. 7G networks will integrate space-air-ground-sea integrated networks (SAGSIN), quantum networking, AI-native edge intelligence, holographic communications, and intelligent reflecting surfaces (IRS). This paper delivers a forward-looking survey on 7G architectural innovations, detailing key enabling technologies, spectrum management in terahertz frequencies, semantic communication paradigms, and extreme security frameworks. We discuss critical research challenges including energy consumption, cross-domain management, and protocol standardization.",
@@ -236,7 +236,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Gaurav Kumar, Kunjan Shah, and Vinay Chamola",
     venue: "Expert Systems",
     year: 2025,
-    citations: 39,
+    citations: 40,
     tags: ["Q2 Journal", "SCIE Indexed", "Impact Factor: 2.3"],
     abstract:
       "Digital voting systems face intense scrutiny regarding voter anonymity, coercion resistance, ballot verifiability, and resistance against central authority tampering. DemocracyGuard introduces a novel decentralized electronic voting system leveraging permissioned blockchain ledgers, zero-knowledge proofs (ZKP), and ring signatures. Voters execute tamper-evident transactions recorded on a distributed ledger, allowing public end-to-end auditability while strictly preserving voter identity confidentiality. We conduct security evaluations against double-voting, Sybil attacks, and man-in-the-middle exploits, demonstrating low latency and high scalability across national-scale election simulations.",
@@ -247,7 +247,7 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam and collaborators",
     venue: "International Journal of Circuit Theory and Applications",
     year: 2024,
-    citations: 27,
+    citations: 29,
     tags: ["Journal", "Scopus Indexed"],
     abstract:
       "Analog-to-Digital Converters (ADCs) and Digital-to-Analog Converters (DACs) are fundamental building blocks in Internet of Things (IoT) edge sensors, translating real-world analog signals into digital streams for processing. Designing data converters for IoT requires balancing ultra-low power consumption, high signal-to-noise-and-distortion ratios (SINAD), dynamic range, and compact silicon area. This survey provides an in-depth examination of ADC/DAC architectures—including Successive Approximation Register (SAR), Delta-Sigma (ΔΣ), and Pipelined topologies—optimized for IoT sensor interfaces. We categorize circuit design strategies, trade-offs, and identify emerging trends in neuromorphic and event-driven data conversion.",
@@ -258,7 +258,7 @@ const publications: Publication[] = [
     authors: "Mritunjay Shall Peelam, Kunjan Shah, and Vinay Chamola",
     venue: "Digital Communications and Networks",
     year: 2024,
-    citations: 22,
+    citations: 23,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 7.5"],
     abstract:
       "Location-based services in Intelligent Transportation Systems (ITS) rely heavily on Global Positioning System (GPS) data, which is susceptible to spoofing, jamming, and malicious location falsification by rogue drivers or cyber attackers. V-Track presents a decentralized, tamper-proof location verification architecture that fuses IoT onboard diagnostics (OBD), road-side unit (RSU) multi-lateration, and blockchain immutability. Through a consensus mechanism validating spatial-temporal vehicle trajectories, V-Track detects and rejects falsified location claims in real-time, providing reliable proof-of-location for tolling, usage-based insurance, and autonomous fleet dispatching.",
@@ -270,7 +270,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Kunjan Shah, Vinay Chamola, and Biplab Sikdar",
     venue: "IEEE Transactions on Consumer Electronics",
     year: 2024,
-    citations: 17,
+    citations: 19,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 10.9"],
     abstract:
       "Maintaining verifiable vehicle historical records—such as mileage, service history, accident logs, and component wear—is critical for second-hand market valuation and automotive safety. However, centralized databases are vulnerable to data manipulation, while sharing raw vehicle sensor data raises severe user privacy concerns. This paper proposes a hybrid architecture combining permissioned blockchain ledgers with privacy-preserving Federated Learning (FL). Blockchain immutability guarantees verifiable lifecycle logging, while FL nodes collaboratively train predictive maintenance models on distributed onboard diagnostics data without exposing sensitive location or driving pattern history.",
@@ -305,7 +305,7 @@ const publications: Publication[] = [
       "Mritunjay Shall Peelam, Vinay Chamola, and Brijesh Kumar Chaurasia",
     venue: "Vehicular Communications",
     year: 2025,
-    citations: 14,
+    citations: 15,
     tags: ["Q1 Journal", "SCIE Indexed", "Impact Factor: 6.5"],
     abstract:
       "Connected and Autonomous Vehicles (CAVs) generate continuous streams of telemetry data via in-vehicle Controller Area Networks (CAN) and external V2X links, making them vulnerable to malware injection, distributed denial-of-service (DDoS), and spoofing attacks. This paper develops a blockchain-enabled collaborative Intrusion Detection System (IDS) for real-time vehicular networks. Edge RSUs inspect telemetry traffic using lightweight machine learning classifiers, while a permissioned blockchain ledger aggregates threat intelligence across regional transportation zones, enabling instant cross-fleet signature updates without central point-of-failure vulnerabilities.",
@@ -1027,7 +1027,7 @@ function AnimatedCount({
 function SocialStrip() {
   const [visitorTotal, setVisitorTotal] = useState<number>(14850);
   const [scholar, setScholar] = useState<ScholarMetrics>({
-    total_citations: 622,
+    total_citations: 640,
     h_index: 14,
     i10_index: 17,
   });
@@ -1164,8 +1164,8 @@ function SocialStrip() {
             <span className="visitor-counter-metric">
               Citations :{" "}
               <AnimatedCount
-                value={scholar.total_citations ?? 622}
-                fallback="622"
+                value={scholar.total_citations ?? 640}
+                fallback="640"
                 className="visitor-counter-metric-value"
               />
             </span>

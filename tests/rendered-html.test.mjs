@@ -106,7 +106,7 @@ test("serves current aggregate and per-paper Google Scholar citations", async ()
   assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
 
   const snapshot = await response.json();
-  assert.ok(snapshot.total_citations >= 622);
+  assert.ok(snapshot.total_citations >= 640);
   assert.ok(snapshot.h_index >= 14);
   assert.ok(snapshot.i10_index >= 17);
   assert.ok(snapshot.papers.length >= 21);
@@ -117,7 +117,7 @@ test("serves current aggregate and per-paper Google Scholar citations", async ()
   const quantumIot = snapshot.papers.find(
     (paper) => paper.title === "Quantum computing applications for Internet of Things",
   );
-  assert.ok(metaverse.citations >= 68);
+  assert.ok(metaverse.citations >= 71);
   assert.ok(quantumIot.citations >= 81);
   assert.match(quantumIot.scholar_url, /citation_for_view=MdGRPEIAAAAJ:zYLM7Y9cAGgC/);
 });

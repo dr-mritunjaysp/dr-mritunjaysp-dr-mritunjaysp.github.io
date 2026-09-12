@@ -1,0 +1,142 @@
+{
+  "total_citations": 640,
+  "h_index": 14,
+  "i10_index": 17,
+  "papers": [
+    {
+      "title": "Quantum computing applications for Internet of Things",
+      "citations": 81,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:zYLM7Y9cAGgC"
+    },
+    {
+      "title": "Metaverse for education: Developments, challenges, and future direction",
+      "citations": 71,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC"
+    },
+    {
+      "title": "QIoTChain: quantum IoT-blockchain fusion for advanced data protection in Industry 4.0",
+      "citations": 65,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:qjMakFHDy7sC"
+    },
+    {
+      "title": "A review on emergency vehicle management for intelligent transportation systems",
+      "citations": 61,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:_FxGoFyzp5QC"
+    },
+    {
+      "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of Cosmos blockchain interoperability",
+      "citations": 55,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC"
+    },
+    {
+      "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7G smart networks",
+      "citations": 49,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC"
+    },
+    {
+      "title": "DemocracyGuard: Blockchain-based secure voting framework for digital democracy",
+      "citations": 40,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:ufrVoPGSRksC"
+    },
+    {
+      "title": "Explorative implementation of quantum key distribution algorithms for secure consumer electronics networks",
+      "citations": 39,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:W7OEmFMy1HYC"
+    },
+    {
+      "title": "Enhancing security using quantum blockchain in consumer IoT networks",
+      "citations": 38,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C"
+    },
+    {
+      "title": "A comprehensive survey on data converters for IoT applications: Scope, issues and future directions",
+      "citations": 29,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:0EnyYjriUFMC"
+    },
+    {
+      "title": "V-Track: Blockchain-enabled IoT system for reliable vehicle location verification",
+      "citations": 23,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:WF5omc3nYNoC"
+    },
+    {
+      "title": "Blockchain-enabled vehicle lifecycle management with predictive maintenance using federated learning",
+      "citations": 19,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:LkGwnXOMwfcC"
+    },
+    {
+      "title": "Blockchain-enabled intrusion detection systems for real-time vehicle monitoring",
+      "citations": 15,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:4TOpqqG69KYC"
+    },
+    {
+      "title": "Decentralized trust: NFT and blockchain-enabled evidence system using fog computing",
+      "citations": 15,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:ULOm3_A8WrAC"
+    },
+    {
+      "title": "Machine Learning Techniques for Wi-Fi CSI-based Recognition and Sensing: A Comprehensive Review",
+      "citations": 12,
+      "year": "2026",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:9ZlFYXVOiuMC"
+    },
+    {
+      "title": "Enhancing security using quantum computing (ESUQC)",
+      "citations": 11,
+      "year": "2021",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:u5HHmVD_uO8C"
+    },
+    {
+      "title": "Blockchain-Based Game Theoretical Framework for V2V and V2G Energy Trading in Carbon-Intelligent Internet of Vehicles",
+      "citations": 10,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC"
+    },
+    {
+      "title": "Blockchain-Enabled Secure V2V and V2G Energy Trading for Carbon-Aware Internet of Energy Networks",
+      "citations": 2,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:4DMP91E08xMC"
+    },
+    {
+      "title": "Enhancing Quantum-Resistant Data Privacy in Vehicular Cloud Networks Using NIST-Qualified FALCON Algorithm",
+      "citations": 1,
+      "year": "2026",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:mVmsd5A6BfQC"
+    },
+    {
+      "title": "Blockchain-based framework for global IMEI blacklist management and mobile device theft prevention",
+      "citations": 1,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:M3ejUd6NZC8C"
+    },
+    {
+      "title": "Enhancing Vehicle Lifecycle Management Through Blockchain-Driven Predictive Maintenance and Federated Learning",
+      "citations": 1,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:Zph67rFs4hoC"
+    },
+    {
+      "title": "Smart Railway Obstruction Detection System using IoT and Computer Vision",
+      "citations": 0,
+      "year": "2026",
+      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:QIV2ME_5wuYC"
+    }
+  ],
+  "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
+  "fetched_at": "2026-09-12T05:31:39.459Z",
+  "source": "google-scholar"
+}
