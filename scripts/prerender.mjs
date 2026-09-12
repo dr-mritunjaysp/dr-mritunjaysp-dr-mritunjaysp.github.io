@@ -117,15 +117,20 @@ async function prerender() {
   // Create .nojekyll in dist/ (kept for compatibility)
   fs.writeFileSync(path.join(distDir, ".nojekyll"), "# Disable Jekyll", "utf8");
 
-  // Copy Resume Builder standalone app into dist/ResumeBuilder/ and dist/resumebuilder/
+  // Keep one canonical, case-stable directory for every deployment platform.
+  // The public route remains lowercase and Firebase rewrites it to this bundle.
   const publicResumeBuilder = path.join(projectRoot, "public", "ResumeBuilder");
 
   if (fs.existsSync(publicResumeBuilder)) {
     const targetCamel = path.join(distDir, "ResumeBuilder");
     const targetLower = path.join(distDir, "resumebuilder");
+
+    // Clear both spellings so a previous Linux build cannot leave a stale
+    // lowercase copy. On Windows these resolve to the same directory.
+    fs.rmSync(targetCamel, { recursive: true, force: true });
+    fs.rmSync(targetLower, { recursive: true, force: true });
     fs.cpSync(publicResumeBuilder, targetCamel, { recursive: true });
-    fs.cpSync(publicResumeBuilder, targetLower, { recursive: true });
-    console.log("Copied Resume Builder app into dist/ResumeBuilder/ and dist/resumebuilder/");
+    console.log("Copied Resume Builder app into canonical dist/ResumeBuilder/");
   } else {
     console.warn("WARNING: Resume Builder build not found at", publicResumeBuilder);
   }

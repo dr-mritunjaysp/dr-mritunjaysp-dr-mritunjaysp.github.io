@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 async function render(pathname = "/") {
@@ -254,21 +254,22 @@ test("redirects the previous Vision Pen URL to the integrated page", async () =>
   assert.equal(response.headers.get("location"), "http://localhost/vision-pen");
 });
 
-test("packages the complete Scholar Resume app on its lowercase public route", async () => {
-  const scholarHtml = await readFile(
-    new URL("../dist/resumebuilder/index.html", import.meta.url),
-    "utf8",
-  );
+test("packages the complete Scholar Resume app behind its lowercase public route", async () => {
+  const [distEntries, firebaseConfig, scholarHtml] = await Promise.all([
+    readdir(new URL("../dist/", import.meta.url)),
+    readFile(new URL("../firebase.json", import.meta.url), "utf8").then(JSON.parse),
+    readFile(new URL("../dist/ResumeBuilder/index.html", import.meta.url), "utf8"),
+  ]);
   const scholarScript = await readFile(
-    new URL("../dist/resumebuilder/assets/index-BADIOmQT.js", import.meta.url),
+    new URL("../dist/ResumeBuilder/assets/index-BADIOmQT.js", import.meta.url),
     "utf8",
   );
   const scholarStyles = await readFile(
-    new URL("../dist/resumebuilder/assets/index-JcPN3zOH.css", import.meta.url),
+    new URL("../dist/ResumeBuilder/assets/index-JcPN3zOH.css", import.meta.url),
     "utf8",
   );
   const apiBridge = await readFile(
-    new URL("../dist/resumebuilder/api-bridge.js", import.meta.url),
+    new URL("../dist/ResumeBuilder/api-bridge.js", import.meta.url),
     "utf8",
   );
   const mobileApi = await readFile(
@@ -276,13 +277,21 @@ test("packages the complete Scholar Resume app on its lowercase public route", a
     "utf8",
   );
   const livePdfRenderer = await readFile(
-    new URL("../dist/resumebuilder/live-pdf-renderer.js", import.meta.url),
+    new URL("../dist/ResumeBuilder/live-pdf-renderer.js", import.meta.url),
     "utf8",
   );
 
+  assert.ok(distEntries.includes("ResumeBuilder"));
+  assert.ok(!distEntries.includes("resumebuilder"));
+  for (const source of ["/resumebuilder/**", "/ResumeBuilder/**"]) {
+    const rewrite = firebaseConfig.hosting.rewrites.find(
+      (candidate) => candidate.source === source,
+    );
+    assert.equal(rewrite?.destination, "/ResumeBuilder/index.html", source);
+  }
   assert.match(scholarHtml, /<title>ScholarResume<\/title>/);
-  assert.match(scholarHtml, /__SCHOLAR_RESUME_ENTRY__ = "\/resumebuilder\/assets\/index-BADIOmQT\.js\?v=20260823-chrome-pdf-1"/);
-  assert.match(scholarHtml, /href="\/resumebuilder\/assets\/index-JcPN3zOH\.css\?v=20260823-membership-1"/);
+  assert.match(scholarHtml, /__SCHOLAR_RESUME_ENTRY__ = "\/ResumeBuilder\/assets\/index-BADIOmQT\.js\?v=20260823-chrome-pdf-1"/);
+  assert.match(scholarHtml, /href="\/ResumeBuilder\/assets\/index-JcPN3zOH\.css\?v=20260823-membership-1"/);
   assert.match(scholarScript, /\/resumebuilder/);
   assert.doesNotMatch(scholarHtml, /html2canvas|jspdf/i);
   assert.match(scholarHtml, /live-pdf-renderer\.js\?v=20260823-chrome-pdf-1/);
