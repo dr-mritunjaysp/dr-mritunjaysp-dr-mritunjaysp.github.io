@@ -131,12 +131,7 @@ function fetchScholarApi(): Promise<ScholarSnapshot | null> {
           cache: "no-store",
           headers: { Accept: "application/json" },
         });
-        if (
-          !response.ok ||
-          !response.headers.get("content-type")?.includes("application/json")
-        ) {
-          continue;
-        }
+        if (!response.ok) continue;
         const value = (await response.json()) as Partial<ScholarSnapshot>;
         if (
           !Number.isFinite(value.total_citations) ||
