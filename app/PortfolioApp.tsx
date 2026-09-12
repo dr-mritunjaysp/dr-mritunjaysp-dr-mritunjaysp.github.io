@@ -699,7 +699,7 @@ function Header({
                   Vision Pen
                 </Link>
                 <a
-                  href="/resumebuilder"
+                  href="/ResumeBuilder/"
                   target="_blank"
                   rel="noopener noreferrer"
                   role="menuitem"

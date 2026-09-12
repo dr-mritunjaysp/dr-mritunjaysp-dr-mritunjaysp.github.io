@@ -83,10 +83,10 @@ test("keeps the implementation independent from the retired theme", async () => 
   assert.match(liveRefresh, /setInterval/);
   assert.match(liveRefresh, /visibilitychange/);
   assert.match(layout, /og\.png/);
-  assert.match(portfolio, /href="\/vision-pen"[\s\S]*Vision Pen[\s\S]*href="\/resumebuilder"/);
+  assert.match(portfolio, /href="\/vision-pen"[\s\S]*Vision Pen[\s\S]*href="\/ResumeBuilder\/"/);
   assert.match(
     portfolio,
-    /href="\/resumebuilder"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"[\s\S]*Scholar Resume/,
+    /href="\/ResumeBuilder\/"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"[\s\S]*Scholar Resume/,
   );
   assert.match(styles, /max-height:\s*min\(34rem,\s*calc\(100dvh\s*-\s*5\.75rem/);
   assert.match(styles, /overflow-y:\s*auto/);
@@ -254,7 +254,7 @@ test("redirects the previous Vision Pen URL to the integrated page", async () =>
   assert.equal(response.headers.get("location"), "http://localhost/vision-pen");
 });
 
-test("packages the complete Scholar Resume app behind its lowercase public route", async () => {
+test("packages the complete Scholar Resume app behind its canonical production route", async () => {
   const [distEntries, firebaseConfig, scholarHtml] = await Promise.all([
     readdir(new URL("../dist/", import.meta.url)),
     readFile(new URL("../firebase.json", import.meta.url), "utf8").then(JSON.parse),
@@ -292,7 +292,8 @@ test("packages the complete Scholar Resume app behind its lowercase public route
   assert.match(scholarHtml, /<title>ScholarResume<\/title>/);
   assert.match(scholarHtml, /__SCHOLAR_RESUME_ENTRY__ = "\/ResumeBuilder\/assets\/index-BADIOmQT\.js\?v=20260823-chrome-pdf-1"/);
   assert.match(scholarHtml, /href="\/ResumeBuilder\/assets\/index-JcPN3zOH\.css\?v=20260823-membership-1"/);
-  assert.match(scholarScript, /\/resumebuilder/);
+  assert.match(scholarScript, /basename:"\/ResumeBuilder"/);
+  assert.doesNotMatch(scholarScript, /basename:"\/resumebuilder"/);
   assert.doesNotMatch(scholarHtml, /html2canvas|jspdf/i);
   assert.match(scholarHtml, /live-pdf-renderer\.js\?v=20260823-chrome-pdf-1/);
   assert.match(scholarHtml, /api-bridge\.js\?v=20260823-chrome-pdf-1/);

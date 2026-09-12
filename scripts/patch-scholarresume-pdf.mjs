@@ -16,6 +16,8 @@ const downloadBlob =
   'function downloadPdfBlob(o,s){const c=URL.createObjectURL(o),d=document.createElement("a");d.href=c,d.download=s,document.body.appendChild(d),d.click(),d.remove(),window.setTimeout(()=>URL.revokeObjectURL(c),1e3)}';
 const downloadWithNativePrint =
   'function downloadPdfBlob(o,s){if(o&&o.type==="application/x-scholarresume-print-dialog")return;const c=URL.createObjectURL(o),d=document.createElement("a");d.href=c,d.download=s,document.body.appendChild(d),d.click(),d.remove(),window.setTimeout(()=>URL.revokeObjectURL(c),1e3)}';
+const legacyRouterBasename = 'basename:"/resumebuilder"';
+const canonicalRouterBasename = 'basename:"/ResumeBuilder"';
 
 const membershipPatches = [
   {
@@ -65,6 +67,8 @@ let membershipPatched = 0;
 let membershipCurrent = 0;
 let nativePrintPatched = 0;
 let nativePrintCurrent = 0;
+let routerBasenamePatched = 0;
+let routerBasenameCurrent = 0;
 
 for (const assetName of assetNames) {
   const assetPath = path.join(assetsDir, assetName);
@@ -92,6 +96,14 @@ for (const assetName of assetNames) {
   } else if (source.includes(downloadBlob)) {
     source = source.replace(downloadBlob, downloadWithNativePrint);
     nativePrintPatched += 1;
+    changed = true;
+  }
+
+  if (source.includes(canonicalRouterBasename)) {
+    routerBasenameCurrent += 1;
+  } else if (source.includes(legacyRouterBasename)) {
+    source = source.replace(legacyRouterBasename, canonicalRouterBasename);
+    routerBasenamePatched += 1;
     changed = true;
   }
 
@@ -129,6 +141,10 @@ if (nativePrintPatched + nativePrintCurrent === 0) {
   throw new Error("Scholar Resume PDF download handler was not found in the bundled assets.");
 }
 
+if (routerBasenamePatched + routerBasenameCurrent === 0) {
+  throw new Error("Scholar Resume router basename was not found in the bundled assets.");
+}
+
 const cssNames = (await readdir(assetsDir)).filter((name) => /^index-[\w-]+\.css$/.test(name));
 let membershipCssFound = false;
 for (const cssName of cssNames) {
@@ -161,4 +177,9 @@ console.log(
   membershipPatched > 0
     ? `Patched ${membershipPatched} Scholar Resume bundle(s) with the professional membership field.`
     : "Scholar Resume professional membership field is already present.",
+);
+console.log(
+  routerBasenamePatched > 0
+    ? `Patched ${routerBasenamePatched} Scholar Resume bundle(s) with the canonical production path.`
+    : "Scholar Resume canonical production path is already present.",
 );
