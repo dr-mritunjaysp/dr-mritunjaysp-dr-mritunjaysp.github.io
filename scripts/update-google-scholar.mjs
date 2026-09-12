@@ -5,6 +5,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 export const GOOGLE_SCHOLAR_USER_ID = "MdGRPEIAAAAJ";
 export const GOOGLE_SCHOLAR_PROFILE_URL =
   `https://scholar.google.com/citations?user=${GOOGLE_SCHOLAR_USER_ID}&hl=en`;
+export const FIREBASE_SCHOLAR_URL =
+  "https://portfolio-6a1b9-default-rtdb.firebaseio.com/visitor-counter.json";
 
 const DEFAULT_OUTPUT = fileURLToPath(
   new URL("../public/data/google-scholar.json", import.meta.url),
@@ -193,12 +195,43 @@ export async function fetchGoogleScholarSnapshot(fetchImpl = fetch) {
   return parseGoogleScholarProfileHtml(await response.text());
 }
 
+export function buildFirebaseScholarUpdate(snapshot) {
+  return {
+    "scholar-metrics": {
+      current: {
+        total_citations: snapshot.total_citations,
+        h_index: snapshot.h_index,
+        i10_index: snapshot.i10_index,
+        profile_url: snapshot.profile_url,
+        fetched_at: snapshot.fetched_at,
+        source: snapshot.source,
+      },
+    },
+    "publication-citations": snapshot.papers,
+  };
+}
+
+export async function publishFirebaseScholarSnapshot(snapshot, fetchImpl = fetch) {
+  const response = await fetchImpl(FIREBASE_SCHOLAR_URL, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(buildFirebaseScholarUpdate(snapshot)),
+    signal: AbortSignal.timeout(20_000),
+  });
+  if (!response.ok) {
+    throw new Error(`Firebase citation update returned HTTP ${response.status}`);
+  }
+}
+
 async function main() {
   const outputArgumentIndex = process.argv.indexOf("--output");
   const outputPath = outputArgumentIndex >= 0
     ? path.resolve(process.argv[outputArgumentIndex + 1])
     : DEFAULT_OUTPUT;
-  const snapshot = await fetchGoogleScholarSnapshot();
+  const inputArgumentIndex = process.argv.indexOf("--input");
+  const snapshot = inputArgumentIndex >= 0
+    ? JSON.parse(await readFile(path.resolve(process.argv[inputArgumentIndex + 1]), "utf8"))
+    : await fetchGoogleScholarSnapshot();
 
   if (process.argv.includes("--stdout")) {
     process.stdout.write(`${JSON.stringify(snapshot, null, 2)}\n`);
@@ -206,11 +239,17 @@ async function main() {
   }
 
   const changed = await writeSnapshotIfChanged(snapshot, outputPath);
+  if (process.argv.includes("--firebase")) {
+    await publishFirebaseScholarSnapshot(snapshot);
+  }
   console.log(
     changed
       ? `Updated Google Scholar snapshot: ${snapshot.total_citations} citations, h-index ${snapshot.h_index}, i10-index ${snapshot.i10_index}, ${snapshot.papers.length} papers.`
       : `Google Scholar snapshot is unchanged at ${snapshot.total_citations} citations.`,
   );
+  if (process.argv.includes("--firebase")) {
+    console.log("Published the Scholar profile and individual paper counts to Firebase.");
+  }
 }
 
 const isMain = process.argv[1] &&

@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
+  buildFirebaseScholarUpdate,
   parseGoogleScholarProfileHtml,
   writeSnapshotIfChanged,
 } from "../scripts/update-google-scholar.mjs";
@@ -48,6 +49,17 @@ test("does not rewrite the snapshot when only the fetch time changes", async () 
   assert.equal(JSON.parse(await readFile(output, "utf8")).fetched_at, first.fetched_at);
 });
 
+test("publishes aggregate and individual citations in one Firebase update", () => {
+  const snapshot = parseGoogleScholarProfileHtml(profileHtml);
+  const update = buildFirebaseScholarUpdate(snapshot);
+
+  assert.equal(update["scholar-metrics"].current.total_citations, 640);
+  assert.equal(update["scholar-metrics"].current.h_index, 14);
+  assert.equal(update["scholar-metrics"].current.i10_index, 17);
+  assert.equal(update["publication-citations"].length, 10);
+  assert.equal(update["publication-citations"][0].citations, 81);
+});
+
 test("runs the Scholar updater hourly and serves the shared live snapshot", async () => {
   const [workflow, firebaseClient, snapshot] = await Promise.all([
     readFile(new URL("../.github/workflows/update-google-scholar.yml", import.meta.url), "utf8"),
@@ -56,7 +68,7 @@ test("runs the Scholar updater hourly and serves the shared live snapshot", asyn
   ]);
 
   assert.match(workflow, /cron:\s*"17 \* \* \* \*"/);
-  assert.match(workflow, /node scripts\/update-google-scholar\.mjs/);
+  assert.match(workflow, /node scripts\/update-google-scholar\.mjs --firebase/);
   assert.match(firebaseClient, /raw\.githubusercontent\.com/);
   assert.match(firebaseClient, /SCHOLAR_REFRESH_INTERVAL_MS = 60 \* 60 \* 1000/);
   assert.equal(snapshot.total_citations, 640);

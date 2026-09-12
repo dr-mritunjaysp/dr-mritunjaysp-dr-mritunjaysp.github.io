@@ -27,7 +27,7 @@ jobs:
           node-version: "22"
 
       - name: Read Google Scholar profile
-        run: node scripts/update-google-scholar.mjs
+        run: node scripts/update-google-scholar.mjs --firebase
 
       - name: Publish citation changes
         shell: bash
