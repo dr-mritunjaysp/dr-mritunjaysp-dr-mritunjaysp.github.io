@@ -1,142 +1,164 @@
 {
-  "total_citations": 640,
+  "total_citations": 646,
   "h_index": 14,
   "i10_index": 17,
   "papers": [
     {
       "title": "Quantum computing applications for Internet of Things",
-      "citations": 81,
+      "citations": 83,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:zYLM7Y9cAGgC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:zYLM7Y9cAGgC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=9686432201873605822"
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
       "citations": 71,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
     },
     {
-      "title": "QIoTChain: quantum IoT-blockchain fusion for advanced data protection in Industry 4.0",
-      "citations": 65,
+      "title": "QIoTChain: quantum IoT‐blockchain fusion for advanced data protection in Industry 4.0",
+      "citations": 67,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:qjMakFHDy7sC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:qjMakFHDy7sC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=15831870856063533727"
     },
     {
       "title": "A review on emergency vehicle management for intelligent transportation systems",
       "citations": 61,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:_FxGoFyzp5QC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:_FxGoFyzp5QC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=13729872689521760260"
     },
     {
-      "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of Cosmos blockchain interoperability",
+      "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of cosmos blockchain interoperability",
       "citations": 55,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=466942265117435416"
     },
     {
-      "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7G smart networks",
+      "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7g smart networks",
       "citations": 49,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7172045923725479815"
     },
     {
-      "title": "DemocracyGuard: Blockchain-based secure voting framework for digital democracy",
+      "title": "DemocracyGuard: Blockchain‐based secure voting framework for digital democracy",
       "citations": 40,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:ufrVoPGSRksC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ufrVoPGSRksC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12403159287003757603"
     },
     {
       "title": "Explorative implementation of quantum key distribution algorithms for secure consumer electronics networks",
-      "citations": 39,
+      "citations": 40,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:W7OEmFMy1HYC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:W7OEmFMy1HYC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12744333347528424792"
     },
     {
       "title": "Enhancing security using quantum blockchain in consumer IoT networks",
       "citations": 38,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=16854804718286061991"
     },
     {
-      "title": "A comprehensive survey on data converters for IoT applications: Scope, issues and future directions",
+      "title": "A comprehensive survey on data converters for IoT applications: Scope, issues, and future directions",
       "citations": 29,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:0EnyYjriUFMC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:0EnyYjriUFMC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7821640531072506724"
     },
     {
-      "title": "V-Track: Blockchain-enabled IoT system for reliable vehicle location verification",
+      "title": "V-track: blockchain-enabled iot system for reliable vehicle location verification",
       "citations": 23,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:WF5omc3nYNoC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:WF5omc3nYNoC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5921717216089011881"
     },
     {
       "title": "Blockchain-enabled vehicle lifecycle management with predictive maintenance using federated learning",
       "citations": 19,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:LkGwnXOMwfcC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:LkGwnXOMwfcC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=10900713872302634975"
     },
     {
       "title": "Blockchain-enabled intrusion detection systems for real-time vehicle monitoring",
       "citations": 15,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:4TOpqqG69KYC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:4TOpqqG69KYC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=3672807562139699312"
     },
     {
       "title": "Decentralized trust: NFT and blockchain-enabled evidence system using fog computing",
       "citations": 15,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:ULOm3_A8WrAC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ULOm3_A8WrAC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=14148570133583246326"
     },
     {
-      "title": "Machine Learning Techniques for Wi-Fi CSI-based Recognition and Sensing: A Comprehensive Review",
+      "title": "Machine learning techniques for Wi-Fi CSI-based recognition and sensing: A comprehensive review",
       "citations": 12,
       "year": "2026",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:9ZlFYXVOiuMC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:9ZlFYXVOiuMC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5709288465619362501"
     },
     {
       "title": "Enhancing security using quantum computing (ESUQC)",
       "citations": 11,
       "year": "2021",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:u5HHmVD_uO8C"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:u5HHmVD_uO8C",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=11280568287610996165"
     },
     {
-      "title": "Blockchain-Based Game Theoretical Framework for V2V and V2G Energy Trading in Carbon-Intelligent Internet of Vehicles",
+      "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
       "citations": 10,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12490583310529805986"
     },
     {
-      "title": "Blockchain-Enabled Secure V2V and V2G Energy Trading for Carbon-Aware Internet of Energy Networks",
+      "title": "Enhancing quantum-resistant data privacy in vehicular cloud networks using NIST-qualified FALCON algorithm",
+      "citations": 2,
+      "year": "2026",
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:mVmsd5A6BfQC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=9536515976185837115"
+    },
+    {
+      "title": "Blockchain-enabled secure V2V and V2G energy trading for carbon-aware internet of energy (IoE) networks",
       "citations": 2,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:4DMP91E08xMC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:4DMP91E08xMC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=13135934395601803640"
     },
     {
-      "title": "Enhancing Quantum-Resistant Data Privacy in Vehicular Cloud Networks Using NIST-Qualified FALCON Algorithm",
-      "citations": 1,
-      "year": "2026",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:mVmsd5A6BfQC"
-    },
-    {
-      "title": "Blockchain-based framework for global IMEI blacklist management and mobile device theft prevention",
+      "title": "Blockchain-based framework for global imei blacklist management and mobile device theft prevention",
       "citations": 1,
       "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:M3ejUd6NZC8C"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:M3ejUd6NZC8C",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=11113142097322899762"
     },
     {
-      "title": "Enhancing Vehicle Lifecycle Management Through Blockchain-Driven Predictive Maintenance and Federated Learning",
+      "title": "Enhancing vehicle lifecycle management through blockchain-driven predictive maintenance and federated learning",
       "citations": 1,
       "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:Zph67rFs4hoC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:Zph67rFs4hoC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=4089043779411409513"
     },
     {
       "title": "Smart Railway Obstruction Detection System using IoT and Computer Vision",
       "citations": 0,
       "year": "2026",
-      "scholar_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en&view_op=view_citation&citation_for_view=MdGRPEIAAAAJ:QIV2ME_5wuYC"
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:QIV2ME_5wuYC",
+      "cited_by_url": ""
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-09-12T05:31:39.459Z",
+  "fetched_at": "2026-09-13T16:17:01.367Z",
   "source": "google-scholar"
 }
