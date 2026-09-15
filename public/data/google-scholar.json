@@ -1,5 +1,5 @@
 {
-  "total_citations": 646,
+  "total_citations": 650,
   "h_index": 14,
   "i10_index": 17,
   "papers": [
@@ -12,7 +12,7 @@
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 71,
+      "citations": 72,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -75,7 +75,7 @@
     },
     {
       "title": "V-track: blockchain-enabled iot system for reliable vehicle location verification",
-      "citations": 23,
+      "citations": 24,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:WF5omc3nYNoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5921717216089011881"
@@ -89,7 +89,7 @@
     },
     {
       "title": "Blockchain-enabled intrusion detection systems for real-time vehicle monitoring",
-      "citations": 15,
+      "citations": 16,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:4TOpqqG69KYC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=3672807562139699312"
@@ -103,7 +103,7 @@
     },
     {
       "title": "Machine learning techniques for Wi-Fi CSI-based recognition and sensing: A comprehensive review",
-      "citations": 12,
+      "citations": 13,
       "year": "2026",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:9ZlFYXVOiuMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5709288465619362501"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-09-13T16:17:01.367Z",
+  "fetched_at": "2026-09-15T19:00:26.309Z",
   "source": "google-scholar"
 }
