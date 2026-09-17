@@ -1,5 +1,5 @@
 {
-  "total_citations": 650,
+  "total_citations": 652,
   "h_index": 14,
   "i10_index": 17,
   "papers": [
@@ -40,14 +40,14 @@
     },
     {
       "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7g smart networks",
-      "citations": 49,
+      "citations": 50,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7172045923725479815"
     },
     {
       "title": "DemocracyGuard: Blockchain‐based secure voting framework for digital democracy",
-      "citations": 40,
+      "citations": 41,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ufrVoPGSRksC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12403159287003757603"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-09-15T19:00:26.309Z",
+  "fetched_at": "2026-09-17T01:25:15.853Z",
   "source": "google-scholar"
 }
