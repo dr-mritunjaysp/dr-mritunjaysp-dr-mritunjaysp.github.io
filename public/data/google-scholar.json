@@ -1,5 +1,5 @@
 {
-  "total_citations": 652,
+  "total_citations": 655,
   "h_index": 14,
   "i10_index": 17,
   "papers": [
@@ -40,14 +40,14 @@
     },
     {
       "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7g smart networks",
-      "citations": 50,
+      "citations": 51,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7172045923725479815"
     },
     {
       "title": "DemocracyGuard: Blockchain‐based secure voting framework for digital democracy",
-      "citations": 41,
+      "citations": 42,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ufrVoPGSRksC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12403159287003757603"
@@ -109,18 +109,18 @@
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5709288465619362501"
     },
     {
+      "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
+      "citations": 11,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12490583310529805986"
+    },
+    {
       "title": "Enhancing security using quantum computing (ESUQC)",
       "citations": 11,
       "year": "2021",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:u5HHmVD_uO8C",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=11280568287610996165"
-    },
-    {
-      "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
-      "citations": 10,
-      "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC",
-      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12490583310529805986"
     },
     {
       "title": "Enhancing quantum-resistant data privacy in vehicular cloud networks using NIST-qualified FALCON algorithm",
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-09-17T01:25:15.853Z",
+  "fetched_at": "2026-09-18T05:55:06.524Z",
   "source": "google-scholar"
 }
