@@ -60,6 +60,87 @@ test("server-renders the finished academic portfolio", async () => {
   );
 });
 
+test("opens Data Structures and Algorithms resources on a dedicated page", async () => {
+  const teachingResponse = await render("/teaching");
+  const teachingHtml = await teachingResponse.text();
+
+  assert.equal(teachingResponse.status, 200);
+  assert.match(teachingHtml, /Data Structures and Algorithms/);
+  assert.match(
+    teachingHtml,
+    /href="\/teaching\/data-structures-and-algorithms"/,
+  );
+  assert.doesNotMatch(teachingHtml, /Sample Questions/);
+
+  const courseResponse = await render(
+    "/teaching/data-structures-and-algorithms",
+  );
+  const courseHtml = await courseResponse.text();
+
+  assert.equal(courseResponse.status, 200);
+  assert.match(courseHtml, /Data Structures and Algorithms/);
+  assert.match(courseHtml, /Back to Teaching/);
+  assert.match(courseHtml, /src="\/media\/data-structures-algorithms-v2\.webp"/);
+  assert.match(courseHtml, /aria-controls="unit-1-reader"/);
+  assert.match(courseHtml, /aria-expanded="false"/);
+  assert.match(courseHtml, /aria-haspopup="dialog"/);
+  assert.match(courseHtml, />Read here - 47 pages</);
+
+  const unitOneControl = courseHtml.match(
+    /<button[^>]*aria-controls="unit-1-reader"[^>]*>[\s\S]*?<\/button>/,
+  )?.[0];
+  assert.ok(unitOneControl, "Unit 1 should render as a full-page reader button");
+  assert.doesNotMatch(unitOneControl, /\b(?:href|target|download)=/);
+
+  for (const resource of [
+    "Syllabus",
+    "Unit 1",
+    "Unit 2",
+    "Unit 3",
+    "Unit 4",
+    "Unit 5",
+    "Unit 6",
+    "Question Paper",
+    "Sample Questions",
+  ]) {
+    assert.match(courseHtml, new RegExp(`>${resource}<`));
+  }
+
+  const pdf = await readFile(
+    new URL(
+      "../public/documents/data-structures-and-algorithms/unit-1.pdf",
+      import.meta.url,
+    ),
+  );
+  assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
+
+  const [pdfWorker, courseImage] = await Promise.all([
+    readFile(
+      new URL(
+        "../public/vendor/pdfjs/pdf.worker.min.mjs",
+        import.meta.url,
+      ),
+    ),
+    readFile(
+      new URL(
+        "../public/media/data-structures-algorithms-v2.webp",
+        import.meta.url,
+      ),
+    ),
+  ]);
+  assert.ok(pdfWorker.length > 1_000_000);
+  assert.ok(courseImage.length > 50_000);
+
+  const [readerSource, styles] = await Promise.all([
+    readFile(new URL("../app/CoursePdfViewer.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.match(readerSource, /createPortal\(/);
+  assert.match(readerSource, /aria-modal="true"/);
+  assert.match(styles, /\.course-pdf-reader-page\s*\{[^}]*position:\s*fixed/s);
+  assert.match(styles, /\.course-pdf-reader\.course-pdf-reader-fullpage\s*\{[^}]*height:\s*100dvh/s);
+});
+
 test("keeps the implementation independent from the retired theme", async () => {
   const [page, layout, portfolio, styles, scrollControls, liveRefresh, packageJson] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

@@ -30,6 +30,7 @@ async function prerender() {
     "/msp-live-frame",
     "/cv",
     "/teaching",
+    "/teaching/data-structures-and-algorithms",
     "/people",
     "/award-fdp",
     "/game",

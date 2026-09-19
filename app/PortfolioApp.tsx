@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowLeft,
   Award,
   BarChart3,
   BookOpen,
@@ -42,6 +43,7 @@ import { FaLinkedinIn, FaEnvelope, FaFileLines } from "react-icons/fa6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LiveUpdateRefresh } from "./LiveUpdateRefresh";
 import { LottieIcon } from "./LottieIcon";
+import { CoursePdfViewer } from "./CoursePdfViewer";
 
 import { ScrollJumpButton } from "./ScrollJumpButton";
 import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationCitations } from "./firebase";
@@ -77,6 +79,7 @@ type SectionKey =
 
   | "cv"
   | "teaching"
+  | "data-structures-and-algorithms"
   | "people"
   | "award-fdp"
   | "game"
@@ -454,9 +457,32 @@ const travelPosts = [
 
 
 
+type CourseResource = {
+  label: string;
+  href?: string;
+  detail?: string;
+};
+
+const dataStructuresResources: CourseResource[] = [
+  { label: "Syllabus" },
+  {
+    label: "Unit 1",
+    href: "/documents/data-structures-and-algorithms/unit-1.pdf",
+    detail: "Read here - 47 pages",
+  },
+  { label: "Unit 2" },
+  { label: "Unit 3" },
+  { label: "Unit 4" },
+  { label: "Unit 5" },
+  { label: "Unit 6" },
+  { label: "Question Paper" },
+  { label: "Sample Questions" },
+];
+
 const courses = [
   {
     title: "Software Engineering",
+    slug: "software-engineering",
     year: "2026",
     image: "/media/software-engineering.jpg",
     description:
@@ -465,6 +491,7 @@ const courses = [
   },
   {
     title: "Operating Systems",
+    slug: "operating-systems",
     year: "2026",
     image: "/media/operating-systems.jpg",
     description:
@@ -472,15 +499,18 @@ const courses = [
     topics: ["Processes", "Scheduling", "Memory", "File Systems"],
   },
   {
-    title: "Data Structures",
+    title: "Data Structures and Algorithms",
+    slug: "data-structures-and-algorithms",
     year: "2026",
-    image: "/media/data-structures.jpg",
+    image: "/media/data-structures-algorithms-v2.webp",
     description:
-      "Core data structures, design trade-offs, and efficient problem solving.",
-    topics: ["Arrays", "Linked Lists", "Trees", "Graphs"],
+      "Core data structures, algorithm design, complexity analysis, and efficient problem solving.",
+    topics: ["Arrays", "Linked Lists", "Trees", "Algorithms"],
+    resourcePage: "/teaching/data-structures-and-algorithms",
   },
   {
     title: "Computer Organization",
+    slug: "computer-organization",
     year: "2026",
     image: "/media/computer-organization.jpg",
     description:
@@ -632,7 +662,13 @@ function Header({
           {primaryNav.map((item) => (
             <Link
               key={item.key}
-              className={section === item.key ? "active" : ""}
+              className={
+                section === item.key ||
+                (item.key === "teaching" &&
+                  section === "data-structures-and-algorithms")
+                  ? "active"
+                  : ""
+              }
               href={item.href}
               onClick={() => setMobileOpen(false)}
             >
@@ -1744,32 +1780,138 @@ function TeachingPage() {
         </p>
       </div>
       <div className="course-grid">
-        {courses.map((course) => (
-          <article className="course-card" key={course.title}>
-            <img src={course.image} alt="" />
-            <div>
-              <span className="course-year">{course.year}</span>
-              <h2>{course.title}</h2>
-              <p>{course.description}</p>
-              <div className="topic-row">
-                {course.topics.map((topic) => (
-                  <span key={topic}>{topic}</span>
-                ))}
+        {courses.map((course) => {
+          const cardContent = (
+            <>
+              <img src={course.image} alt="" />
+              <div>
+                <span className="course-year">{course.year}</span>
+                <h2>{course.title}</h2>
+                <p>{course.description}</p>
+                <div className="topic-row">
+                  {course.topics.map((topic) => (
+                    <span key={topic}>{topic}</span>
+                  ))}
+                </div>
+                <span className="text-link">
+                  {course.resourcePage ? "Open course" : "Course resources"}{" "}
+                  <ChevronRight size={15} />
+                </span>
               </div>
-              <Link
-                href={
-                  course.title === "Operating Systems"
-                    ? "/teaching#operating-systems"
-                    : "/teaching"
-                }
-                className="text-link"
-              >
-                Course resources <ChevronRight size={15} />
-              </Link>
-            </div>
-          </article>
-        ))}
+            </>
+          );
+
+          return course.resourcePage ? (
+            <Link
+              className="course-card course-card-link"
+              href={course.resourcePage}
+              id={course.slug}
+              key={course.title}
+            >
+              {cardContent}
+            </Link>
+          ) : (
+            <article className="course-card" id={course.slug} key={course.title}>
+              {cardContent}
+            </article>
+          );
+        })}
       </div>
+    </section>
+  );
+}
+
+function DataStructuresCoursePage() {
+  const [activeResource, setActiveResource] = useState<CourseResource | null>(
+    null,
+  );
+
+  return (
+    <section className="page-section course-detail-page">
+      <Link className="course-page-back" href="/teaching">
+        <ArrowLeft size={16} aria-hidden="true" /> Back to Teaching
+      </Link>
+
+      <div className="course-detail-hero">
+        <img
+          src="/media/data-structures-algorithms-v2.webp"
+          alt="Arrays, linked nodes, a binary tree, and a graph"
+          width={880}
+          height={1320}
+          fetchPriority="high"
+        />
+        <div>
+          <span className="course-year">2026 course</span>
+          <p className="eyebrow">MSP Tutorial</p>
+          <h1>Data Structures and Algorithms</h1>
+          <p>
+            Core data structures, algorithm design, complexity analysis, and
+            efficient problem solving.
+          </p>
+          <div className="topic-row">
+            {["Arrays", "Linked Lists", "Trees", "Graphs", "Algorithms"].map(
+              (topic) => (
+                <span key={topic}>{topic}</span>
+              ),
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="course-resource-menu course-resource-page-menu">
+        <div className="course-resource-heading">
+          <BookOpen size={20} aria-hidden="true" />
+          <div>
+            <strong>Course resources</strong>
+            <span>Select an available learning resource</span>
+          </div>
+        </div>
+        <div className="course-resource-list">
+          {dataStructuresResources.map((resource) =>
+            resource.href ? (
+              <button
+                type="button"
+                className={`course-resource-item is-available${
+                  activeResource?.href === resource.href ? " is-active" : ""
+                }`}
+                onClick={() => setActiveResource(resource)}
+                aria-controls="unit-1-reader"
+                aria-expanded={activeResource?.href === resource.href}
+                aria-haspopup="dialog"
+                key={resource.label}
+              >
+                <FileText size={18} aria-hidden="true" />
+                <span>
+                  <strong>{resource.label}</strong>
+                  <small>{resource.detail}</small>
+                </span>
+                <BookOpen size={15} aria-hidden="true" />
+              </button>
+            ) : (
+              <span
+                className="course-resource-item"
+                aria-disabled="true"
+                key={resource.label}
+              >
+                <FileText size={18} aria-hidden="true" />
+                <span>
+                  <strong>{resource.label}</strong>
+                  <small>Coming soon</small>
+                </span>
+              </span>
+            ),
+          )}
+        </div>
+      </div>
+
+      {activeResource?.href ? (
+        <CoursePdfViewer
+          src={activeResource.href}
+          title={activeResource.label}
+          detail={activeResource.detail}
+          onClose={() => setActiveResource(null)}
+        />
+      ) : null}
     </section>
   );
 }
@@ -3951,6 +4093,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     "finger-frame",
     "pen-app",
     "penapp",
+    "data-structures-and-algorithms",
     "news",
     "repositories",
     "books",
@@ -3960,9 +4103,16 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
   const getEffectiveSection = (): SectionKey => {
     let target = section;
     if (typeof window !== "undefined") {
-      const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
+      const pathname = window.location.pathname.replace(/^\//, "").replace(/\/$/, "");
+      const pathSeg = pathname.split("/")[0];
+      if (pathname === "teaching/data-structures-and-algorithms") {
+        target = "data-structures-and-algorithms";
+      }
       if (pathSeg && validSections.includes(pathSeg)) {
-        target = pathSeg;
+        target =
+          pathname === "teaching/data-structures-and-algorithms"
+            ? "data-structures-and-algorithms"
+            : pathSeg;
       }
     }
     return (validSections.includes(target) ? target : "home") as SectionKey;
@@ -3977,7 +4127,12 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handleLocationChange = () => {
-      const pathSeg = window.location.pathname.replace(/^\//, "").split("/")[0];
+      const pathname = window.location.pathname.replace(/^\//, "").replace(/\/$/, "");
+      const pathSeg = pathname.split("/")[0];
+      if (pathname === "teaching/data-structures-and-algorithms") {
+        setCurrentSection("data-structures-and-algorithms");
+        return;
+      }
       if (pathSeg && validSections.includes(pathSeg)) {
         setCurrentSection(pathSeg as SectionKey);
       } else if (!pathSeg) {
@@ -4019,6 +4174,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "teaching":
       content = <TeachingPage />;
+      break;
+    case "data-structures-and-algorithms":
+      content = <DataStructuresCoursePage />;
       break;
     case "cv":
       content = <CvPage />;
