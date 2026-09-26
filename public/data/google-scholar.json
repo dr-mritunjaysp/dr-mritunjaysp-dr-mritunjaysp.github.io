@@ -1,5 +1,5 @@
 {
-  "total_citations": 662,
+  "total_citations": 664,
   "h_index": 14,
   "i10_index": 17,
   "papers": [
@@ -12,7 +12,7 @@
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 72,
+      "citations": 73,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -33,7 +33,7 @@
     },
     {
       "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7g smart networks",
-      "citations": 55,
+      "citations": 56,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7172045923725479815"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-09-22T09:57:49.962Z",
+  "fetched_at": "2026-09-26T01:33:51.645Z",
   "source": "google-scholar"
 }
