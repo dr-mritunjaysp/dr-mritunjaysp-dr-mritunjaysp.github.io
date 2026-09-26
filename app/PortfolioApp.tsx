@@ -59,6 +59,7 @@ import { MSPLiveFrameApp } from "./msp-live-frame/MSPLiveFrameApp";
 import { VisionPenPage } from "./vision-pen/VisionPenPage";
 import { FilterVerseShell } from "./filterverse/FilterVerseShell";
 import { FingerCounterPage } from "./finger-counter/FingerCounterPage";
+import { PostureCoachApp } from "./posture-coach/PostureCoachApp";
 
 type SectionKey =
   | "home"
@@ -69,6 +70,7 @@ type SectionKey =
   | "vision-pen"
   | "filterverse"
   | "finger-counter"
+  | "posture-coach"
   | "inkora"
   | "pen-app"
   | "penapp"
@@ -120,6 +122,7 @@ const moreNav = [
   { label: "Finger Counter", href: "/finger-counter", key: "finger-counter" },
   { label: "Vision Pen", href: "/vision-pen", key: "vision-pen" },
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
+  { label: "Posture Coach", href: "/posture-coach", key: "posture-coach" },
   { label: "Inkora PenApp", href: "/inkora", key: "inkora" },
   { label: "Sorting Visualizer", href: "/sorting-visualizer", key: "sorting-visualizer" },
   { label: "Awards & FDP", href: "/award-fdp", key: "award-fdp" },
@@ -4195,6 +4198,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       break;
     case "finger-counter":
       content = <FingerCounterPage />;
+      break;
+    case "posture-coach":
+      content = <PostureCoachApp />;
       break;
     case "inkora":
     case "pen-app":

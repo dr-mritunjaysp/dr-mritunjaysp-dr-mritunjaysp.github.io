@@ -24,6 +24,7 @@ async function prerender() {
     "/vision-pen",
     "/filterverse",
     "/finger-counter",
+    "/posture-coach",
     "/inkora",
     "/pen-app",
     "/penapp",

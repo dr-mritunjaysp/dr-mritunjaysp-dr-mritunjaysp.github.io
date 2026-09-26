@@ -14,6 +14,12 @@ export function generateMetadata({ params }: { params: Promise<{ section: string
         description: "Raise fingers on camera and see the total appear as a full-screen animated number using private, on-device hand tracking.",
       };
     }
+    if (section === "posture-coach") {
+      return {
+        title: "Posture Coach · Private AI Exercise Form Tracking",
+        description: "Track squats, push-ups and standing posture with private, on-device pose analysis and real-time joint-angle feedback.",
+      };
+    }
     return {};
   });
 }
@@ -27,6 +33,7 @@ export function generateStaticParams() {
     "vision-pen",
     "filterverse",
     "finger-counter",
+    "posture-coach",
     "inkora",
     "pen-app",
     "penapp",

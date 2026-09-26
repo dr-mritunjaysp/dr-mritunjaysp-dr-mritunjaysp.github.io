@@ -267,6 +267,23 @@ test("renders Vision Pen inside the portfolio header and footer", async () => {
   assert.match(html, /class="site-footer"/);
 });
 
+test("renders the Posture Coach and exposes it from the More menu", async () => {
+  const response = await render("/posture-coach");
+  const html = await response.text();
+  const source = await readFile(
+    new URL("../app/PortfolioApp.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.equal(response.status, 200);
+  assert.match(html, /Posture Coach/);
+  assert.match(html, /On-device movement intelligence/);
+  assert.match(html, /Squat trainer/);
+  assert.match(html, /Push-up trainer/);
+  assert.match(html, /Posture scan/);
+  assert.match(source, /label: "Posture Coach", href: "\/posture-coach"/);
+});
+
 test("opens Filter Verse and Finger Counter above Vision Pen", async () => {
   const response = await render("/filterverse");
   const html = await response.text();
