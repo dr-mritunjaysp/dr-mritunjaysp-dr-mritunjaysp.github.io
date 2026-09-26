@@ -137,6 +137,9 @@ test("opens Data Structures and Algorithms resources on a dedicated page", async
   ]);
   assert.match(readerSource, /createPortal\(/);
   assert.match(readerSource, /aria-modal="true"/);
+  assert.match(readerSource, /Array\.from\(\{ length: pageCount \}/);
+  assert.match(readerSource, /new IntersectionObserver\(/);
+  assert.match(readerSource, /className="course-pdf-pages"/);
   assert.match(
     styles,
     /\.course-pdf-reader-page\s*\{[^}]*position:\s*fixed[^}]*overflow:\s*auto/s,
@@ -152,6 +155,10 @@ test("opens Data Structures and Algorithms resources on a dedicated page", async
   assert.match(
     styles,
     /\.course-pdf-reader-header > div\s*\{[^}]*display:\s*flex[^}]*white-space:\s*nowrap/s,
+  );
+  assert.match(
+    styles,
+    /\.course-pdf-pages\s*\{[^}]*flex-direction:\s*column/s,
   );
 });
 

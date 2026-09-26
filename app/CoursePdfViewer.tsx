@@ -10,7 +10,7 @@ import {
   RotateCcw,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type {
   PDFDocumentLoadingTask,
@@ -31,6 +31,155 @@ const MIN_ZOOM = 0.75;
 const MAX_ZOOM = 1.5;
 const ZOOM_STEP = 0.25;
 
+type CoursePdfPageProps = {
+  availableWidth: number;
+  document: PDFDocumentProxy;
+  pageNumber: number;
+  scrollRootRef: { current: HTMLDivElement | null };
+  title: string;
+  totalPages: number;
+  zoom: number;
+  onRenderError: (pageNumber: number, error: unknown) => void;
+  registerElement: (element: HTMLDivElement | null) => void;
+};
+
+function CoursePdfPage({
+  availableWidth,
+  document,
+  pageNumber,
+  scrollRootRef,
+  title,
+  totalPages,
+  zoom,
+  onRenderError,
+  registerElement,
+}: CoursePdfPageProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isNearViewport, setIsNearViewport] = useState(false);
+  const [isRendering, setIsRendering] = useState(false);
+  const [pageRatio, setPageRatio] = useState(612 / 792);
+  const pageWidth = Math.max(240, Math.min(availableWidth, 980) * zoom);
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element || typeof IntersectionObserver === "undefined") {
+      setIsNearViewport(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsNearViewport(entry.isIntersecting),
+      {
+        root: scrollRootRef.current,
+        rootMargin: "120% 0px",
+        threshold: 0.01,
+      },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [scrollRootRef]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    if (!isNearViewport || availableWidth < 100) {
+      canvas.width = 0;
+      canvas.height = 0;
+      setIsRendering(false);
+      return;
+    }
+
+    let isActive = true;
+    let currentTask: RenderTask | null = null;
+
+    const renderPage = async () => {
+      setIsRendering(true);
+
+      try {
+        const page = await document.getPage(pageNumber);
+        if (!isActive) return;
+
+        const baseViewport = page.getViewport({ scale: 1 });
+        setPageRatio(baseViewport.width / baseViewport.height);
+
+        const fittedWidth = Math.min(availableWidth, 980);
+        const fittedScale = fittedWidth / baseViewport.width;
+        const viewport = page.getViewport({ scale: fittedScale * zoom });
+        const outputScale = Math.min(window.devicePixelRatio || 1, 2);
+
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.style.width = `${Math.floor(viewport.width)}px`;
+        canvas.style.height = `${Math.floor(viewport.height)}px`;
+
+        currentTask = page.render({
+          canvas,
+          viewport,
+          transform:
+            outputScale === 1
+              ? undefined
+              : [outputScale, 0, 0, outputScale, 0, 0],
+          background: "#ffffff",
+        });
+        await currentTask.promise;
+      } catch (error) {
+        if (
+          isActive &&
+          !(error instanceof Error && error.name === "RenderingCancelledException")
+        ) {
+          onRenderError(pageNumber, error);
+        }
+      } finally {
+        if (isActive) setIsRendering(false);
+      }
+    };
+
+    void renderPage();
+
+    return () => {
+      isActive = false;
+      currentTask?.cancel();
+    };
+  }, [availableWidth, document, isNearViewport, onRenderError, pageNumber, zoom]);
+
+  return (
+    <div
+      className="course-pdf-page"
+      ref={(element) => {
+        containerRef.current = element;
+        registerElement(element);
+      }}
+      role="group"
+      aria-label={`Page ${pageNumber} of ${totalPages}`}
+      style={{ width: `${pageWidth}px`, aspectRatio: pageRatio }}
+    >
+      {!isNearViewport ? (
+        <div className="course-pdf-page-placeholder" aria-hidden="true">
+          <FileText size={20} />
+          <span>Page {pageNumber}</span>
+        </div>
+      ) : null}
+      <canvas
+        ref={canvasRef}
+        className={`course-pdf-canvas${isRendering ? " is-rendering" : ""}`}
+        aria-label={`${title}, page ${pageNumber} of ${totalPages}`}
+        hidden={!isNearViewport}
+      />
+      {isNearViewport && isRendering ? (
+        <span className="course-pdf-rendering" role="status">
+          Rendering page {pageNumber}...
+        </span>
+      ) : null}
+      <span className="course-pdf-page-number" aria-hidden="true">
+        {pageNumber}
+      </span>
+    </div>
+  );
+}
+
 export function CoursePdfViewer({
   src,
   title,
@@ -39,18 +188,28 @@ export function CoursePdfViewer({
 }: CoursePdfViewerProps) {
   const readerPageRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pageElementsRef = useRef<Array<HTMLDivElement | null>>([]);
   const loadingTaskRef = useRef<PDFDocumentLoadingTask | null>(null);
   const documentRef = useRef<PDFDocumentProxy | null>(null);
-  const renderTaskRef = useRef<RenderTask | null>(null);
+  const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy | null>(null);
   const [status, setStatus] = useState<ReaderStatus>("loading");
   const [errorMessage, setErrorMessage] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [availableWidth, setAvailableWidth] = useState(0);
-  const [isRendering, setIsRendering] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
+
+  const handlePageRenderError = useCallback(
+    (failedPage: number, error: unknown) => {
+      console.error(`Unable to render course PDF page ${failedPage}`, error);
+      setErrorMessage(
+        `Page ${failedPage} could not be displayed. Please retry the reader.`,
+      );
+      setStatus("error");
+    },
+    [],
+  );
 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
@@ -93,6 +252,8 @@ export function CoursePdfViewer({
     setErrorMessage("");
     setPageNumber(1);
     setPageCount(0);
+    setPdfDocument(null);
+    pageElementsRef.current = [];
 
     const loadDocument = async () => {
       try {
@@ -110,6 +271,7 @@ export function CoursePdfViewer({
         }
 
         documentRef.current = document;
+        setPdfDocument(document);
         setPageCount(document.numPages);
         setStatus("ready");
       } catch (error) {
@@ -126,8 +288,6 @@ export function CoursePdfViewer({
 
     return () => {
       isActive = false;
-      renderTaskRef.current?.cancel();
-      renderTaskRef.current = null;
       void loadingTaskRef.current?.destroy();
       loadingTaskRef.current = null;
       documentRef.current = null;
@@ -135,83 +295,64 @@ export function CoursePdfViewer({
   }, [retryKey, src]);
 
   useEffect(() => {
-    const document = documentRef.current;
-    const canvas = canvasRef.current;
+    const readerPage = readerPageRef.current;
+    if (!readerPage || status !== "ready" || pageCount === 0) return;
 
-    if (
-      status !== "ready" ||
-      !document ||
-      !canvas ||
-      availableWidth < 100
-    ) {
-      return;
-    }
+    let frameId = 0;
 
-    let isActive = true;
-    let currentTask: RenderTask | null = null;
+    const updateCurrentPage = () => {
+      frameId = 0;
+      const readerTop = readerPage.getBoundingClientRect().top;
+      const marker = readerTop + Math.min(readerPage.clientHeight * 0.35, 280);
+      let closestPage = 1;
+      let closestDistance = Number.POSITIVE_INFINITY;
 
-    const renderPage = async () => {
-      setIsRendering(true);
+      pageElementsRef.current.forEach((page, index) => {
+        if (!page) return;
+        const bounds = page.getBoundingClientRect();
 
-      try {
-        const page = await document.getPage(pageNumber);
-        if (!isActive) return;
-
-        const baseViewport = page.getViewport({ scale: 1 });
-        const fittedWidth = Math.min(availableWidth, 980);
-        const fittedScale = fittedWidth / baseViewport.width;
-        const viewport = page.getViewport({ scale: fittedScale * zoom });
-        const outputScale = Math.min(window.devicePixelRatio || 1, 2);
-
-        canvas.width = Math.floor(viewport.width * outputScale);
-        canvas.height = Math.floor(viewport.height * outputScale);
-        canvas.style.width = `${Math.floor(viewport.width)}px`;
-        canvas.style.height = `${Math.floor(viewport.height)}px`;
-
-        currentTask = page.render({
-          canvas,
-          viewport,
-          transform:
-            outputScale === 1
-              ? undefined
-              : [outputScale, 0, 0, outputScale, 0, 0],
-          background: "#ffffff",
-        });
-        renderTaskRef.current = currentTask;
-        await currentTask.promise;
-      } catch (error) {
-        if (
-          isActive &&
-          !(error instanceof Error && error.name === "RenderingCancelledException")
-        ) {
-          console.error("Unable to render course PDF page", error);
-          setErrorMessage(
-            "This page could not be displayed. Please retry the reader.",
-          );
-          setStatus("error");
+        if (bounds.top <= marker && bounds.bottom > marker) {
+          closestPage = index + 1;
+          closestDistance = 0;
+          return;
         }
-      } finally {
-        if (isActive) setIsRendering(false);
-      }
+
+        const distance = Math.min(
+          Math.abs(bounds.top - marker),
+          Math.abs(bounds.bottom - marker),
+        );
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestPage = index + 1;
+        }
+      });
+
+      setPageNumber((current) =>
+        current === closestPage ? current : closestPage,
+      );
     };
 
-    void renderPage();
+    const queueCurrentPageUpdate = () => {
+      if (!frameId) frameId = window.requestAnimationFrame(updateCurrentPage);
+    };
+
+    updateCurrentPage();
+    readerPage.addEventListener("scroll", queueCurrentPageUpdate, {
+      passive: true,
+    });
 
     return () => {
-      isActive = false;
-      currentTask?.cancel();
-      if (renderTaskRef.current === currentTask) {
-        renderTaskRef.current = null;
-      }
+      readerPage.removeEventListener("scroll", queueCurrentPageUpdate);
+      if (frameId) window.cancelAnimationFrame(frameId);
     };
-  }, [availableWidth, pageNumber, status, zoom]);
+  }, [pageCount, status]);
 
   const changePage = (nextPage: number) => {
-    setPageNumber(Math.min(Math.max(nextPage, 1), pageCount || 1));
-    readerPageRef.current?.scrollTo({
-      top: stageRef.current?.offsetTop ?? 0,
-      left: 0,
+    const boundedPage = Math.min(Math.max(nextPage, 1), pageCount || 1);
+    setPageNumber(boundedPage);
+    pageElementsRef.current[boundedPage - 1]?.scrollIntoView({
       behavior: "smooth",
+      block: "start",
     });
   };
 
@@ -317,16 +458,32 @@ export function CoursePdfViewer({
           </div>
         ) : null}
 
-        <canvas
-          ref={canvasRef}
-          className={`course-pdf-canvas${isRendering ? " is-rendering" : ""}`}
-          aria-label={`${title}, page ${pageNumber} of ${pageCount || 47}`}
-          hidden={status !== "ready"}
-        />
-        {status === "ready" && isRendering ? (
-          <span className="course-pdf-rendering" role="status">
-            Rendering page {pageNumber}...
-          </span>
+        {status === "ready" && pdfDocument ? (
+          <div
+            className="course-pdf-pages"
+            aria-label={`${title}, ${pageCount} pages`}
+          >
+            {Array.from({ length: pageCount }, (_, index) => {
+              const renderedPageNumber = index + 1;
+
+              return (
+                <CoursePdfPage
+                  key={renderedPageNumber}
+                  availableWidth={availableWidth}
+                  document={pdfDocument}
+                  pageNumber={renderedPageNumber}
+                  scrollRootRef={readerPageRef}
+                  title={title}
+                  totalPages={pageCount}
+                  zoom={zoom}
+                  onRenderError={handlePageRenderError}
+                  registerElement={(element) => {
+                    pageElementsRef.current[index] = element;
+                  }}
+                />
+              );
+            })}
+          </div>
         ) : null}
       </div>
       </section>

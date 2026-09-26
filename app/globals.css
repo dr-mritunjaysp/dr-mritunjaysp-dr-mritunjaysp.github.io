@@ -2728,13 +2728,31 @@ img {
   overscroll-behavior: contain;
 }
 
-.course-pdf-canvas {
-  display: block;
-  max-width: none;
-  margin: 0 auto;
+.course-pdf-pages {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.course-pdf-page {
+  position: relative;
+  flex: 0 0 auto;
+  overflow: hidden;
+  scroll-margin-top: 18px;
   border-radius: 4px;
   background: #ffffff;
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+}
+
+.course-pdf-canvas {
+  display: block;
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
   transition: opacity 120ms ease;
 }
 
@@ -2744,6 +2762,39 @@ img {
 
 .course-pdf-canvas.is-rendering {
   opacity: 0.58;
+}
+
+.course-pdf-page-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 7px;
+  color: #94a3b8;
+  background: #ffffff;
+}
+
+.course-pdf-page-placeholder span {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.course-pdf-page-number {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: inline-grid;
+  min-width: 26px;
+  height: 26px;
+  place-items: center;
+  padding: 0 7px;
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 760;
 }
 
 .course-pdf-status {
