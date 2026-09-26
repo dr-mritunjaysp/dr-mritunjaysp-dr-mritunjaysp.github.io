@@ -37,6 +37,7 @@ export function CoursePdfViewer({
   detail,
   onClose,
 }: CoursePdfViewerProps) {
+  const readerPageRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const loadingTaskRef = useRef<PDFDocumentLoadingTask | null>(null);
@@ -207,7 +208,11 @@ export function CoursePdfViewer({
 
   const changePage = (nextPage: number) => {
     setPageNumber(Math.min(Math.max(nextPage, 1), pageCount || 1));
-    stageRef.current?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    readerPageRef.current?.scrollTo({
+      top: stageRef.current?.offsetTop ?? 0,
+      left: 0,
+      behavior: "smooth",
+    });
   };
 
   const changeZoom = (nextZoom: number) => {
@@ -215,7 +220,11 @@ export function CoursePdfViewer({
   };
 
   return createPortal(
-    <div className="course-pdf-reader-page" role="presentation">
+    <div
+      className="course-pdf-reader-page"
+      ref={readerPageRef}
+      role="presentation"
+    >
       <section
         className="course-pdf-reader course-pdf-reader-fullpage"
         id="unit-1-reader"

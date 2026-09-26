@@ -137,8 +137,22 @@ test("opens Data Structures and Algorithms resources on a dedicated page", async
   ]);
   assert.match(readerSource, /createPortal\(/);
   assert.match(readerSource, /aria-modal="true"/);
-  assert.match(styles, /\.course-pdf-reader-page\s*\{[^}]*position:\s*fixed/s);
-  assert.match(styles, /\.course-pdf-reader\.course-pdf-reader-fullpage\s*\{[^}]*height:\s*100dvh/s);
+  assert.match(
+    styles,
+    /\.course-pdf-reader-page\s*\{[^}]*position:\s*fixed[^}]*overflow:\s*auto/s,
+  );
+  assert.match(
+    styles,
+    /\.course-pdf-reader\.course-pdf-reader-fullpage\s*\{[^}]*min-height:\s*100dvh[^}]*height:\s*auto/s,
+  );
+  assert.match(
+    styles,
+    /\.course-pdf-reader-fullpage \.course-pdf-stage\s*\{[^}]*overflow:\s*visible/s,
+  );
+  assert.match(
+    styles,
+    /\.course-pdf-reader-header > div\s*\{[^}]*display:\s*flex[^}]*white-space:\s*nowrap/s,
+  );
 });
 
 test("keeps the implementation independent from the retired theme", async () => {
