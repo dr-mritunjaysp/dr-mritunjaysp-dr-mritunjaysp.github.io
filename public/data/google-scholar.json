@@ -1,5 +1,5 @@
 {
-  "total_citations": 664,
+  "total_citations": 668,
   "h_index": 14,
   "i10_index": 17,
   "papers": [
@@ -12,7 +12,7 @@
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 73,
+      "citations": 74,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -40,7 +40,7 @@
     },
     {
       "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of cosmos blockchain interoperability",
-      "citations": 55,
+      "citations": 56,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=466942265117435416"
@@ -61,7 +61,7 @@
     },
     {
       "title": "Enhancing security using quantum blockchain in consumer IoT networks",
-      "citations": 38,
+      "citations": 39,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=16854804718286061991"
@@ -110,7 +110,7 @@
     },
     {
       "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
-      "citations": 11,
+      "citations": 12,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12490583310529805986"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-09-26T01:33:51.645Z",
+  "fetched_at": "2026-09-27T13:58:08.335Z",
   "source": "google-scholar"
 }
