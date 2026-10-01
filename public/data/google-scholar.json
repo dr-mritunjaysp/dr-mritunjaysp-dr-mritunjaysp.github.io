@@ -1,5 +1,5 @@
 {
-  "total_citations": 668,
+  "total_citations": 669,
   "h_index": 14,
   "i10_index": 17,
   "papers": [
@@ -68,7 +68,7 @@
     },
     {
       "title": "A comprehensive survey on data converters for IoT applications: Scope, issues, and future directions",
-      "citations": 29,
+      "citations": 30,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:0EnyYjriUFMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7821640531072506724"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-09-28T15:27:38.728Z",
+  "fetched_at": "2026-10-01T05:53:22.041Z",
   "source": "google-scholar"
 }
