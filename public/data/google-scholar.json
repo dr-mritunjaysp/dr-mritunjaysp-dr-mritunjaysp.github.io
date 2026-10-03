@@ -32,18 +32,18 @@
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=13729872689521760260"
     },
     {
-      "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of cosmos blockchain interoperability",
-      "citations": 57,
-      "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC",
-      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=466942265117435416"
-    },
-    {
       "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7g smart networks",
       "citations": 56,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7172045923725479815"
+    },
+    {
+      "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of cosmos blockchain interoperability",
+      "citations": 56,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=466942265117435416"
     },
     {
       "title": "DemocracyGuard: Blockchain‐based secure voting framework for digital democracy",
@@ -75,7 +75,7 @@
     },
     {
       "title": "V-track: blockchain-enabled iot system for reliable vehicle location verification",
-      "citations": 24,
+      "citations": 23,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:WF5omc3nYNoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5921717216089011881"
@@ -96,14 +96,14 @@
     },
     {
       "title": "Decentralized trust: NFT and blockchain-enabled evidence system using fog computing",
-      "citations": 15,
+      "citations": 16,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ULOm3_A8WrAC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=14148570133583246326"
     },
     {
       "title": "Machine learning techniques for Wi-Fi CSI-based recognition and sensing: A comprehensive review",
-      "citations": 13,
+      "citations": 14,
       "year": "2026",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:9ZlFYXVOiuMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5709288465619362501"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-01T05:53:22.041Z",
+  "fetched_at": "2026-10-03T12:34:57.131Z",
   "source": "google-scholar"
 }
