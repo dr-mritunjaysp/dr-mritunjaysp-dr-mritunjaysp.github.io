@@ -1,5 +1,5 @@
 {
-  "total_citations": 674,
+  "total_citations": 677,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
@@ -12,7 +12,7 @@
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 74,
+      "citations": 75,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -26,14 +26,14 @@
     },
     {
       "title": "A review on emergency vehicle management for intelligent transportation systems",
-      "citations": 61,
+      "citations": 62,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:_FxGoFyzp5QC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=13729872689521760260"
     },
     {
       "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7g smart networks",
-      "citations": 57,
+      "citations": 58,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7172045923725479815"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-05T02:00:53.722Z",
+  "fetched_at": "2026-10-06T07:34:27.050Z",
   "source": "google-scholar"
 }
