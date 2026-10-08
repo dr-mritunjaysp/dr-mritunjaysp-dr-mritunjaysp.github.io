@@ -1,5 +1,5 @@
 {
-  "total_citations": 677,
+  "total_citations": 679,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
@@ -68,7 +68,7 @@
     },
     {
       "title": "A comprehensive survey on data converters for IoT applications: Scope, issues, and future directions",
-      "citations": 30,
+      "citations": 31,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:0EnyYjriUFMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7821640531072506724"
@@ -89,7 +89,7 @@
     },
     {
       "title": "Blockchain-enabled intrusion detection systems for real-time vehicle monitoring",
-      "citations": 17,
+      "citations": 18,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:4TOpqqG69KYC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=3672807562139699312"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-06T07:34:27.050Z",
+  "fetched_at": "2026-10-08T01:00:25.422Z",
   "source": "google-scholar"
 }
