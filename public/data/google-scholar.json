@@ -1,5 +1,5 @@
 {
-  "total_citations": 679,
+  "total_citations": 682,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
@@ -26,7 +26,7 @@
     },
     {
       "title": "A review on emergency vehicle management for intelligent transportation systems",
-      "citations": 62,
+      "citations": 63,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:_FxGoFyzp5QC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=13729872689521760260"
@@ -68,7 +68,7 @@
     },
     {
       "title": "A comprehensive survey on data converters for IoT applications: Scope, issues, and future directions",
-      "citations": 31,
+      "citations": 33,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:0EnyYjriUFMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7821640531072506724"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-08T01:00:25.422Z",
+  "fetched_at": "2026-10-10T00:50:44.784Z",
   "source": "google-scholar"
 }
