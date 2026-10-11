@@ -1,5 +1,5 @@
 {
-  "total_citations": 682,
+  "total_citations": 685,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
@@ -12,7 +12,7 @@
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 75,
+      "citations": 77,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -40,7 +40,7 @@
     },
     {
       "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of cosmos blockchain interoperability",
-      "citations": 57,
+      "citations": 58,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=466942265117435416"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-10T00:50:44.784Z",
+  "fetched_at": "2026-10-11T01:53:34.670Z",
   "source": "google-scholar"
 }
