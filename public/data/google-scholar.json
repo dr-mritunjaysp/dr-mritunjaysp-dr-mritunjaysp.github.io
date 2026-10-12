@@ -1,5 +1,5 @@
 {
-  "total_citations": 685,
+  "total_citations": 691,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
@@ -12,7 +12,7 @@
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 77,
+      "citations": 78,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -26,7 +26,7 @@
     },
     {
       "title": "A review on emergency vehicle management for intelligent transportation systems",
-      "citations": 63,
+      "citations": 64,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:_FxGoFyzp5QC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=13729872689521760260"
@@ -53,18 +53,18 @@
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12403159287003757603"
     },
     {
+      "title": "Enhancing security using quantum blockchain in consumer IoT networks",
+      "citations": 40,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=16854804718286061991"
+    },
+    {
       "title": "Explorative implementation of quantum key distribution algorithms for secure consumer electronics networks",
       "citations": 40,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:W7OEmFMy1HYC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12744333347528424792"
-    },
-    {
-      "title": "Enhancing security using quantum blockchain in consumer IoT networks",
-      "citations": 39,
-      "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C",
-      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=16854804718286061991"
     },
     {
       "title": "A comprehensive survey on data converters for IoT applications: Scope, issues, and future directions",
@@ -95,18 +95,18 @@
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=3672807562139699312"
     },
     {
+      "title": "Machine learning techniques for Wi-Fi CSI-based recognition and sensing: A comprehensive review",
+      "citations": 17,
+      "year": "2026",
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:9ZlFYXVOiuMC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5709288465619362501"
+    },
+    {
       "title": "Decentralized trust: NFT and blockchain-enabled evidence system using fog computing",
       "citations": 16,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ULOm3_A8WrAC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=14148570133583246326"
-    },
-    {
-      "title": "Machine learning techniques for Wi-Fi CSI-based recognition and sensing: A comprehensive review",
-      "citations": 15,
-      "year": "2026",
-      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:9ZlFYXVOiuMC",
-      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5709288465619362501"
     },
     {
       "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
@@ -138,7 +138,7 @@
     },
     {
       "title": "Blockchain-based framework for global imei blacklist management and mobile device theft prevention",
-      "citations": 1,
+      "citations": 2,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:M3ejUd6NZC8C",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=11113142097322899762"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-11T01:53:34.670Z",
+  "fetched_at": "2026-10-12T22:59:14.054Z",
   "source": "google-scholar"
 }
