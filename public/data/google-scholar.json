@@ -1,5 +1,5 @@
 {
-  "total_citations": 700,
+  "total_citations": 705,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
@@ -12,14 +12,14 @@
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 78,
+      "citations": 79,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
     },
     {
       "title": "QIoTChain: quantum IoT‐blockchain fusion for advanced data protection in Industry 4.0",
-      "citations": 67,
+      "citations": 68,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:qjMakFHDy7sC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=15831870856063533727"
@@ -33,14 +33,14 @@
     },
     {
       "title": "Future of connectivity: A comprehensive review of innovations and challenges in 7g smart networks",
-      "citations": 59,
+      "citations": 60,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:KlAtU1dfN6UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7172045923725479815"
     },
     {
       "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of cosmos blockchain interoperability",
-      "citations": 58,
+      "citations": 59,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=466942265117435416"
@@ -76,7 +76,7 @@
     {
       "title": "V-track: blockchain-enabled iot system for reliable vehicle location verification",
       "citations": 23,
-      "year": "2024",
+      "year": "2026",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:WF5omc3nYNoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5921717216089011881"
     },
@@ -110,7 +110,7 @@
     },
     {
       "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
-      "citations": 13,
+      "citations": 14,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12490583310529805986"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-16T17:23:41.586Z",
+  "fetched_at": "2026-10-20T10:04:10.519Z",
   "source": "google-scholar"
 }
