@@ -1,5 +1,5 @@
 {
-  "total_citations": 705,
+  "total_citations": 709,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
@@ -12,7 +12,7 @@
     },
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 79,
+      "citations": 80,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -40,7 +40,7 @@
     },
     {
       "title": "Unlocking the potential of interconnected blockchains: A comprehensive study of cosmos blockchain interoperability",
-      "citations": 59,
+      "citations": 60,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:roLk4NBRz8UC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=466942265117435416"
@@ -82,14 +82,14 @@
     },
     {
       "title": "Blockchain-enabled vehicle lifecycle management with predictive maintenance using federated learning",
-      "citations": 19,
+      "citations": 20,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:LkGwnXOMwfcC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=10900713872302634975"
     },
     {
       "title": "Blockchain-enabled intrusion detection systems for real-time vehicle monitoring",
-      "citations": 18,
+      "citations": 19,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:4TOpqqG69KYC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=3672807562139699312"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-20T10:04:10.519Z",
+  "fetched_at": "2026-10-20T19:16:45.782Z",
   "source": "google-scholar"
 }
