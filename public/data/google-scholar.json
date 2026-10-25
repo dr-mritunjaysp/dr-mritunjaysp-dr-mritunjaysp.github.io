@@ -1,11 +1,11 @@
 {
-  "total_citations": 709,
+  "total_citations": 712,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
     {
       "title": "Quantum computing applications for Internet of Things",
-      "citations": 86,
+      "citations": 87,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:zYLM7Y9cAGgC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=9686432201873605822"
@@ -47,7 +47,7 @@
     },
     {
       "title": "DemocracyGuard: Blockchain‐based secure voting framework for digital democracy",
-      "citations": 42,
+      "citations": 43,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ufrVoPGSRksC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12403159287003757603"
@@ -75,7 +75,7 @@
     },
     {
       "title": "V-track: blockchain-enabled iot system for reliable vehicle location verification",
-      "citations": 23,
+      "citations": 24,
       "year": "2026",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:WF5omc3nYNoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5921717216089011881"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-10-20T19:16:45.782Z",
+  "fetched_at": "2026-10-25T19:36:34.940Z",
   "source": "google-scholar"
 }
