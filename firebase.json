@@ -21,6 +21,11 @@
     ],
     "redirects": [
       {
+        "source": "/ai-canvas/index.html",
+        "destination": "/ai-canvas/",
+        "type": 301
+      },
+      {
         "source": "/vision-pen/index.html",
         "destination": "/vision-pen",
         "type": 301

@@ -702,7 +702,7 @@ function Header({
             {moreOpen && (
               <div className="more-menu" role="menu">
                 <a
-                  href="/ai-canvas/index.html"
+                  href="/ai-canvas/"
                   target="_blank"
                   rel="noopener noreferrer"
                   role="menuitem"
