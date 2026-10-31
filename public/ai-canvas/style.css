@@ -256,3 +256,41 @@ select {
   cursor: pointer;
 }
 .primary:disabled { opacity: 0.6; cursor: progress; }
+/* Developer credit: navy footer and magenta dot texture echo the site footer. */
+body { display: flex; flex-direction: column; }
+#stage { flex-shrink: 0; margin: auto; }
+.developer-footer {
+  flex-shrink: 0; width: 100%; padding: 13px 20px;
+  border-top: 1px solid #25314b; text-align: center;
+  background: radial-gradient(circle, #cb72b74d 1px, transparent 1.8px) 0 100% / 16px 13px, #030718;
+  color: #aab7cb; font-size: 13px; line-height: 1.6;
+}
+.developer-footer p { margin: 0; }
+.developer-footer button, .developer-footer a, .profile-guidance a {
+  color: #73d5ff; font: inherit; text-decoration: none;
+}
+.developer-footer button { border: 0; padding: 0 2px; background: none; cursor: pointer; font-weight: 600; }
+.developer-footer button:hover, .developer-footer a:hover, .developer-bio a:hover { text-decoration: underline; }
+.developer-footer .guidance { font-size: 12px; color: #95a2b8; }
+#developer-profile {
+  position: fixed; width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 32px);
+  padding: 0; border: 1px solid #35405c; border-radius: 20px;
+  color: #c7d2e4; background: #080e20; box-shadow: 0 24px 90px #0009;
+}
+#developer-profile::backdrop { background: #020617bd; backdrop-filter: blur(7px); }
+.developer-profile-content { position: relative; display: grid; grid-template-columns: 160px 1fr; align-items: start; gap: 28px; padding: 38px; }
+.profile-close { position: absolute; right: 12px; top: 8px; border: 0; border-radius: 8px; padding: 0 8px; background: transparent; color: #aab7cb; font-size: 28px; cursor: pointer; }
+.profile-close:hover { background: #ffffff12; color: #fff; }
+.developer-portrait { width: 160px; height: auto; border-radius: 12px; border: 1px solid #435376; object-fit: cover; }
+.developer-bio p { margin: 0 0 18px; line-height: 1.75; }
+.developer-bio .profile-eyebrow { color: #76d4f7; font-size: 10px; letter-spacing: .16em; font-weight: 600; margin: 0 20px 8px 0; }
+.developer-bio h2 { margin: 0 0 16px; font-size: 28px; color: #f1f5ff; letter-spacing: -.03em; }
+.developer-email { color: #7ed8ff; text-decoration: none; overflow-wrap: anywhere; }
+.developer-bio .profile-guidance { margin: 24px 0 0; padding-top: 18px; border-top: 1px solid #27324a; font-size: 13px; }
+@media (max-width: 540px) {
+  .developer-profile-content { grid-template-columns: 1fr; gap: 20px; padding: 28px 24px; }
+  .developer-portrait { width: 108px; }
+  .developer-bio h2 { font-size: 26px; }
+  .developer-footer { padding: 10px 12px; font-size: 12px; }
+  .developer-footer .guidance { font-size: 11px; }
+}

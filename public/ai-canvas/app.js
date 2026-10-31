@@ -444,7 +444,8 @@ function resizeCanvases(w, h) {
 
 function fitStage() {
   const ar = W / H;
-  const width = Math.min(innerWidth, innerHeight * ar);
+  const availableHeight = Math.max(1, innerHeight - document.querySelector("#developer-footer").offsetHeight);
+  const width = Math.min(innerWidth, availableHeight * ar);
   stage.style.width = `${width}px`;
   stage.style.aspectRatio = `${W} / ${H}`;
 }
