@@ -701,6 +701,19 @@ function Header({
             </button>
             {moreOpen && (
               <div className="more-menu" role="menu">
+                <a
+                  href="/ai-canvas/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  role="menuitem"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
+                  AI Canvas
+                </a>
                 <Link
                   href="/filterverse"
                   role="menuitem"
