@@ -140,6 +140,14 @@ const moreNav = [
   { label: "Motivations", href: "/motivations", key: "motivations" },
 ] as const;
 
+
+const moreMenuItems = [
+  ...moreNav.map((item) => ({ ...item, newTab: false })),
+  { label: "AI Canvas", href: "/ai-canvas/", key: "ai-canvas", newTab: true },
+  { label: "CyberTwin Agent", href: "/cybertwin-agent/", key: "cybertwin-agent", newTab: true },
+  { label: "Scholar Resume", href: "/ResumeBuilder/", key: "scholar-resume", newTab: true },
+].sort((a, b) => a.label.localeCompare(b.label, "en"));
+
 const publications: Publication[] = [
   {
     title: "Quantum computing applications for Internet of Things",
@@ -701,96 +709,26 @@ function Header({
             </button>
             {moreOpen && (
               <div className="more-menu" role="menu">
-                <a
-                  href="/cybertwin-agent/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  role="menuitem"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMoreOpen(false);
-                    setMobileOpen(false);
-                  }}
-                >
-                  CyberTwin Agent
-                </a>
-                <a
-                  href="/ai-canvas/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  role="menuitem"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMoreOpen(false);
-                    setMobileOpen(false);
-                  }}
-                >
-                  AI Canvas
-                </a>
-                <Link
-                  href="/filterverse"
-                  role="menuitem"
-                  className={section === "filterverse" ? "active" : ""}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMoreOpen(false);
-                    setMobileOpen(false);
-                  }}
-                >
-                  Filter Verse
-                </Link>
-                <Link
-                  href="/finger-counter"
-                  role="menuitem"
-                  className={section === "finger-counter" ? "active" : ""}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMoreOpen(false);
-                    setMobileOpen(false);
-                  }}
-                >
-                  Finger Counter
-                </Link>
-                <Link
-                  href="/vision-pen"
-                  role="menuitem"
-                  className={section === "vision-pen" ? "active" : ""}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMoreOpen(false);
-                    setMobileOpen(false);
-                  }}
-                >
-                  Vision Pen
-                </Link>
-                <a
-                  href="/ResumeBuilder/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  role="menuitem"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMoreOpen(false);
-                    setMobileOpen(false);
-                  }}
-                >
-                  Scholar Resume
-                </a>
-                {moreNav.slice(3).map((item) => (
-                  <Link
-                    href={item.href}
-                    key={item.key}
-                    role="menuitem"
-                    className={section === item.key ? "active" : ""}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setMoreOpen(false);
-                      setMobileOpen(false);
-                    }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {moreMenuItems.map((item) => {
+                  const MenuLink = item.newTab ? "a" : Link;
+                  return (
+                    <MenuLink
+                      href={item.href}
+                      key={item.key}
+                      role="menuitem"
+                      target={item.newTab ? "_blank" : undefined}
+                      rel={item.newTab ? "noopener noreferrer" : undefined}
+                      className={section === item.key ? "active" : ""}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMoreOpen(false);
+                        setMobileOpen(false);
+                      }}
+                    >
+                      {item.label}
+                    </MenuLink>
+                  );
+                })}
               </div>
             )}
           </div>
