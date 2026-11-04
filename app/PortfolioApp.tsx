@@ -702,6 +702,19 @@ function Header({
             {moreOpen && (
               <div className="more-menu" role="menu">
                 <a
+                  href="/cybertwin-agent/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  role="menuitem"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
+                  CyberTwin Agent
+                </a>
+                <a
                   href="/ai-canvas/"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -2876,10 +2889,20 @@ function ProjectsPage() {
         eyebrow="Interactive Work & Systems"
         title="Featured Projects"
         description="Explorations across algorithm design, quantum computing, post-quantum cryptography, and interactive web visualizers."
-        count={4}
+        count={5}
       />
 
       <div className="projects-showcase-grid">
+        <div className="project-feature-card">
+          <div>
+            <div className="project-badge-tag">Predictive Cybersecurity · Research Concept</div>
+            <h3>CyberTwin Agent</h3>
+            <p style={{ color: "var(--muted)", lineHeight: 1.7 }}>Explore a digital twin and coordinated agent framework for attack-path prediction, virtual response evaluation, and analyst-approved decisions through a synthetic interactive demo.</p>
+            <div className="pub-attributes-row"><span className="attribute-pill">Digital Twin</span><span className="attribute-pill">Agentic AI</span><span className="attribute-pill">TRL 2 Concept</span></div>
+          </div>
+          <a className="btn-sort-primary" href="/cybertwin-agent/">Explore CyberTwin Agent <ChevronRight size={16} /></a>
+        </div>
+
         <div className="project-feature-card">
           <div>
             <div className="project-badge-tag">
