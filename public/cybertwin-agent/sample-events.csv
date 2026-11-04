@@ -1,0 +1,4 @@
+asset,event,severity,source,target
+employee-laptop,Repeated failed authentication,medium,remote-client,identity-gateway
+identity-gateway,Unusual privileged login,high,employee-laptop,research-database
+research-database,Unexpected bulk read,critical,identity-gateway,service-cluster

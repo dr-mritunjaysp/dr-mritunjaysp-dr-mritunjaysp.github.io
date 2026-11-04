@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {parseDataset} from '../public/cybertwin-agent/dataset.mjs';
+test('CSV accepts quoted commas and embedded newlines and derives severity score',()=>{const d=parseDataset('asset,event,severity,source,target\r\nedge,"failed, then\nblocked",HIGH,client,database','csv');assert.equal(d.events.length,1);assert.equal(d.scenario.risk,75);assert.equal(d.edgeCount,1);assert.deepEqual(d.scenario.labels,['client','edge','database']);});
+test('JSON array and wrapper have the same normalized result',()=>{const rows=[{asset:'a',event:'read',severity:'critical'}];assert.deepEqual(parseDataset(JSON.stringify(rows),'json'),parseDataset(JSON.stringify({events:rows}),'json'));});
+test('rejects invalid severity, non-text fields, missing required fields and malformed JSON',()=>{for(const row of [{asset:'a',event:'e',severity:'__proto__'},{asset:4,event:'e',severity:'high'},{asset:'a',severity:'high'}])assert.throws(()=>parseDataset(JSON.stringify([row]),'json'));assert.throws(()=>parseDataset('{broken','json'),/Invalid JSON/);});
+test('rejects duplicate CSV headers, unequal columns and unterminated quotes',()=>{for(const csv of ['asset,asset,event,severity\na,a,e,high','asset,event,severity\na,e,high,extra','asset,event,severity\na,"unterminated,high'])assert.throws(()=>parseDataset(csv,'csv'));});
+test('bounds file size and row count',()=>{assert.throws(()=>parseDataset('x'.repeat(2*1024*1024+1),'csv'),/2 MB/);assert.throws(()=>parseDataset(JSON.stringify(Array(5001).fill({asset:'a',event:'e',severity:'low'})),'json'),/5,000/);});
+test('handles BOM and missing topology without inventing relationships',()=>{const d=parseDataset('\uFEFFasset,event,severity\na,e,info','csv');assert.equal(d.edgeCount,0);assert.equal(d.scenario.risk,10);assert.match(d.scenario.prediction,/inference is unavailable/);});
