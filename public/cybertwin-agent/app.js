@@ -28,6 +28,11 @@ function renderResults(){
   group.append(bars);$('result-chart').append(group);
   const tr=document.createElement('tr');for(const value of [row.name,row.risk===null?'Pending':String(row.risk),row.availability===null?'Pending':row.availability+'%']){const td=document.createElement('td');td.textContent=value;tr.append(td);}$('result-table').append(tr);
  }
+ const proposed=simulation?actions[simulation.action]:null;
+ $('authorization-action').textContent=proposed?proposed.name:'Simulation required';
+ $('authorization-risk').textContent=simulation?`${s.risk} → ${simulation.risk}/100 (${s.risk-simulation.risk} points reduced)`:'Not yet evaluated';
+ $('authorization-impact').textContent=simulation?`${simulation.availability}% availability · ${100-simulation.availability}% disruption`:'Not yet evaluated';
+ $('authorization-status').textContent=applied?'Authorized response applied. The decision is recorded in the session log.':simulation?'Review the assessment above and confirm authorization to proceed.':'Authorization becomes available after response simulation.';
  $('result-status').textContent=applied?'Response applied to demo twin':simulation?'Simulated · awaiting approval':analyzed?'Baseline established':'Awaiting analysis';
  $('result-summary').textContent=simulation?`${actions[simulation.action].name}: risk ${s.risk} → ${simulation.risk}/100, a reduction of ${s.risk-simulation.risk} points. Service availability 100% → ${simulation.availability}%. ${applied?'The approved result is now applied to the demo twin.':'The candidate has not been applied.'}`:analyzed?`Baseline risk is ${s.risk}/100 with 100% synthetic service availability. Simulate a response to compare the trade-off.`:'Run agent analysis to establish the baseline, then simulate an action to compare its impact.';
  $('result-chart').setAttribute('aria-label',rows.map(r=>r.name+': '+(r.risk===null?'pending':`risk ${r.risk} out of 100, availability ${r.availability}%`)).join('. '));updateWorkflow();renderAlternatives();syncTwinModel();
@@ -69,7 +74,7 @@ const flowSteps=[
  ['Asset and dependency context','Trace the potential route to the critical asset and the service cluster that depends on it.'],
  ['Four coordinated agent roles','Detection identifies unusual events; intelligence correlates signals; prediction traces the path; risk assesses impact.'],
  ['Virtual response evaluation','Test isolation, traffic restriction or increased monitoring in the twin and compare the preset trade-offs.'],
- ['Analyst review and approval','The analyst reviews a simulated response. This animation does not approve or execute any action.'],
+ ['Analyst authorization','The analyst reviews evidence, residual risk and service impact before authorizing the simulated response. This animation does not grant authorization.'],
  ['Outcome feedback','After approval, the synthetic outcome updates the demo twin. Live telemetry feedback is not connected.']
 ];
 let flowStep=0,flowTimer=null,flowPaused=matchMedia('(prefers-reduced-motion: reduce)').matches;
