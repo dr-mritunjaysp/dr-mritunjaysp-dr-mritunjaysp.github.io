@@ -11,8 +11,9 @@ function syncThemeLabel(){const dark=document.documentElement.dataset.theme==='d
 themeButton.addEventListener('click',()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;try{localStorage.setItem('cybertwin-theme',theme)}catch{}syncThemeLabel();});syncThemeLabel();
 function updateWorkflow(){
  const stage=applied?6:simulation?5:analyzed?4:1;
- document.querySelectorAll('[data-step]').forEach(n=>{const step=Number(n.dataset.step);const done=step<stage||applied;n.classList.toggle('done',done);n.classList.toggle('current',step===stage&&!applied);n.querySelector('small').textContent=done?'Complete':step===stage?'Current step':'Pending';});
- $('workflow-status').textContent=applied?'6 of 6 stages complete':analyzed?(simulation?'Simulation complete · review approval':'Analysis complete · simulate a response'):'Step 1 · select a scenario';
+ document.querySelectorAll('.architecture-track [data-step]').forEach(n=>{
+  const step=Number(n.dataset.step);n.classList.toggle('done',step<stage||applied);n.classList.toggle('current',step===stage&&!applied);
+ });
 }
 function renderResults(){
  const s=scenarios[$('scenario').value];
@@ -95,3 +96,5 @@ $('flow-speed').addEventListener('change',()=>{const seconds=Number($('flow-spee
 $('scenario').addEventListener('change',()=>{flowStep=0;showFlowStep();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(flowTimer);$('network-flow-svg').pauseAnimations();}else scheduleFlow();});
 $('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({project:'CyberTwin Agent',mode:'synthetic demonstration',scenario:$('scenario').value,simulation,applied,alternatives:analyzed?possibleOutcomes($('scenario').value):[],scenarioComparisons:analyzed?Object.keys(scenarios).flatMap(possibleOutcomes):[],entries},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='cybertwin-demo-log.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});reset();scheduleFlow();
+
+$('architecture-toggle').addEventListener('click',()=>{const paused=document.querySelector('.architecture-model').classList.toggle('architecture-paused');$('architecture-toggle').textContent=paused?'Play arrows':'Pause arrows';});
