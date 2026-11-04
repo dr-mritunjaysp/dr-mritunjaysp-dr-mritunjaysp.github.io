@@ -29,7 +29,7 @@ function renderResults(){
  }
  $('result-status').textContent=applied?'Response applied to demo twin':simulation?'Simulated · awaiting approval':analyzed?'Baseline established':'Awaiting analysis';
  $('result-summary').textContent=simulation?`${actions[simulation.action].name}: risk ${s.risk} → ${simulation.risk}/100, a reduction of ${s.risk-simulation.risk} points. Service availability 100% → ${simulation.availability}%. ${applied?'The approved result is now applied to the demo twin.':'The candidate has not been applied.'}`:analyzed?`Baseline risk is ${s.risk}/100 with 100% synthetic service availability. Simulate a response to compare the trade-off.`:'Run agent analysis to establish the baseline, then simulate an action to compare its impact.';
- $('result-chart').setAttribute('aria-label',rows.map(r=>r.name+': '+(r.risk===null?'pending':`risk ${r.risk} out of 100, availability ${r.availability}%`)).join('. '));updateWorkflow();renderAlternatives();
+ $('result-chart').setAttribute('aria-label',rows.map(r=>r.name+': '+(r.risk===null?'pending':`risk ${r.risk} out of 100, availability ${r.availability}%`)).join('. '));updateWorkflow();renderAlternatives();syncTwinModel();
 }
 const scenarioNames={ransomware:'Enterprise ransomware',iot:'Industrial IoT gateway',cloud:'Cloud credentials'};
 function possibleOutcomes(scenarioKey){const scenario=scenarios[scenarioKey];return Object.entries(actions).map(([key,a])=>({scenario:scenarioKey,action:key,name:a.name,baseline:scenario.risk,risk:Math.max(0,scenario.risk-a.reduction),reduction:Math.min(scenario.risk,a.reduction),availability:a.availability,disruption:100-a.availability}));}
@@ -62,4 +62,36 @@ $('action').addEventListener('change',()=>{if(analyzed&&!applied)invalidate();})
 $('simulate').addEventListener('click',()=>{if(!analyzed||applied)return;invalidate();const s=scenarios[$('scenario').value],a=actions[$('action').value];simulation={action:$('action').value,risk:Math.max(0,s.risk-a.reduction),availability:a.availability};$('evaluation').textContent=`Preset what-if result: risk ${s.risk} → ${simulation.risk}/100; estimated service availability ${a.availability}%. ${100-a.availability}% service disruption. These illustrative values are not validated efficacy estimates.`;$('approval').disabled=false;log('Simulated: '+a.name+'. No response applied.');renderResults();});
 $('approval').addEventListener('change',()=>{$('apply').disabled=!simulation||!$('approval').checked||applied;});
 $('apply').addEventListener('click',()=>{if(!simulation||!$('approval').checked||applied)return;applied=true;$('risk').textContent=simulation.risk+'/100';$('availability').textContent=simulation.availability+'%';$('twin-state').textContent='Demo response applied';document.querySelectorAll('[data-node]').forEach(n=>{n.classList.remove('threat');n.classList.add('safe');});$('path').textContent='Demo state updated. Residual risk remains; live outcome monitoring is planned research work.';log('Analyst approval recorded for this session: '+actions[simulation.action].name+'. Demo twin updated; no external action executed.');log('Synthetic outcome: residual risk '+simulation.risk+'/100, service availability '+simulation.availability+'%.');$('apply').disabled=true;$('approval').disabled=true;$('simulate').disabled=true;renderResults();});
-$('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({project:'CyberTwin Agent',mode:'synthetic demonstration',scenario:$('scenario').value,simulation,applied,alternatives:analyzed?possibleOutcomes($('scenario').value):[],scenarioComparisons:analyzed?Object.keys(scenarios).flatMap(possibleOutcomes):[],entries},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='cybertwin-demo-log.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});reset();
+const flowSteps=[
+ ['Incoming telemetry','Synthetic device logs, traffic and security events enter the digital twin.'],
+ ['Trust-boundary mapping','The gateway links the entry point to connected assets. The twin maps this trust boundary.'],
+ ['Asset and dependency context','Trace the potential route to the critical asset and the service cluster that depends on it.'],
+ ['Four coordinated agent roles','Detection identifies unusual events; intelligence correlates signals; prediction traces the path; risk assesses impact.'],
+ ['Virtual response evaluation','Test isolation, traffic restriction or increased monitoring in the twin and compare the preset trade-offs.'],
+ ['Analyst review and approval','The analyst reviews a simulated response. This animation does not approve or execute any action.'],
+ ['Outcome feedback','After approval, the synthetic outcome updates the demo twin. Live telemetry feedback is not connected.']
+];
+let flowStep=0,flowTimer=null,flowPaused=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function showFlowStep(){
+ const model=$('system-model');model.dataset.stage=String(flowStep);document.querySelectorAll('.flow-current').forEach(n=>n.classList.remove('flow-current'));
+ const target=flowStep<3?document.querySelector(['.model-entry','.model-gateway','.model-target'][flowStep]):document.querySelector('[data-flow-node="'+flowStep+'"]');target?.classList.add('flow-current');
+ $('flow-step-count').textContent='STEP '+(flowStep+1)+' OF 7';$('flow-step-title').textContent=flowSteps[flowStep][0];$('flow-step-description').textContent=flowSteps[flowStep][1];
+ if(flowStep===0)$('flow-step-description').textContent='Synthetic signals from '+scenarios[$('scenario').value].labels[0]+' enter the twin.';
+ if(flowStep===2)$('flow-step-description').textContent='Potential path: '+scenarios[$('scenario').value].path+'. The service cluster is an operational dependency.';
+ if(flowStep===4&&simulation)$('flow-step-description').textContent=actions[simulation.action].name+': preset residual risk '+simulation.risk+'/100 and availability '+simulation.availability+'%. This remains a what-if result until approved.';
+ if(flowStep===6&&applied)$('flow-step-description').textContent='Approved demo result: residual risk '+simulation.risk+'/100; service availability '+simulation.availability+'%. The twin is updated; no live network action occurred.';
+}
+function scheduleFlow(){clearInterval(flowTimer);$('flow-toggle').textContent=flowPaused?'Play flow':'Pause flow';$('flow-toggle').setAttribute('aria-pressed',String(flowPaused));$('system-model').classList.toggle('flow-paused',flowPaused);const svg=$('network-flow-svg');if(flowPaused)svg.pauseAnimations();else{svg.unpauseAnimations();flowTimer=setInterval(()=>{flowStep=(flowStep+1)%flowSteps.length;showFlowStep();},Number($('flow-speed').value));}}
+function syncTwinModel(){
+ const model=$('system-model');if(!model)return;model.classList.toggle('has-threat',analyzed&&!applied);model.classList.toggle('response-applied',applied);model.dataset.response=applied?simulation.action:'none';
+ $('flow-context').textContent=applied?'Approved demo response: '+actions[simulation.action].name+'. Residual risk remains.':simulation?'Candidate simulated; analyst approval is pending.':analyzed?'Analysis complete · orange marks the potential threat path.':'Illustrative walkthrough · run analysis to reveal the scenario threat path.';
+ const badge=$('model-action-badge');badge.hidden=!applied;badge.textContent=applied?(simulation.action==='isolate'?'Asset isolated':simulation.action==='restrict'?'Traffic restricted':'Monitoring increased'):'';
+ showFlowStep();
+}
+$('flow-toggle').addEventListener('click',()=>{flowPaused=!flowPaused;scheduleFlow();});
+$('flow-next').addEventListener('click',()=>{flowPaused=true;scheduleFlow();flowStep=(flowStep+1)%flowSteps.length;showFlowStep();});
+$('flow-restart').addEventListener('click',()=>{flowStep=0;$('network-flow-svg').setCurrentTime(0);showFlowStep();scheduleFlow();});
+$('flow-speed').addEventListener('change',()=>{const seconds=Number($('flow-speed').value)*3/1000;document.querySelectorAll('animateMotion').forEach(n=>n.setAttribute('dur',seconds+'s'));scheduleFlow();});
+$('scenario').addEventListener('change',()=>{flowStep=0;showFlowStep();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(flowTimer);$('network-flow-svg').pauseAnimations();}else scheduleFlow();});
+$('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({project:'CyberTwin Agent',mode:'synthetic demonstration',scenario:$('scenario').value,simulation,applied,alternatives:analyzed?possibleOutcomes($('scenario').value):[],scenarioComparisons:analyzed?Object.keys(scenarios).flatMap(possibleOutcomes):[],entries},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='cybertwin-demo-log.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});reset();scheduleFlow();
