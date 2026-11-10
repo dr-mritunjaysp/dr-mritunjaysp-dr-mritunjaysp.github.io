@@ -1,5 +1,5 @@
 {
-  "total_citations": 733,
+  "total_citations": 734,
   "h_index": 15,
   "i10_index": 17,
   "papers": [
@@ -46,18 +46,18 @@
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7172045923725479815"
     },
     {
+      "title": "Enhancing security using quantum blockchain in consumer IoT networks",
+      "citations": 45,
+      "year": "2024",
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=16854804718286061991"
+    },
+    {
       "title": "DemocracyGuard: Blockchain‐based secure voting framework for digital democracy",
       "citations": 44,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ufrVoPGSRksC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12403159287003757603"
-    },
-    {
-      "title": "Enhancing security using quantum blockchain in consumer IoT networks",
-      "citations": 44,
-      "year": "2024",
-      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C",
-      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=16854804718286061991"
     },
     {
       "title": "A comprehensive survey on data converters for IoT applications: Scope, issues, and future directions",
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-11-08T00:35:00.326Z",
+  "fetched_at": "2026-11-10T09:49:09.153Z",
   "source": "google-scholar"
 }
