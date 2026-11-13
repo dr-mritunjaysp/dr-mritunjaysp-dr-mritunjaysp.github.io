@@ -1,6 +1,6 @@
 {
-  "total_citations": 734,
-  "h_index": 15,
+  "total_citations": 736,
+  "h_index": 16,
   "i10_index": 17,
   "papers": [
     {
@@ -12,7 +12,7 @@
     },
     {
       "title": "Quantum computing applications for Internet of Things",
-      "citations": 87,
+      "citations": 88,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:zYLM7Y9cAGgC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=9686432201873605822"
@@ -110,7 +110,7 @@
     },
     {
       "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
-      "citations": 15,
+      "citations": 16,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12490583310529805986"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-11-10T09:49:09.153Z",
+  "fetched_at": "2026-11-13T22:37:11.063Z",
   "source": "google-scholar"
 }
