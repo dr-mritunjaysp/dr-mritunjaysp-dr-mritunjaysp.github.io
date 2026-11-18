@@ -1,11 +1,11 @@
 {
-  "total_citations": 738,
+  "total_citations": 740,
   "h_index": 16,
   "i10_index": 17,
   "papers": [
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 88,
+      "citations": 89,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -47,7 +47,7 @@
     },
     {
       "title": "Enhancing security using quantum blockchain in consumer IoT networks",
-      "citations": 45,
+      "citations": 46,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:UebtZRa9Y70C",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=16854804718286061991"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-11-15T21:49:10.201Z",
+  "fetched_at": "2026-11-18T13:57:41.429Z",
   "source": "google-scholar"
 }
