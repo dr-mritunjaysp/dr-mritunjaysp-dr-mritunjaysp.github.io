@@ -84,3 +84,5 @@ services:
 
 volumes:
   portfolio_node_modules:
+
+# CyberTwin is removed from public assets; its local archive is not served.

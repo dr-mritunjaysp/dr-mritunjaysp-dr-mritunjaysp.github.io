@@ -19,3 +19,6 @@ compose*.yaml
 compose*.yml
 README.md
 public/downloads/Inkora-Setup-1.0.0-x64.exe
+
+# Exclude the local private CyberTwin archive (covered by work above).
+work/private-archive/

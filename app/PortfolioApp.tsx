@@ -144,7 +144,6 @@ const moreNav = [
 const moreMenuItems = [
   ...moreNav.map((item) => ({ ...item, newTab: false })),
   { label: "AI Canvas", href: "/ai-canvas/", key: "ai-canvas", newTab: true },
-  { label: "CyberTwin Agent", href: "/cybertwin-agent/", key: "cybertwin-agent", newTab: true },
   { label: "Scholar Resume", href: "/ResumeBuilder/", key: "scholar-resume", newTab: true },
 ].sort((a, b) => a.label.localeCompare(b.label, "en"));
 
@@ -2827,20 +2826,10 @@ function ProjectsPage() {
         eyebrow="Interactive Work & Systems"
         title="Featured Projects"
         description="Explorations across algorithm design, quantum computing, post-quantum cryptography, and interactive web visualizers."
-        count={5}
+        count={4}
       />
 
       <div className="projects-showcase-grid">
-        <div className="project-feature-card">
-          <div>
-            <div className="project-badge-tag">Predictive Cybersecurity · Research Concept</div>
-            <h3>CyberTwin Agent</h3>
-            <p style={{ color: "var(--muted)", lineHeight: 1.7 }}>Explore a digital twin and coordinated agent framework for attack-path prediction, virtual response evaluation, and analyst-approved decisions through a synthetic interactive demo.</p>
-            <div className="pub-attributes-row"><span className="attribute-pill">Digital Twin</span><span className="attribute-pill">Agentic AI</span><span className="attribute-pill">TRL 2 Concept</span></div>
-          </div>
-          <a className="btn-sort-primary" href="/cybertwin-agent/">Explore CyberTwin Agent <ChevronRight size={16} /></a>
-        </div>
-
         <div className="project-feature-card">
           <div>
             <div className="project-badge-tag">

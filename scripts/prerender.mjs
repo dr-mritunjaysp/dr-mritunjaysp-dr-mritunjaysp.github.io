@@ -45,6 +45,8 @@ async function prerender() {
   ];
 
   const distDir = path.join(projectRoot, "dist");
+  // Remove retired assets left behind by earlier builds.
+  fs.rmSync(path.join(distDir, "cybertwin-agent"), { recursive: true, force: true });
   const localInstallerPath = path.join(
     projectRoot,
     "public",
