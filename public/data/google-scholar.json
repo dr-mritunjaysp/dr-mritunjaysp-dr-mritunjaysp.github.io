@@ -1,11 +1,11 @@
 {
-  "total_citations": 740,
+  "total_citations": 743,
   "h_index": 16,
   "i10_index": 17,
   "papers": [
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 89,
+      "citations": 90,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
@@ -26,7 +26,7 @@
     },
     {
       "title": "A review on emergency vehicle management for intelligent transportation systems",
-      "citations": 66,
+      "citations": 67,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:_FxGoFyzp5QC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=13729872689521760260"
@@ -102,18 +102,18 @@
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=5709288465619362501"
     },
     {
+      "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
+      "citations": 17,
+      "year": "2025",
+      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC",
+      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12490583310529805986"
+    },
+    {
       "title": "Decentralized trust: NFT and blockchain-enabled evidence system using fog computing",
       "citations": 16,
       "year": "2026",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ULOm3_A8WrAC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=14148570133583246326"
-    },
-    {
-      "title": "Blockchain-based game theoretical framework for V2V and V2G energy trading in carbon-intelligent Internet of vehicles",
-      "citations": 16,
-      "year": "2025",
-      "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:YOwf2qJgpHMC",
-      "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12490583310529805986"
     },
     {
       "title": "Enhancing security using quantum computing (ESUQC)",
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-11-18T13:57:41.429Z",
+  "fetched_at": "2026-11-20T03:14:09.981Z",
   "source": "google-scholar"
 }
