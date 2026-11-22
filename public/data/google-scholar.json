@@ -1,25 +1,25 @@
 {
-  "total_citations": 743,
+  "total_citations": 749,
   "h_index": 16,
   "i10_index": 17,
   "papers": [
     {
       "title": "Metaverse for education: Developments, challenges, and future direction",
-      "citations": 90,
+      "citations": 91,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:kNdYIx-mwKoC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=6379278039350305310"
     },
     {
       "title": "Quantum computing applications for Internet of Things",
-      "citations": 88,
+      "citations": 90,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:zYLM7Y9cAGgC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=9686432201873605822"
     },
     {
       "title": "QIoTChain: quantum IoT‐blockchain fusion for advanced data protection in Industry 4.0",
-      "citations": 68,
+      "citations": 70,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:qjMakFHDy7sC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=15831870856063533727"
@@ -89,7 +89,7 @@
     },
     {
       "title": "Blockchain-enabled vehicle lifecycle management with predictive maintenance using federated learning",
-      "citations": 21,
+      "citations": 22,
       "year": "2024",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:LkGwnXOMwfcC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=10900713872302634975"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-11-20T03:14:09.981Z",
+  "fetched_at": "2026-11-22T19:39:00.229Z",
   "source": "google-scholar"
 }
