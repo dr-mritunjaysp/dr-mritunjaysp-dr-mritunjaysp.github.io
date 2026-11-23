@@ -1,5 +1,5 @@
 {
-  "total_citations": 749,
+  "total_citations": 751,
   "h_index": 16,
   "i10_index": 17,
   "papers": [
@@ -54,14 +54,14 @@
     },
     {
       "title": "DemocracyGuard: Blockchain‐based secure voting framework for digital democracy",
-      "citations": 44,
+      "citations": 45,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:ufrVoPGSRksC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=12403159287003757603"
     },
     {
       "title": "A comprehensive survey on data converters for IoT applications: Scope, issues, and future directions",
-      "citations": 40,
+      "citations": 41,
       "year": "2025",
       "scholar_url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MdGRPEIAAAAJ&pagesize=100&citation_for_view=MdGRPEIAAAAJ:0EnyYjriUFMC",
       "cited_by_url": "https://scholar.google.com/scholar?oi=bibs&hl=en&cites=7821640531072506724"
@@ -159,6 +159,6 @@
     }
   ],
   "profile_url": "https://scholar.google.com/citations?user=MdGRPEIAAAAJ&hl=en",
-  "fetched_at": "2026-11-22T19:39:00.229Z",
+  "fetched_at": "2026-11-23T21:23:49.386Z",
   "source": "google-scholar"
 }
