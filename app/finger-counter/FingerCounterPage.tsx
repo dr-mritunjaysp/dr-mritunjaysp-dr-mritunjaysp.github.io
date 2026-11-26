@@ -1,10 +1,12 @@
+import { sitePublicPath } from "../site-public-path";
+
 export function FingerCounterPage() {
   return (
     <section className="finger-counter-page" aria-label="Animated finger counter">
       <div className="finger-counter-frame-shell">
         <iframe
           className="finger-counter-frame"
-          src="/finger-counter-app/index.html?v=20260909-hand-precision"
+          src={sitePublicPath("/finger-counter-app/index.html?v=20260909-hand-precision")}
           title="Animated finger counter"
           allow="camera; fullscreen"
           allowFullScreen

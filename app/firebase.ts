@@ -4,6 +4,7 @@ import {
   normalizeScholarTitle,
   type ScholarSnapshot,
 } from "./scholar-data";
+import { sitePublicPath } from "./site-public-path";
 
 /**
  * Firebase visitor counter — mirrors the reference site (portfolio-6a1b9)
@@ -120,8 +121,8 @@ function fetchScholarApi(): Promise<ScholarSnapshot | null> {
   const hourVersion = Math.floor(now / SCHOLAR_REFRESH_INTERVAL_MS);
   const candidates = [
     `${SCHOLAR_SNAPSHOT_URL}?v=${hourVersion}`,
-    `/data/google-scholar.json?v=${hourVersion}`,
-    "/api/scholar",
+    sitePublicPath(`/data/google-scholar.json?v=${hourVersion}`),
+    sitePublicPath("/api/scholar"),
   ];
 
   scholarApiRequest = (async () => {

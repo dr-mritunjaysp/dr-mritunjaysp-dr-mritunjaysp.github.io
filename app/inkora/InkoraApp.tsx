@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { InkSurfaceCanvas } from "./InkSurfaceCanvas";
 import { INKORA_INSTALLER_URL } from "./installer";
+import { sitePublicPath } from "../site-public-path";
 
 const featureCards = [
   {
@@ -232,7 +233,7 @@ export function InkoraApp() {
           {/* Showcase Image Banner */}
           <div style={{ marginTop: "16px", borderRadius: "12px", overflow: "hidden", border: "1px solid var(--border)", background: "var(--bg)" }}>
             <img
-              src="/inkora-studio.png"
+              src={sitePublicPath("/inkora-studio.png")}
               alt="Inkora App Studio Visual"
               style={{ width: "100%", height: "auto", display: "block", maxHeight: "380px", objectFit: "cover" }}
             />

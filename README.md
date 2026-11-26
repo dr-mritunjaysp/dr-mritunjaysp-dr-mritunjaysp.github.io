@@ -1,6 +1,6 @@
 <div align="center">
 
-  <a href="https://dr-mritunjaysp.github.io/">
+  <a href="https://dr-mritunjaysp.github.io/dr-mritunjaysp-dr-mritunjaysp.github.io/">
     <img src="public/media/profile-circle.png?v=4" alt="Dr. Mritunjay Shall Peelam" width="160" height="160" />
   </a>
 
@@ -11,7 +11,7 @@
 
   <br />
 
-  [![Website](https://img.shields.io/badge/Website-dr--mritunjaysp.github.io-0284c7?style=for-the-badge&logo=google-chrome&logoColor=white)](https://dr-mritunjaysp.github.io/)
+  [![Website](https://img.shields.io/badge/Website-GitHub%20Pages-0284c7?style=for-the-badge&logo=google-chrome&logoColor=white)](https://dr-mritunjaysp.github.io/dr-mritunjaysp-dr-mritunjaysp.github.io/)
   [![Google Scholar](https://img.shields.io/badge/Google%20Scholar-Metrics-4285F4?style=for-the-badge&logo=google-scholar&logoColor=white)](https://scholar.google.com/citations?user=mritunjaysp)
   [![ORCID](https://img.shields.io/badge/ORCID-0000--0003--3987--2028-A6CE39?style=for-the-badge&logo=orcid&logoColor=white)](https://orcid.org/0000-0003-3987-2028)
   [![GitHub](https://img.shields.io/badge/GitHub-dr--mritunjaysp-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/dr-mritunjaysp)
@@ -102,27 +102,19 @@ npm ci
 # Start local dev server
 npm run dev
 
-# Run production build & test suite
+# Run production build
 npm run build
-npm test
-
-# Deploy to Firebase Hosting
-npm run deploy:firebase
 ```
 
 ---
 
-### 🔥 3. Firebase Hosting Deployment
+### 🌐 3. GitHub Pages Deployment
 
-```bash
-# Login to Firebase CLI (one-time setup)
-npx firebase login
+The `Deploy static website to GitHub Pages` workflow builds the site and publishes it when changes are pushed to `main`. It uses the repository's GitHub Pages deployment token, so Hosting does not need a Firebase service-account secret. The project-site base path is configured in the workflow so page links and Flip Clock downloads work at the GitHub Pages URL.
 
-# Deploy pre-rendered static site to Firebase Hosting CDN
-npm run deploy:firebase
-```
+[Open the live portfolio](https://dr-mritunjaysp.github.io/dr-mritunjaysp-dr-mritunjaysp.github.io/) · [Open Flip Clock](https://dr-mritunjaysp.github.io/dr-mritunjaysp-dr-mritunjaysp.github.io/flip-clock/)
 
-Automated GitHub deployment is configured in `.github/workflows/deploy-firebase.yml`. Add `FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_6A1B9` to your GitHub repository secrets for continuous integration on `git push`.
+Firebase Realtime Database remains connected for live citation and visitor metrics. Firebase Hosting itself is not used for these GitHub Pages deployments.
 
 ---
 
@@ -132,7 +124,7 @@ Automated GitHub deployment is configured in `.github/workflows/deploy-firebase.
 - 🏫 **Institutional Email**: [mritunjay.peelam@ddn.upes.ac.in](mailto:mritunjay.peelam@ddn.upes.ac.in)
 - 📞 **Phone**: +91-8745080986
 - 📍 **Location**: Mirzapur, Uttar Pradesh 231001 & UPES Dehradun, Uttarakhand, India
-- 🌐 **Live Website**: [dr-mritunjaysp.github.io](https://dr-mritunjaysp.github.io/)
+- 🌐 **Live Website**: [GitHub Pages portfolio](https://dr-mritunjaysp.github.io/dr-mritunjaysp-dr-mritunjaysp.github.io/)
 
 ---
 

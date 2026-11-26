@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
+import { sitePublicPath } from "./site-public-path";
 
 export function LottieIcon({
   path,
@@ -30,7 +31,7 @@ export function LottieIcon({
         renderer: "svg",
         loop: true,
         autoplay: true,
-        path,
+        path: sitePublicPath(path),
       });
       animation.setSpeed(speed);
       destroy = () => animation.destroy();

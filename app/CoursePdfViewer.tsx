@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { sitePublicPath } from "./site-public-path";
 import type {
   PDFDocumentLoadingTask,
   PDFDocumentProxy,
@@ -259,7 +260,7 @@ export function CoursePdfViewer({
       try {
         const pdfjs = await import("pdfjs-dist");
         pdfjs.GlobalWorkerOptions.workerSrc =
-          "/vendor/pdfjs/pdf.worker.min.mjs";
+          sitePublicPath("/vendor/pdfjs/pdf.worker.min.mjs");
 
         const loadingTask = pdfjs.getDocument({ url: src });
         loadingTaskRef.current = loadingTask;

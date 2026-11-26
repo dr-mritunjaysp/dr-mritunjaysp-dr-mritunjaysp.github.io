@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { sitePublicPath } from "./site-public-path";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -39,9 +40,9 @@ export async function generateMetadata(): Promise<Metadata> {
     ],
     authors: [{ name: "Dr. Mritunjay Shall Peelam" }],
     icons: {
-      icon: "/apple-touch-icon.png",
-      shortcut: "/apple-touch-icon.png",
-      apple: "/apple-touch-icon.png",
+      icon: sitePublicPath("/apple-touch-icon.png"),
+      shortcut: sitePublicPath("/apple-touch-icon.png"),
+      apple: sitePublicPath("/apple-touch-icon.png"),
     },
     openGraph: {
       type: "website",
@@ -52,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "Dr. Mritunjay Shall Peelam",
       images: [
         {
-          url: `${origin}/og.png`,
+          url: `${origin}${sitePublicPath("/og.png")}`,
           width: 1736,
           height: 909,
           alt: "Dr. Mritunjay Shall Peelam academic portfolio",
@@ -64,7 +65,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: "Dr. Mritunjay Shall Peelam",
       description:
         "Senior Member, IEEE · Assistant Professor (Selection Grade) · Researcher in Blockchain, IoT, Edge AI, and Multimodal ML.",
-      images: [`${origin}/og.png`],
+      images: [`${origin}${sitePublicPath("/og.png")}`],
     },
   };
 }

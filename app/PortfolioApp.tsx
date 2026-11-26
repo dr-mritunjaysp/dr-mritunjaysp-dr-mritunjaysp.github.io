@@ -62,6 +62,7 @@ import { FilterVerseShell } from "./filterverse/FilterVerseShell";
 import { FingerCounterPage } from "./finger-counter/FingerCounterPage";
 import { PostureCoachApp } from "./posture-coach/PostureCoachApp";
 import { FlipClockPage } from "./flip-clock/FlipClockPage";
+import { sitePublicPath, stripSiteBasePath } from "./site-public-path";
 
 type SectionKey =
   | "home"
@@ -716,7 +717,7 @@ function Header({
                   const MenuLink = item.newTab ? "a" : Link;
                   return (
                     <MenuLink
-                      href={item.href}
+                      href={item.newTab ? sitePublicPath(item.href) : item.href}
                       key={item.key}
                       role="menuitem"
                       target={item.newTab ? "_blank" : undefined}
@@ -1142,7 +1143,7 @@ function SocialStrip() {
         <div className="social-icons contact-icons">
           {socials.map(({ id, label, href, icon: Icon }) => (
             <a
-              href={href}
+              href={sitePublicPath(href)}
               key={label}
               className={`social-icon-btn ${id}`}
               aria-label={label}
@@ -1157,7 +1158,7 @@ function SocialStrip() {
         <div className="visitor-counter">
           <span className="visitor-counter-item">
             <span className="visitor-counter-eye" aria-hidden="true">
-              <img src="/media/view.gif" alt="" width={34} height={34} />
+              <img src={sitePublicPath("/media/view.gif")} alt="" width={34} height={34} />
             </span>
             <AnimatedCount
               value={visitorTotal}
@@ -1231,7 +1232,7 @@ function HomePage() {
       <section className="hero">
         <div className="portrait-ring">
           <img
-            src="/media/profile.png"
+            src={sitePublicPath("/media/profile.png")}
             alt="Dr. Mritunjay Shall Peelam"
             width={190}
             height={190}
@@ -1666,7 +1667,7 @@ function BlogPage() {
                 <figure>
                   <picture>
                     <img
-                      src={post.image}
+                      src={sitePublicPath(post.image)}
                       className="card-img-top"
                       alt={post.title}
                       loading="eager"
@@ -1710,7 +1711,7 @@ function BlogPage() {
               {selectedPost.title}
             </h2>
             <img
-              src={selectedPost.image}
+              src={sitePublicPath(selectedPost.image)}
               alt={selectedPost.title}
               style={{
                 width: "100%",
@@ -1753,7 +1754,7 @@ function TeachingPage() {
         {courses.map((course) => {
           const cardContent = (
             <>
-              <img src={course.image} alt="" />
+              <img src={sitePublicPath(course.image)} alt="" />
               <div>
                 <span className="course-year">{course.year}</span>
                 <h2>{course.title}</h2>
@@ -1804,7 +1805,7 @@ function DataStructuresCoursePage() {
 
       <div className="course-detail-hero">
         <img
-          src="/media/data-structures-algorithms-v2.webp"
+          src={sitePublicPath("/media/data-structures-algorithms-v2.webp")}
           alt="Arrays, linked nodes, a binary tree, and a graph"
           width={880}
           height={1320}
@@ -1876,7 +1877,7 @@ function DataStructuresCoursePage() {
 
       {activeResource?.href ? (
         <CoursePdfViewer
-          src={activeResource.href}
+          src={sitePublicPath(activeResource.href)}
           title={activeResource.label}
           detail={activeResource.detail}
           onClose={() => setActiveResource(null)}
@@ -1900,7 +1901,7 @@ function CvPage() {
     <section className="page-section cv-page">
       <div className="cv-hero">
         <div className="cv-avatar-ring">
-          <img src="/media/profile-color.jpg" alt="Dr. Mritunjay Shall Peelam" />
+          <img src={sitePublicPath("/media/profile-color.jpg")} alt="Dr. Mritunjay Shall Peelam" />
         </div>
         <div>
           <p className="eyebrow">Academic curriculum vitae</p>
@@ -1915,7 +1916,7 @@ function CvPage() {
           <div className="cv-actions">
             <a
               className="primary-link"
-              href="/documents/Dr-Mritunjay-resume.pdf"
+              href={sitePublicPath("/documents/Dr-Mritunjay-resume.pdf")}
               download="Dr-Mritunjay-Shall-Peelam-Resume.pdf"
             >
               <Download size={17} /> Download PDF
@@ -2859,7 +2860,7 @@ function ProjectsPage() {
             <Link className="btn-sort-primary" href="/flip-clock" style={{ flex: "1", textDecoration: "none", textAlign: "center", justifyContent: "center" }}>
               Explore Flip Clock <ChevronRight size={16} />
             </Link>
-            <a className="btn-sort-secondary" href="/downloads/flip-clock/Flip%20Clock%20Setup.exe" download="Flip-Clock-Setup.exe" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.86rem", padding: "8px 14px" }}>
+            <a className="btn-sort-secondary" href={sitePublicPath("/downloads/flip-clock/Flip%20Clock%20Setup.exe")} download="Flip-Clock-Setup.exe" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.86rem", padding: "8px 14px" }}>
               <Download size={15} /> Download setup
             </a>
           </div>
@@ -2918,7 +2919,7 @@ function ProjectsPage() {
             </Link>
             <a
               className="btn-sort-secondary"
-              href={INKORA_INSTALLER_URL}
+              href={sitePublicPath(INKORA_INSTALLER_URL)}
               download="Inkora-Setup-1.0.0-x64.exe"
               style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.86rem", padding: "8px 14px" }}
             >
@@ -4105,7 +4106,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
   const getEffectiveSection = (): SectionKey => {
     let target = section;
     if (typeof window !== "undefined") {
-      const pathname = window.location.pathname.replace(/^\//, "").replace(/\/$/, "");
+      const pathname = stripSiteBasePath(window.location.pathname).replace(/^\//, "").replace(/\/$/, "");
       const pathSeg = pathname.split("/")[0];
       if (pathname === "teaching/data-structures-and-algorithms") {
         target = "data-structures-and-algorithms";
@@ -4129,7 +4130,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handleLocationChange = () => {
-      const pathname = window.location.pathname.replace(/^\//, "").replace(/\/$/, "");
+      const pathname = stripSiteBasePath(window.location.pathname).replace(/^\//, "").replace(/\/$/, "");
       const pathSeg = pathname.split("/")[0];
       if (pathname === "teaching/data-structures-and-algorithms") {
         setCurrentSection("data-structures-and-algorithms");
@@ -4211,6 +4212,9 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     case "mriframe":
     case "finger-frame":
       content = <MSPLiveFrameApp />;
+      break;
+    case "flip-clock":
+      content = <FlipClockPage />;
       break;
     case "people":
       content = <ComingSoonPage kind="People" />;

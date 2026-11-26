@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/+$/, "");
 
 async function prerender() {
   console.log("Starting static pre-rendering for GitHub Pages...");
@@ -87,8 +88,10 @@ async function prerender() {
   }
 
   for (const route of routes) {
+    const routePath = route === "/" ? "/" : `${route}/`;
+    const requestPath = `${basePath}${routePath}`;
     const res = await worker.fetch(
-      new Request(`http://localhost${route}`, {
+      new Request(`http://localhost${requestPath}`, {
         headers: { accept: "text/html" },
       }),
       { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
