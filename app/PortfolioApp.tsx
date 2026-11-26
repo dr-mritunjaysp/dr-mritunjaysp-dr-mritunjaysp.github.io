@@ -4275,7 +4275,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       <main className="site-main">{content}</main>
       <SocialStrip />
       <Footer />
-      <ScrollJumpButton pageKey={safeSection} />
+      {safeSection !== "flip-clock" && <ScrollJumpButton pageKey={safeSection} />}
       {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
     </div>
   );
