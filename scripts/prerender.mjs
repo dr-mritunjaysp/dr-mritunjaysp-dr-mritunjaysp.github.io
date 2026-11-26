@@ -88,7 +88,7 @@ async function prerender() {
   }
 
   for (const route of routes) {
-    const routePath = route === "/" ? "/" : `${route}/`;
+    const routePath = basePath && route !== "/" ? `${route}/` : route;
     const requestPath = `${basePath}${routePath}`;
     const res = await worker.fetch(
       new Request(`http://localhost${requestPath}`, {
