@@ -110,11 +110,11 @@ npm run build
 
 ### 🌐 3. GitHub Pages Deployment
 
-The `Deploy static website to GitHub Pages` workflow builds the site and publishes it when changes are pushed to `main`. It uses the repository's GitHub Pages deployment token, so Hosting does not need a Firebase service-account secret. The project-site base path is configured in the workflow so page links and Flip Clock downloads work at the GitHub Pages URL.
+The `Deploy static website to GitHub Pages` workflow builds the site and publishes it when changes are pushed to `main`. It uses the repository's GitHub Pages deployment token, so this workflow does not need a Firebase service-account secret. The project-site base path is configured in the workflow so page links and Flip Clock downloads work at the GitHub Pages URL.
 
 [Open the live portfolio](https://dr-mritunjaysp.github.io/dr-mritunjaysp-dr-mritunjaysp.github.io/) · [Open Flip Clock](https://dr-mritunjaysp.github.io/dr-mritunjaysp-dr-mritunjaysp.github.io/flip-clock/)
 
-Firebase Realtime Database remains connected for live citation and visitor metrics. Firebase Hosting itself is not used for these GitHub Pages deployments.
+The custom domain also uses Firebase Hosting and is deployed separately from GitHub Pages. Firebase Realtime Database remains connected for live citation and visitor metrics. On Firebase's Spark plan, direct Windows executable downloads are served from the GitHub Pages copy.
 
 ---
 
