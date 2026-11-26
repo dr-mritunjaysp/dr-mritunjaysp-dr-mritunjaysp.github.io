@@ -25,6 +25,7 @@ async function prerender() {
     "/filterverse",
     "/finger-counter",
     "/posture-coach",
+    "/flip-clock",
     "/inkora",
     "/pen-app",
     "/penapp",

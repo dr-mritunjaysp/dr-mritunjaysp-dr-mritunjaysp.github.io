@@ -1,0 +1,17 @@
+Flip Clock — Terms and Conditions
+
+By installing or using Flip Clock, you agree to these terms:
+
+1. Permission is granted to install and use Flip Clock for personal desktop use.
+2. The software is provided “as is”, without warranties or guarantees of any
+   kind, to the fullest extent permitted by applicable law.
+3. The author is not liable for loss or damage arising from use or inability
+   to use the software, to the extent permitted by applicable law.
+4. You are responsible for selecting and configuring your Windows screen saver.
+   Setup changes the current-user screen saver selection and timeout to five
+   minutes. The uninstall script disables Flip Clock if it is still selected.
+5. The software may not be redistributed or sold without written permission.
+6. These terms are governed by applicable law. Any rights that cannot legally
+   be waived remain unaffected.
+
+Questions about these terms: contact the copyright holder, Dr. Mritunjay Shall Peelam.

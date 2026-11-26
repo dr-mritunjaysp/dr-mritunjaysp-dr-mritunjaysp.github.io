@@ -14,6 +14,9 @@ export function generateMetadata({ params }: { params: Promise<{ section: string
         description: "Raise fingers on camera and see the total appear as a full-screen animated number using private, on-device hand tracking.",
       };
     }
+    if (section === "flip-clock") {
+      return { title: "Flip Clock for Windows", description: "A native, customizable Windows flip clock screensaver. Explore its features and download the self-contained setup." };
+    }
     if (section === "posture-coach") {
       return {
         title: "Posture Coach · Private AI Exercise Form Tracking",
@@ -34,6 +37,7 @@ export function generateStaticParams() {
     "filterverse",
     "finger-counter",
     "posture-coach",
+    "flip-clock",
     "inkora",
     "pen-app",
     "penapp",

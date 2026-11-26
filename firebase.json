@@ -13,7 +13,6 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      "**/*.exe",
       "**/*.bat",
       "**/*.cmd",
       "**/*.sh",

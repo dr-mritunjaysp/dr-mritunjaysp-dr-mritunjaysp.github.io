@@ -1,0 +1,11 @@
+Flip Clock — License and Third-Party Notice
+
+Copyright (c) 2026 Dr. Mritunjay Shall Peelam
+
+All rights reserved.
+
+You may use this software for personal purposes. You may not redistribute,
+modify, sublicense, or sell this software or derivative works without prior
+written permission from the copyright holder.
+
+This is independent software. Fliqlo is not included, modified, or redistributed.

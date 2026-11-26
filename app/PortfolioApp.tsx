@@ -8,6 +8,7 @@ import {
   BriefcaseBusiness,
   Check,
   ChevronRight,
+  Clock3,
   Code2,
   Copy,
   Download,
@@ -60,6 +61,7 @@ import { VisionPenPage } from "./vision-pen/VisionPenPage";
 import { FilterVerseShell } from "./filterverse/FilterVerseShell";
 import { FingerCounterPage } from "./finger-counter/FingerCounterPage";
 import { PostureCoachApp } from "./posture-coach/PostureCoachApp";
+import { FlipClockPage } from "./flip-clock/FlipClockPage";
 
 type SectionKey =
   | "home"
@@ -71,6 +73,7 @@ type SectionKey =
   | "filterverse"
   | "finger-counter"
   | "posture-coach"
+  | "flip-clock"
   | "inkora"
   | "pen-app"
   | "penapp"
@@ -119,6 +122,7 @@ const primaryNav = [
 
 const moreNav = [
   { label: "Filter Verse", href: "/filterverse", key: "filterverse" },
+  { label: "Flip Clock", href: "/flip-clock", key: "flip-clock" },
   { label: "Finger Counter", href: "/finger-counter", key: "finger-counter" },
   { label: "Vision Pen", href: "/vision-pen", key: "vision-pen" },
   { label: "MSP Live Frame", href: "/msp-live-frame", key: "msp-live-frame" },
@@ -2830,6 +2834,37 @@ function ProjectsPage() {
       />
 
       <div className="projects-showcase-grid">
+<div className="project-feature-card">
+          <div>
+            <div className="project-badge-tag">
+              <Clock3 size={13} /> Windows Desktop Utility
+            </div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "8px" }}>
+              Flip Clock for Windows
+            </h3>
+            <div className="subdomain-badge-banner" style={{ fontSize: "0.78rem", padding: "4px 10px", marginBottom: "12px" }}>
+              <span className="subdomain-badge-link">https://dr-mritunjaysp.com/flip-clock</span>
+            </div>
+            <p style={{ color: "var(--muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "16px" }}>
+              A native Windows screensaver with animated flip cards, flexible time and display settings, and an optional date, name, and hourly quote. Self-contained setup with no extra runtime.
+            </p>
+            <div className="pub-attributes-row" style={{ marginBottom: "20px" }}>
+              <span className="attribute-pill">Windows Screensaver</span>
+              <span className="attribute-pill">12/24-hour</span>
+              <span className="attribute-pill">Multi-display</span>
+              <span className="attribute-pill">Self-contained</span>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <Link className="btn-sort-primary" href="/flip-clock" style={{ flex: "1", textDecoration: "none", textAlign: "center", justifyContent: "center" }}>
+              Explore Flip Clock <ChevronRight size={16} />
+            </Link>
+            <a className="btn-sort-secondary" href="/downloads/flip-clock/Flip%20Clock%20Setup.exe" download="Flip-Clock-Setup.exe" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.86rem", padding: "8px 14px" }}>
+              <Download size={15} /> Download setup
+            </a>
+          </div>
+        </div>
+
         <div className="project-feature-card">
           <div>
             <div className="project-badge-tag">
@@ -4054,6 +4089,7 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
     ...primaryNav.map((item) => item.key),
     ...moreNav.map((item) => item.key),
     "msp-live-frame",
+    "flip-clock",
     "mspliveframe",
     "mriframe",
     "finger-frame",
