@@ -42,11 +42,9 @@ import {
 } from "react-icons/si";
 import { FaLinkedinIn, FaEnvelope, FaFileLines } from "react-icons/fa6";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LiveUpdateRefresh } from "./LiveUpdateRefresh";
 import { LottieIcon } from "./LottieIcon";
 import { CoursePdfViewer } from "./CoursePdfViewer";
 
-import { ScrollJumpButton } from "./ScrollJumpButton";
 import { subscribeVisitorCounter, subscribeScholarMetrics, subscribePublicationCitations } from "./firebase";
 import type { ScholarMetrics } from "./firebase";
 import {
@@ -4265,7 +4263,6 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
 
   return (
     <div className="site-frame">
-      <LiveUpdateRefresh />
       <Header
         section={safeSection}
         theme={theme}
@@ -4275,7 +4272,6 @@ export function PortfolioApp({ section = "home" }: { section?: string }) {
       <main className="site-main">{content}</main>
       <SocialStrip />
       <Footer />
-      {safeSection !== "flip-clock" && <ScrollJumpButton pageKey={safeSection} />}
       {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
     </div>
   );
