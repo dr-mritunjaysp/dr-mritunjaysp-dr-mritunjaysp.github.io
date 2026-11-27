@@ -9467,3 +9467,78 @@ body::before {
 @media (prefers-reduced-motion: reduce) { .developer-credit { background: none; color: #fff; -webkit-text-fill-color: #fff; animation: none; } }
 @media (max-width: 900px) { .fc-customizer-grid { grid-template-columns: 1fr; } .fc-custom-preview { min-height: 320px; } }
 @media (max-width: 600px) { .fc-customizer { padding: 70px 18px 82px; } .fc-customizer-heading { margin-bottom: 31px; } .fc-customizer-heading h2 { font-size: 3.15rem; } .fc-customizer-controls,.fc-customizer-live { padding: 16px; } .fc-color-fields { grid-template-columns: 1fr; } .fc-color-input { max-width: 180px; } .fc-customizer-toggles { grid-template-columns: 1fr 1fr; } .fc-custom-preview { min-height: 270px; padding: 14px; } .fc-custom-date { flex-wrap: wrap; font-size: .55rem; } .fc-custom-digits { font-size: clamp(2.2rem,11vw,3.4rem); } .fc-custom-quote { font-size: .72rem; } .fc-signature-footer { padding: 52px 20px 58px; } }
+
+
+/* Stronger full-page aurora and a visible, persistent mode switch */
+.fc-page::before {
+  background-image:
+    radial-gradient(ellipse 52rem 39rem at 8% 10%, rgba(255,121,70,.38), transparent 72%),
+    radial-gradient(ellipse 50rem 42rem at 91% 28%, rgba(53,137,255,.31), transparent 74%),
+    radial-gradient(ellipse 62rem 48rem at 48% 77%, rgba(159,87,225,.28), transparent 76%),
+    radial-gradient(ellipse 42rem 39rem at 86% 91%, rgba(31,194,169,.23), transparent 73%);
+  background-size: 175% 175%;
+  background-position: 0% 0%, 100% 32%, 45% 100%, 90% 100%;
+  opacity: .98;
+  animation: fc-aurora-flow 12s ease-in-out infinite alternate, fc-aurora-hue 34s linear infinite;
+  will-change: background-position, filter;
+}
+@keyframes fc-aurora-flow {
+  0% { background-position: 0% 0%, 100% 25%, 40% 100%, 95% 90%; }
+  50% { background-position: 100% 70%, 0% 90%, 85% 0%, 15% 10%; }
+  100% { background-position: 18% 100%, 83% 0%, 0% 42%, 100% 55%; }
+}
+@keyframes fc-aurora-hue {
+  0% { filter: hue-rotate(-12deg) saturate(1.08); }
+  50% { filter: hue-rotate(48deg) saturate(1.22); }
+  100% { filter: hue-rotate(112deg) saturate(1.08); }
+}
+.fc-theme-toggle { position: absolute; z-index: 8; top: 18px; right: max(22px,calc((100vw - 1200px)/2)); display: inline-flex; min-height: 42px; align-items: center; gap: 9px; padding: 0 14px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(15,17,21,.84); color: #fff; box-shadow: 0 8px 28px rgba(0,0,0,.24); font-size: .72rem; font-weight: 680; cursor: pointer; backdrop-filter: blur(16px); transition: background .2s,color .2s,border-color .2s,transform .2s; }
+.fc-theme-toggle:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.42); }
+.fc-theme-toggle:focus-visible { outline: 2px solid var(--fc-orange); outline-offset: 3px; }
+.fc-theme-toggle svg { color: #ffd27b; }
+.fc-page--light { --fc-bg: #f4f6fb; --fc-panel: rgba(255,255,255,.88); --fc-line: rgba(31,41,55,.15); --fc-muted: #5c6878; --fc-text: #202938; --fc-orange: #b65334; background-color: var(--fc-bg); color: var(--fc-text); }
+.fc-page--light::before { background-image: radial-gradient(ellipse 52rem 39rem at 8% 10%,rgba(255,151,111,.42),transparent 72%),radial-gradient(ellipse 50rem 42rem at 91% 28%,rgba(91,159,245,.3),transparent 74%),radial-gradient(ellipse 62rem 48rem at 48% 77%,rgba(176,133,229,.25),transparent 76%),radial-gradient(ellipse 42rem 39rem at 86% 91%,rgba(90,208,190,.23),transparent 73%); opacity: .82; }
+.fc-page--light .fc-theme-toggle { border-color: rgba(31,41,55,.17); background: rgba(255,255,255,.88); color: #202938; box-shadow: 0 8px 26px rgba(40,58,88,.13); }
+.fc-page--light .fc-theme-toggle:hover { border-color: rgba(31,41,55,.34); }
+.fc-page--light .fc-theme-toggle svg { color: #59677b; }
+.fc-page--light .fc-hero h1,.fc-page--light .fc-intro h2,.fc-page--light .fc-install-heading h2,.fc-page--light .fc-feature-step h3,.fc-page--light .fc-screenshots-heading h2 { color: #1c2737; }
+.fc-page--light .fc-hero h1 em,.fc-page--light .fc-intro h2 em,.fc-page--light .fc-install-heading h2 em,.fc-page--light .fc-screenshots-heading h2 em { color: var(--fc-orange); }
+.fc-page--light .fc-hero-copy > p,.fc-page--light .fc-intro > p,.fc-page--light .fc-install-heading > p,.fc-page--light .fc-feature-step p,.fc-page--light .fc-screenshots-heading > p { color: #526176; }
+.fc-page--light .fc-back,.fc-page--light .fc-eyebrow,.fc-page--light .fc-section-kicker,.fc-page--light .fc-step-meta,.fc-page--light .fc-screenshot-label { color: #5d6878 !important; }
+.fc-page--light .fc-app-brand strong { color: #202938; }
+.fc-page--light .fc-app-brand small { color: #6a7482; }
+.fc-page--light .fc-requirements { color: #657184; }
+.fc-page--light .fc-author-credit { color: #657184; }
+.fc-page--light .fc-author-credit strong { color: #283447; }
+.fc-page--light .fc-story-stage,.fc-page--light .fc-settings-mock,.fc-page--light .fc-customizer-controls,.fc-page--light .fc-customizer-live { border-color: rgba(31,41,55,.14); background: linear-gradient(145deg,rgba(255,255,255,.94),rgba(244,247,252,.94)); box-shadow: 0 22px 55px rgba(43,58,82,.11); }
+.fc-page--light .fc-stage-top,.fc-page--light .fc-stage-bottom,.fc-page--light .fc-mock-row,.fc-page--light .fc-customizer-field,.fc-page--light .fc-customizer-toggles label { color: #526176; }
+.fc-page--light .fc-mock-title,.fc-page--light .fc-mock-row b,.fc-page--light .fc-customizer-card-title,.fc-page--light .fc-customizer-live-heading { color: #243146; }
+.fc-page--light .fc-mock-note,.fc-page--light .fc-customizer-note,.fc-page--light .fc-customizer-live > p { color: #687589; }
+.fc-page--light .fc-install { border-color: rgba(31,41,55,.12); background: rgba(255,255,255,.55); }
+.fc-page--light .fc-install-grid article { border-color: rgba(31,41,55,.2); }
+.fc-page--light .fc-install-grid h3 { color: #243146; }
+.fc-page--light .fc-install-grid p,.fc-page--light .fc-install-bottom > div { color: #526176; }
+.fc-page--light .fc-install-grid strong,.fc-page--light .fc-install-bottom strong { color: #263448; }
+.fc-page--light .fc-install-bottom { border-color: rgba(31,41,55,.14); background: rgba(255,255,255,.72); }
+.fc-page--light .fc-customizer-heading h2 { color: #1c2737; }
+.fc-page--light .fc-customizer-heading > p { color: #526176; }
+.fc-page--light .fc-customizer-controls,.fc-page--light .fc-customizer-live { color: #273449; }
+.fc-page--light .fc-color-input,.fc-page--light .fc-customizer-field input[type="text"],.fc-page--light .fc-customizer-field select,.fc-page--light .fc-customizer-field textarea { border-color: rgba(31,41,55,.17); background: #fff; color: #263448; }
+.fc-page--light .fc-color-input code { color: #465368; }
+.fc-page--light .fc-customizer-toggles { border-color: rgba(31,41,55,.14); }
+.fc-page--light .fc-customizer-field input:focus,.fc-page--light .fc-customizer-field select:focus,.fc-page--light .fc-customizer-field textarea:focus { border-color: var(--fc-orange); }
+.fc-page--light .fc-screenshot-card { border-color: rgba(31,41,55,.14); background: rgba(255,255,255,.86); box-shadow: 0 22px 55px rgba(43,58,82,.1); }
+.fc-page--light .fc-screenshot-card figcaption strong { color: #253248; }
+.fc-page--light .fc-screenshot-card figcaption small { color: #5f6d80; }
+.fc-page--light .fc-footer { border-color: rgba(31,41,55,.14); background: radial-gradient(ellipse at 15% 95%,rgba(239,138,89,.14),transparent 40%),rgba(245,247,251,.72); }
+.fc-page--light .fc-footer-credit > p { color: #425066; }
+.fc-page--light .developer-credit { background-image: linear-gradient(100deg,#344155 0%,#344155 38%,#fff 46%,#fff 51%,#344155 61%,#344155 100%); }
+.developer-credit { background-image: linear-gradient(100deg,#c4ccd8 0%,#c4ccd8 38%,#fff 46%,#c5f0ff 51%,#fff 56%,#c4ccd8 64%,#c4ccd8 100%); background-size: 250% 100%; animation: credit-shine 2.4s linear infinite; }
+.fc-page--light .fc-scroll-cue { color: #546276 !important; }
+.fc-page--light .fc-scroll-cue span { border-color: rgba(31,41,55,.22); }
+@media (prefers-reduced-motion: reduce) {
+  .fc-page::before { animation: fc-aurora-flow 12s ease-in-out infinite alternate,fc-aurora-hue 34s linear infinite !important; animation-duration: 12s,34s !important; animation-iteration-count: infinite !important; }
+  .fc-page .developer-credit { animation: credit-shine 2.4s linear infinite !important; animation-duration: 2.4s !important; animation-iteration-count: infinite !important; }
+}
+@media (max-width: 900px) { .fc-theme-toggle { top: 14px; right: 20px; } }
+@media (max-width: 600px) { .fc-theme-toggle { top: 12px; right: 14px; min-height: 38px; padding: 0 11px; font-size: .65rem; } }

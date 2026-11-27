@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { sitePublicPath } from "../site-public-path";
 import { ClockCustomizer, SignatureFooter } from "./ClockCustomizer";
-import { ArrowDown, ArrowDownToLine, Clock3, Monitor, Settings2, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowDownToLine, Clock3, Monitor, Moon, Settings2, ShieldCheck, Sparkles, Sun } from "lucide-react";
 
 const features = [
   { number: "01", label: "The clock", title: "Time, with a little motion.", body: "Hours, minutes and seconds appear on animated flip cards. The seconds card cycles through accent colors, while the date, display name and an hourly quote add a personal touch.", icon: Clock3, screen: "clock" },
@@ -35,6 +35,15 @@ function FeatureVisual({ screen }: { screen: string }) {
 
 export function FlipClockPage() {
   const [active, setActive] = useState(0);
+  const [lightMode, setLightMode] = useState(false);
+  const [themeReady, setThemeReady] = useState(false);
+  useEffect(() => {
+    if (window.localStorage.getItem("flip-clock-page-theme") === "light") setLightMode(true);
+    setThemeReady(true);
+  }, []);
+  useEffect(() => {
+    if (themeReady) window.localStorage.setItem("flip-clock-page-theme", lightMode ? "light" : "dark");
+  }, [lightMode, themeReady]);
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-fc-step]"));
     const observer = new IntersectionObserver((entries) => {
@@ -45,7 +54,10 @@ export function FlipClockPage() {
     return () => observer.disconnect();
   }, []);
 
-  return <main className="fc-page">
+  return <main className={`fc-page${lightMode ? " fc-page--light" : ""}`}>
+    <button className="fc-theme-toggle" type="button" onClick={() => setLightMode((current) => !current)} aria-pressed={lightMode} aria-label={lightMode ? "Switch to dark mode" : "Switch to light mode"}>
+      {lightMode ? <Moon size={16} /> : <Sun size={16} />}<span>{lightMode ? "Dark mode" : "Light mode"}</span>
+    </button>
     <section className="fc-hero" id="top">
       <div className="fc-hero-copy"><div className="fc-app-brand"><span className="fc-app-icon-frame"><Image src={sitePublicPath("/downloads/flip-clock/Flip%20Clock.ico")} alt="Flip Clock app icon" width={54} height={54} unoptimized /></span><span><strong>Flip Clock</strong><small>WINDOWS SCREENSAVER</small></span></div><span className="fc-eyebrow"><span /> MADE FOR A CALMER DESKTOP</span><h1>Make time<br /><em>flip.</em></h1><p>A calm, customizable flip clock that lives on your Windows screen saver. Choose the look, settle into the moment, and let the seconds fall into place.</p><div className="fc-hero-actions"><a className="fc-download-primary" href={sitePublicPath("/downloads/flip-clock/Flip%20Clock%20Setup.exe")} download="Flip-Clock-Setup.exe"><ArrowDownToLine size={17} /> Download for Windows <span>· 177 KB</span></a></div><span className="fc-requirements">Windows screen saver · No extra runtime required</span><span className="fc-author-credit">Designed and developed by <strong>Dr. Mritunjay Shall Peelam</strong></span></div>
       <div className="fc-hero-art"><div className="fc-orbit fc-orbit-one"/><div className="fc-orbit fc-orbit-two"/><div className="fc-clock-window"><div className="fc-window-bar"><span><i/> FLIP CLOCK <small>SCREENSAVER</small></span><span>−　□　×</span></div><ClockPreview/><div className="fc-window-bottom"><span><Sparkles size={13}/> A quieter way to watch time</span><span>24H · LANDSCAPE</span></div></div><div className="fc-float-tag"><span className="fc-float-dot"/> Live clock</div></div>
