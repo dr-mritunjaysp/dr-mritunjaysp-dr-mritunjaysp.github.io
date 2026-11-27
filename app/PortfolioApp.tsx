@@ -2858,9 +2858,6 @@ function ProjectsPage() {
             <Link className="btn-sort-primary" href="/flip-clock" style={{ flex: "1", textDecoration: "none", textAlign: "center", justifyContent: "center" }}>
               Explore Flip Clock <ChevronRight size={16} />
             </Link>
-            <a className="btn-sort-secondary" href={sitePublicPath("/downloads/flip-clock/Flip%20Clock%20Setup.exe")} download="Flip-Clock-Setup.exe" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.86rem", padding: "8px 14px" }}>
-              <Download size={15} /> Download setup
-            </a>
           </div>
         </div>
 
