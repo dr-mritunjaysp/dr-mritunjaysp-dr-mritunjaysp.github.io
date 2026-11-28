@@ -11,7 +11,7 @@ async function prerender() {
   console.log("Starting static pre-rendering for GitHub Pages...");
 
   const serverBundlePath = path.join(projectRoot, "dist", "server", "index.js");
-  const serverUrl = new URL(`file:///${serverBundlePath.replace(/\\/g, "/")}`);
+  const serverUrl = new URL(`file:///${serverBundlePath.replace(/\\\\/g, "/")}`);
   serverUrl.searchParams.set("prerender", Date.now().toString());
 
   const { default: worker } = await import(serverUrl.href);
@@ -121,6 +121,22 @@ async function prerender() {
       console.log(`Created 404 fallback -> ${path.relative(projectRoot, fallback404)}`);
     }
   }
+
+  // Redirect visitors who still have the old GitHub project-site URL saved.
+  // The custom domain serves the application from the root, so this path is
+  // kept only as a compatibility redirect in the static deployment output.
+  const legacyFlipClockPath = path.join(
+    distDir,
+    "dr-mritunjaysp-dr-mritunjaysp.github.io",
+    "flip-clock",
+  );
+  fs.mkdirSync(legacyFlipClockPath, { recursive: true });
+  fs.writeFileSync(
+    path.join(legacyFlipClockPath, "index.html"),
+    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><link rel="canonical" href="https://dr-mritunjaysp.com/flip-clock/"><meta http-equiv="refresh" content="0;url=/flip-clock/"><title>Flip Clock moved</title><script>window.location.replace("/flip-clock/")</script></head><body><p>Flip Clock has moved to <a href="/flip-clock/">dr-mritunjaysp.com/flip-clock/</a>.</p></body></html>`,
+    "utf8",
+  );
+  console.log("Created legacy Flip Clock URL redirect");
 
   // Create .nojekyll in dist/ (kept for compatibility)
   fs.writeFileSync(path.join(distDir, ".nojekyll"), "# Disable Jekyll", "utf8");
