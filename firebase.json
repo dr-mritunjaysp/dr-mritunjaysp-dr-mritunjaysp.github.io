@@ -22,6 +22,16 @@
     ],
     "redirects": [
       {
+        "source": "/dr-mritunjaysp-dr-mritunjaysp.github.io",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dr-mritunjaysp-dr-mritunjaysp.github.io/**",
+        "destination": "/",
+        "type": 301
+      },
+      {
         "source": "/ai-canvas/index.html",
         "destination": "/ai-canvas/",
         "type": 301
