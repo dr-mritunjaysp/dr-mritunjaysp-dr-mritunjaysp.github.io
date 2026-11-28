@@ -124,7 +124,9 @@ export function ClockCustomizer() {
 
 export function SignatureFooter() {
   return <footer className="fc-footer fc-signature-footer">
-    <div className="fc-footer-credit"><span className="fc-section-kicker">MADE WITH CARE</span><p>Designed and developed by</p><span className="developer-credit">Dr. Mritunjay Shall Peelam</span></div>
+    <a className="fc-footer-home" href="/" aria-label="Return to the portfolio home">Dr. Mritunjay Shall Peelam</a>
+    <p>Designed and developed with care.</p>
+    <a className="fc-footer-top" href="#top">Back to top <span aria-hidden="true">↑</span></a>
   </footer>;
 }
 

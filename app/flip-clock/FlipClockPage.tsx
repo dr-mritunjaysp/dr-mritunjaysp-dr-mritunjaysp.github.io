@@ -35,10 +35,10 @@ function FeatureVisual({ screen }: { screen: string }) {
 
 export function FlipClockPage() {
   const [active, setActive] = useState(0);
-  const [lightMode, setLightMode] = useState(false);
+  const [lightMode, setLightMode] = useState(true);
   const [themeReady, setThemeReady] = useState(false);
   useEffect(() => {
-    if (window.localStorage.getItem("flip-clock-page-theme") === "light") setLightMode(true);
+    if (window.localStorage.getItem("flip-clock-page-theme") !== "dark") setLightMode(true);
     setThemeReady(true);
   }, []);
   useEffect(() => {
