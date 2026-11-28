@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { CalendarDays, Clock3, Palette, Quote, UserRound } from "lucide-react";
+import { CalendarDays, Clock3, Maximize2, Palette, Quote, UserRound } from "lucide-react";
 
 type ClockSettings = {
   accentColor: string;
@@ -76,6 +76,7 @@ function ClockPreview({ settings }: { settings: ClockSettings }) {
 
 export function ClockCustomizer() {
   const [settings, setSettings] = useState(defaultSettings);
+  const previewRef = useRef<HTMLDivElement>(null);
   const [settingsReady, setSettingsReady] = useState(false);
   useEffect(() => {
     try {
@@ -117,7 +118,7 @@ export function ClockCustomizer() {
         </div>
         <p className="fc-customizer-note">Your choices are saved in this browser for the preview. The downloadable Windows clock has its own settings in Windows Screen Saver Settings.</p>
       </div>
-      <div className="fc-customizer-live"><div className="fc-customizer-live-heading"><span>LIVE PREVIEW</span><span><i /> UPDATING</span></div><ClockPreview settings={settings} /><p>Adjust any setting to preview your clock instantly.</p></div>
+      <div className="fc-customizer-live" ref={previewRef}><div className="fc-customizer-live-heading"><span>LIVE FLIP CLOCK</span><button className="fc-fullscreen-button" type="button" onClick={() => { void previewRef.current?.requestFullscreen?.(); }}><Maximize2 size={15} /> Full screen</button></div><ClockPreview settings={settings} /><p>Adjust any setting to preview your clock. Press Esc to leave full screen.</p></div>
     </div>
   </section>;
 }
@@ -125,7 +126,6 @@ export function ClockCustomizer() {
 export function SignatureFooter() {
   return <footer className="fc-footer fc-signature-footer">
     <a className="fc-footer-home" href="/" aria-label="Return to the portfolio home">Dr. Mritunjay Shall Peelam</a>
-    <p>Designed and developed with care.</p>
     <a className="fc-footer-top" href="#top">Back to top <span aria-hidden="true">↑</span></a>
   </footer>;
 }
